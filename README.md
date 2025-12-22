@@ -7,6 +7,8 @@ Jupyter Notebooks as a way to explore various topics
 
 **[`climate_models_blog.ipynb`](./climate_models_blog.ipynb)** - A comprehensive journey through climate modeling
 
+**[📄 View as PDF](./climate_models_blog.pdf)** - Pre-executed notebook with all outputs and visualizations
+
 Build 5 climate models of increasing sophistication:
 1. **0D Energy Balance Model** - Global mean temperature
 2. **1D Radiative-Convective Model** - Vertical atmospheric structure
