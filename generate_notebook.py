@@ -6,10 +6,20 @@ import json
 
 def create_cell(cell_type, content, execution_count=None):
     """Helper to create notebook cells"""
+    # Properly split content into lines for notebook format
+    if isinstance(content, list):
+        source = content
+    elif isinstance(content, str):
+        # Split by newlines and add newline to all but last line
+        lines = content.split('\n')
+        source = [line + '\n' for line in lines[:-1]] + [lines[-1]]
+    else:
+        source = [str(content)]
+    
     cell = {
         "cell_type": cell_type,
         "metadata": {},
-        "source": content if isinstance(content, list) else [content]
+        "source": source
     }
     if cell_type == "code":
         cell["execution_count"] = execution_count

@@ -10,20 +10,30 @@ with open('climate_models_blog.ipynb', 'r') as f:
 
 def add_markdown(text):
     """Add markdown cell"""
+    if isinstance(text, str):
+        lines = text.split('\n')
+        source = [line + '\n' for line in lines[:-1]] + [lines[-1]]
+    else:
+        source = text
     notebook["cells"].append({
         "cell_type": "markdown",
         "metadata": {},
-        "source": text.split('\n') if isinstance(text, str) else text
+        "source": source
     })
 
 def add_code(code):
     """Add code cell"""
+    if isinstance(code, str):
+        lines = code.split('\n')
+        source = [line + '\n' for line in lines[:-1]] + [lines[-1]]
+    else:
+        source = code
     notebook["cells"].append({
         "cell_type": "code",
         "execution_count": None,
         "metadata": {},
         "outputs": [],
-        "source": code.split('\n') if isinstance(code, str) else code
+        "source": source
     })
 
 print("Adding Model 2 visualizations...")

@@ -10,10 +10,18 @@ with open('climate_models_blog.ipynb', 'r') as f:
 
 def add_cell(cell_type, content):
     """Add a cell to the notebook"""
+    if isinstance(content, list):
+        source = content
+    elif isinstance(content, str):
+        lines = content.split('\n')
+        source = [line + '\n' for line in lines[:-1]] + [lines[-1]]
+    else:
+        source = [str(content)]
+    
     cell = {
         "cell_type": cell_type,
         "metadata": {},
-        "source": content if isinstance(content, list) else content.split('\n')
+        "source": source
     }
     if cell_type == "code":
         cell["execution_count"] = None
