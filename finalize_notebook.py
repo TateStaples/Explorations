@@ -379,7 +379,7 @@ with torch.no_grad():
 print("="*70)
 print("REAL GRAPHCAST CHARACTERISTICS")
 print("="*70)
-print("\\n1. Scale: 37 million parameters (vs our {n_params:,})")
+print(f"\\n1. Scale: 37 million parameters (vs our {n_params:,})")
 print("  Real model is 1000× more complex")
 print("\\n2. Training Data: 40+ years of global reanalysis")
 print("  Petabytes of atmospheric data")
