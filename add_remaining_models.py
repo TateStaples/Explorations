@@ -386,9 +386,10 @@ add_code("""class TwoDimensionalEBM:
         
         # Grid
         self.n_lat = n_lat
-        self.lat = np.linspace(-90, 90, n_lat)  # Latitude (degrees)
+        # Avoid exact poles to prevent division by zero in diffusion operator
+        self.lat = np.linspace(-87.5, 87.5, n_lat)  # Latitude (degrees)
         self.lat_rad = np.deg2rad(self.lat)     # Latitude (radians)
-        self.d_lat = np.deg2rad(180 / (n_lat - 1))  # Grid spacing
+        self.d_lat = np.deg2rad(175 / (n_lat - 1))  # Grid spacing
         
         # Model parameters
         self.A = 202.0          # OLR parameter A (W/m²)
@@ -472,6 +473,8 @@ add_code("""class TwoDimensionalEBM:
         
         # Compute flux with cos(φ) weighting
         cos_lat = np.cos(self.lat_rad)
+        # Add small epsilon to prevent division by zero
+        cos_lat = np.maximum(cos_lat, 1e-10)
         flux = -self.D * cos_lat * dT_dlat
         
         # Compute divergence
