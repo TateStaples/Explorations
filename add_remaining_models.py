@@ -503,7 +503,7 @@ add_code("""class TwoDimensionalEBM:
         
         return dT_dt
     
-    def run_to_equilibrium(self, T_init=None, years=100, dt=0.1, S0=None):
+    def run_to_equilibrium(self, T_init=None, years=100, dt=0.01, S0=None):
         \"\"\"
         Time-step to equilibrium
         
@@ -596,14 +596,14 @@ add_code("""class TwoDimensionalEBM:
         CO2 forcing applied as uniform heating
         \"\"\"
         # Control
-        T_control, _, _ = self.run_to_equilibrium(years=50, dt=0.1)
+        T_control, _, _ = self.run_to_equilibrium(years=50, dt=0.01)
         
         # Forced (approximate CO2 forcing as reduced OLR)
         # Equivalent to reducing A parameter
         A_original = self.A
         self.A = A_original - forcing
         
-        T_forced, _, _ = self.run_to_equilibrium(T_init=T_control, years=50, dt=0.1)
+        T_forced, _, _ = self.run_to_equilibrium(T_init=T_control, years=50, dt=0.01)
         
         # Restore
         self.A = A_original
@@ -627,7 +627,7 @@ print(f"  Heat capacity (C): {model3.C:.2e} J/m²/K")
 print(f"  Albedo: {model3.alpha_ocean:.2f} (open) → {model3.alpha_ice:.2f} (ice)\\n")
 
 print("Computing equilibrium climate...")
-T_eq_2d, T_history, times = model3.run_to_equilibrium(years=50, dt=0.1)
+T_eq_2d, T_history, times = model3.run_to_equilibrium(years=50, dt=0.01)
 
 ice_n, ice_s = model3.find_ice_edge(T_eq_2d)
 print(f"  Global mean temperature: {np.mean(T_eq_2d):.2f} K ({np.mean(T_eq_2d)-273.15:.2f}°C)")

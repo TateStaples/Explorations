@@ -213,84 +213,193 @@ GraphCast represents a fundamental question: **Do we need to understand physics 
 - Active research on hybrid models
 - Debate on role of physical understanding""")
 
-# GraphCast Implementation (Conceptual)
-add_cell("code", """# Model 5: GraphCast-Style ML Model (Conceptual Implementation)
+# GraphCast Implementation (Simplified Graph Neural Network)
+add_cell("code", """# Model 5: GraphCast-Style Graph Neural Network
 #
-# Note: Full GraphCast requires massive datasets and computational resources.
-# Here we demonstrate the key concepts with a simplified version that learns
-# patterns in our simpler models.
+# Note: Full GraphCast uses massive datasets and icosahedral mesh.
+# This simplified version demonstrates the key GNN architecture:
+# - Graph structure (nodes = grid points, edges = connections)
+# - Message passing between connected nodes
+# - Encoder-Processor-Decoder with proper graph operations
 
 import torch
 import torch.nn as nn
 
-class SimpleGraphCastAnalog(nn.Module):
+class GraphMessagePassing(nn.Module):
     \"\"\"
-    Simplified analog of GraphCast demonstrating key ML concepts
+    Graph message passing layer - core of GraphCast architecture
     
-    This is NOT the real GraphCast but shows the ML approach:
-    - Learn from data (our previous models)
-    - Map inputs → future states
-    - Neural network architecture
+    Each node aggregates information from its neighbors via message passing.
+    This is the key difference from feedforward networks.
     \"\"\"
     
-    def __init__(self, n_features=5, hidden_dim=64):
+    def __init__(self, node_dim, edge_dim, hidden_dim):
         super().__init__()
         
-        # Encoder: Map atmospheric state to latent space
+        # Edge update: combines source node, target node, and edge features
+        self.edge_mlp = nn.Sequential(
+            nn.Linear(2 * node_dim + edge_dim, hidden_dim),
+            nn.LayerNorm(hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, edge_dim)
+        )
+        
+        # Node update: aggregates messages from edges
+        self.node_mlp = nn.Sequential(
+            nn.Linear(node_dim + edge_dim, hidden_dim),
+            nn.LayerNorm(hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, node_dim)
+        )
+    
+    def forward(self, node_features, edge_features, edge_index):
+        \"\"\"
+        Message passing step
+        
+        Args:
+            node_features: [n_nodes, node_dim] features at each node
+            edge_features: [n_edges, edge_dim] features at each edge
+            edge_index: [2, n_edges] connectivity (source, target pairs)
+        
+        Returns:
+            Updated node_features and edge_features
+        \"\"\"
+        # Extract source and target node features
+        source_nodes = node_features[edge_index[0]]  # [n_edges, node_dim]
+        target_nodes = node_features[edge_index[1]]  # [n_edges, node_dim]
+        
+        # Update edge features (message computation)
+        edge_input = torch.cat([source_nodes, target_nodes, edge_features], dim=-1)
+        edge_messages = self.edge_mlp(edge_input) + edge_features  # Residual
+        
+        # Aggregate messages to nodes (sum aggregation)
+        n_nodes = node_features.size(0)
+        aggregated = torch.zeros(n_nodes, edge_messages.size(1), device=node_features.device)
+        
+        for i in range(edge_index.size(1)):
+            target_idx = edge_index[1, i]
+            aggregated[target_idx] += edge_messages[i]
+        
+        # Update node features
+        node_input = torch.cat([node_features, aggregated], dim=-1)
+        node_features_new = self.node_mlp(node_input) + node_features  # Residual
+        
+        return node_features_new, edge_messages
+
+class GraphCastSimplified(nn.Module):
+    \"\"\"
+    Simplified GraphCast: Encoder-Processor-Decoder with Graph Neural Network
+    
+    Architecture follows GraphCast paper but with reduced complexity:
+    - Encoder: Maps atmospheric state to graph latent space
+    - Processor: Multiple message passing layers (GNN core)
+    - Decoder: Maps latent graph back to atmospheric state
+    
+    Key feature: Message passing respects spatial connectivity, unlike feedforward networks
+    \"\"\"
+    
+    def __init__(self, n_features=5, n_nodes=18, node_dim=32, edge_dim=16, n_layers=4):
+        super().__init__()
+        
+        self.n_nodes = n_nodes
+        self.node_dim = node_dim
+        self.edge_dim = edge_dim
+        
+        # Encoder: Project input features to node embeddings
         self.encoder = nn.Sequential(
-            nn.Linear(n_features, hidden_dim),
+            nn.Linear(n_features, node_dim),
+            nn.LayerNorm(node_dim),
             nn.ReLU(),
-            nn.Linear(hidden_dim, hidden_dim),
-            nn.ReLU()
+            nn.Linear(node_dim, node_dim)
         )
         
-        # Processor: Transform in latent space (like GNN message passing)
-        self.processor = nn.Sequential(
-            nn.Linear(hidden_dim, hidden_dim),
-            nn.ReLU(),
-            nn.Linear(hidden_dim, hidden_dim),
-            nn.ReLU(),
-            nn.Linear(hidden_dim, hidden_dim),
-            nn.ReLU()
-        )
+        # Initialize edge features (learnable, representing spatial relationships)
+        self.edge_embedding = nn.Parameter(torch.randn(n_nodes * 4, edge_dim) * 0.1)
         
-        # Decoder: Map back to atmospheric state
+        # Processor: Stack of message passing layers (GNN core)
+        self.message_passing_layers = nn.ModuleList([
+            GraphMessagePassing(node_dim, edge_dim, hidden_dim=64)
+            for _ in range(n_layers)
+        ])
+        
+        # Decoder: Project node embeddings back to atmospheric features
         self.decoder = nn.Sequential(
-            nn.Linear(hidden_dim, hidden_dim),
+            nn.Linear(node_dim, node_dim),
+            nn.LayerNorm(node_dim),
             nn.ReLU(),
-            nn.Linear(hidden_dim, n_features)
+            nn.Linear(node_dim, n_features)
         )
+        
+        # Create graph structure (simplified 1D lat-lon grid with 4 neighbors per node)
+        self.edge_index = self._create_grid_edges(n_nodes)
+    
+    def _create_grid_edges(self, n_nodes):
+        \"\"\"
+        Create graph connectivity for a 1D grid with periodic boundaries
+        Each node connects to its 4 nearest neighbors (2 on each side + wrapping)
+        \"\"\"
+        edges = []
+        for i in range(n_nodes):
+            # Connect to neighbors (with periodic boundary)
+            for offset in [-2, -1, 1, 2]:
+                j = (i + offset) % n_nodes
+                edges.append([i, j])
+        
+        edge_index = torch.tensor(edges, dtype=torch.long).t()
+        return edge_index
     
     def forward(self, x):
         \"\"\"
-        Forward pass: current state → future state
+        Forward pass: current state → future state via graph neural network
         
         Args:
-            x: [batch, n_features] current atmospheric state
+            x: [batch, n_features] atmospheric state (averaged over grid)
+        
         Returns:
             x_pred: [batch, n_features] predicted future state
         \"\"\"
-        # Encode
-        h = self.encoder(x)
+        batch_size = x.size(0)
         
-        # Process
-        h = self.processor(h)
+        # Expand to node representation (broadcast to all nodes)
+        # In full GraphCast, each node would have different lat/lon values
+        x_nodes = x.unsqueeze(1).expand(batch_size, self.n_nodes, -1)  # [batch, n_nodes, n_features]
         
-        # Decode  
-        x_pred = self.decoder(h)
+        # Encoder: Map to latent node space
+        node_features = []
+        for b in range(batch_size):
+            h = self.encoder(x_nodes[b])  # [n_nodes, node_dim]
+            node_features.append(h)
+        
+        # Process each sample in batch
+        outputs = []
+        for b in range(batch_size):
+            h_nodes = node_features[b]
+            h_edges = self.edge_embedding
+            
+            # Processor: Message passing (GNN core)
+            for mp_layer in self.message_passing_layers:
+                h_nodes, h_edges = mp_layer(h_nodes, h_edges, self.edge_index)
+            
+            # Decoder: Map back to atmospheric state (global pooling + decode)
+            h_global = h_nodes.mean(dim=0)  # [node_dim] - average over nodes
+            out = self.decoder(h_global)  # [n_features]
+            outputs.append(out)
+        
+        x_pred = torch.stack(outputs)  # [batch, n_features]
         
         return x_pred
 
 # Demonstrate the concept with synthetic data from our models
 print("="*70)
-print("GRAPHCAST-STYLE ML MODEL (Conceptual Demonstration)")
+print("GRAPHCAST-STYLE GRAPH NEURAL NETWORK")
 print("="*70 + "\\n")
 
 print("Key Concepts Demonstrated:")
-print("  1. Data-driven approach: Learn from historical simulations")
-print("  2. Neural network architecture: Encoder-Processor-Decoder")
-print("  3. Pattern recognition: No explicit physics equations")
-print("  4. Fast inference: Once trained, predictions are rapid\\n")
+print("  1. Graph Neural Network: Nodes & edges with message passing")
+print("  2. Encoder-Processor-Decoder: GraphCast architecture")
+print("  3. Spatial structure: Graph respects atmospheric connectivity")
+print("  4. Message passing: Information flows between connected nodes")
+print("  5. NOT a simple feedforward network!\\n")
 
 # Create simple synthetic training data
 # Features: [T_surface, T_upper, gradient, wind, humidity]
@@ -325,14 +434,17 @@ print(f"  Test samples: {len(X_test)}")
 print(f"  Features: 5 (T_surface, T_upper, gradient, wind, humidity)\\n")
 
 # Initialize model
-model = SimpleGraphCastAnalog(n_features=5, hidden_dim=64)
+model = GraphCastSimplified(n_features=5, n_nodes=18, node_dim=32, edge_dim=16, n_layers=4)
 
 # Count parameters
 n_params = sum(p.numel() for p in model.parameters())
+n_edges = model.edge_index.size(1)
 print(f"Model Architecture:")
+print(f"  Graph structure: {model.n_nodes} nodes, {n_edges} edges (4 neighbors/node)")
 print(f"  Parameters: {n_params:,}")
-print(f"  Layers: Encoder (2) + Processor (3) + Decoder (2)")
-print(f"  Hidden dimension: 64\\n")
+print(f"  Message passing layers: 4")
+print(f"  Node dimension: 32, Edge dimension: 16")
+print(f"  Key feature: Graph message passing (not feedforward!)\\n")
 
 # Training
 print("Training model (simplified)...")
