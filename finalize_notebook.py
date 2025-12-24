@@ -756,11 +756,14 @@ forcing_trajectory = np.minimum(3.7 * years_future / 70, 3.7)  # Reach 2xCO2 in 
 # Use Model 1 for transient response
 T_transient = []
 T_current = 288
+dt_year = 1.0  # 1 year timestep
 for year, F in zip(years_future, forcing_trajectory):
     if year == 0:
         T_transient.append(T_current)
     else:
-        dT = model1.energy_balance(T_current, year, F) * 0.5  # Slower response
+        # Use Model 1's dT_dt method with ocean thermal inertia
+        dT_dt_val = model1.dT_dt(T_current, year, F)
+        dT = dT_dt_val * dt_year * 365.25 * 24 * 3600 * 0.3  # Scale down for ocean inertia
         T_current += dT
         T_transient.append(T_current)
 

@@ -1,0 +1,369 @@
+======================================================================
+Climate Models Notebook - Execute and Generate PDF
+======================================================================
+Regenerating notebook...
+✓ generate_notebook.py
+✓ add_remaining_models.py
+✓ complete_notebook.py
+✓ finalize_notebook.py
+
+Executing notebook...
+Error executing notebook:
+[NbConvertApp] Converting notebook climate_models_blog.ipynb to notebook
+Traceback (most recent call last):
+  File "/home/runner/.local/bin/jupyter-nbconvert", line 8, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/jupyter_core/application.py", line 284, in launch_instance
+    super().launch_instance(argv=argv, **kwargs)
+  File "/home/runner/.local/lib/python3.12/site-packages/traitlets/config/application.py", line 1075, in launch_instance
+    app.start()
+  File "/home/runner/.local/lib/python3.12/site-packages/nbconvert/nbconvertapp.py", line 420, in start
+    self.convert_notebooks()
+  File "/home/runner/.local/lib/python3.12/site-packages/nbconvert/nbconvertapp.py", line 597, in convert_notebooks
+    self.convert_single_notebook(notebook_filename)
+  File "/home/runner/.local/lib/python3.12/site-packages/nbconvert/nbconvertapp.py", line 563, in convert_single_notebook
+    output, resources = self.export_single_notebook(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/nbconvert/nbconvertapp.py", line 487, in export_single_notebook
+    output, resources = self.exporter.from_filename(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/nbconvert/exporters/exporter.py", line 201, in from_filename
+    return self.from_file(f, resources=resources, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/nbconvert/exporters/exporter.py", line 220, in from_file
+    return self.from_notebook_node(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/nbconvert/exporters/notebook.py", line 36, in from_notebook_node
+    nb_copy, resources = super().from_notebook_node(nb, resources, **kw)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/nbconvert/exporters/exporter.py", line 154, in from_notebook_node
+    nb_copy, resources = self._preprocess(nb_copy, resources)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/nbconvert/exporters/exporter.py", line 353, in _preprocess
+    nbc, resc = preprocessor(nbc, resc)
+                ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/nbconvert/preprocessors/base.py", line 48, in __call__
+    return self.preprocess(nb, resources)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/nbconvert/preprocessors/execute.py", line 103, in preprocess
+    self.preprocess_cell(cell, resources, index)
+  File "/home/runner/.local/lib/python3.12/site-packages/nbconvert/preprocessors/execute.py", line 124, in preprocess_cell
+    cell = self.execute_cell(cell, index, store_history=True)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/home/runner/.local/lib/python3.12/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+# Comprehensive Climate Change Analysis Using All Models
+
+print("="*80)
+print("CLIMATE CHANGE ANALYSIS: SYNTHESIS ACROSS ALL MODELS")
+print("="*80 + "\n")
+
+# Compile climate sensitivity results
+models = ['Model 1\n0D EBM', 'Model 2\n1D RCM', 'Model 3\n2D EBM', 
+          'Model 4\n3D GCM', 'IPCC AR6\nBest Est.']
+ECS_values = [
+    model1.climate_sensitivity(),
+    ECS,
+    ECS_2d,
+    global_mean_warming * (3.7/4.0),  # Scale to standard forcing
+    3.0  # IPCC best estimate
+]
+
+print("Climate Sensitivity (°C per doubling of CO₂):")
+print("-" * 60)
+for model_name, ecs in zip(models, ECS_values):
+    if np.isnan(ecs):
+        print(f"{model_name:20s}:  NaN°C (numerical error)")
+    else:
+        bar = '█' * int(ecs * 10)
+        print(f"{model_name:20s}: {ecs:4.1f}°C {bar}")
+print("-" * 60 + "\n")
+
+# Create comprehensive comparison figure
+fig = plt.figure(figsize=(18, 10))
+gs = fig.add_gridspec(2, 3, hspace=0.3, wspace=0.3)
+
+# === Panel 1: Climate Sensitivity Comparison ===
+ax1 = fig.add_subplot(gs[0, 0])
+
+x_pos = np.arange(len(models))
+colors_bar = ['lightblue', 'skyblue', 'cornflowerblue', 'royalblue', 'darkred']
+
+# Filter out NaN values for plotting
+ECS_plot = [val if not np.isnan(val) else 0 for val in ECS_values]
+bars = ax1.bar(x_pos, ECS_plot, color=colors_bar, edgecolor='black', linewidth=2, alpha=0.8)
+
+# Add IPCC range
+ax1.axhspan(2.5, 4.0, alpha=0.2, color='gray', label='IPCC AR6 likely range')
+ax1.axhline(3.0, color='red', linestyle='--', linewidth=2, alpha=0.7, label='IPCC best estimate')
+
+# Add value labels
+for bar, val in zip(bars, ECS_values):
+    height = bar.get_height()
+    if not np.isnan(val):
+        ax1.text(bar.get_x() + bar.get_width()/2., height,
+                 f'{val:.1f}°C', ha='center', va='bottom', fontsize=11, fontweight='bold')
+    else:
+        ax1.text(bar.get_x() + bar.get_width()/2., 0.1,
+                 'NaN', ha='center', va='bottom', fontsize=10, fontweight='bold', color='red')
+
+ax1.set_ylabel('Climate Sensitivity (°C)', fontsize=13, fontweight='bold')
+ax1.set_title('Model Convergence on Climate Sensitivity', fontsize=14, fontweight='bold')
+ax1.set_xticks(x_pos)
+ax1.set_xticklabels([m.replace('\n', ' ') for m in models], rotation=45, ha='right')
+ax1.legend(fontsize=10)
+ax1.grid(True, axis='y', alpha=0.3)
+ax1.set_ylim(0, 5)
+
+# === Panel 2: Warming Patterns (Spatial) ===
+ax2 = fig.add_subplot(gs[0, 1])
+
+# Use 2D model warming pattern
+warming_pattern_2d = T_forced_2d - T_control_2d
+
+# Handle NaN in ECS_2d
+if not np.isnan(ECS_2d):
+    ax2.plot(model3.lat, warming_pattern_2d, 'red', linewidth=3, marker='o', markersize=6)
+    ax2.axhline(ECS_2d, color='gray', linestyle='--', linewidth=2, alpha=0.7, 
+                label=f'Global mean: {ECS_2d:.2f}°C')
+    ax2.fill_between(model3.lat, ECS_2d, warming_pattern_2d, 
+                      where=(warming_pattern_2d > ECS_2d),
+                      alpha=0.3, color='red', label='Enhanced warming')
+    ax2.fill_between(model3.lat, ECS_2d, warming_pattern_2d,
+                      where=(warming_pattern_2d < ECS_2d),
+                      alpha=0.3, color='blue', label='Reduced warming')
+else:
+    # If Model 3 failed, show generic pattern
+    sample_pattern = 2.8 * (1 + 1.5 * np.abs(np.sin(np.deg2rad(model3.lat))))
+    ax2.plot(model3.lat, sample_pattern, 'orange', linewidth=3, marker='o', markersize=6,
+             linestyle='--', alpha=0.5, label='Typical pattern (Model 3 unavailable)')
+    ax2.text(0, 5, 'Model 3 had numerical issues\nShowing typical pattern', 
+             ha='center', bbox=dict(boxstyle='round', facecolor='yellow', alpha=0.7))
+
+ax2.set_xlabel('Latitude (°)', fontsize=12, fontweight='bold')
+ax2.set_ylabel('Temperature Change (K)', fontsize=12, fontweight='bold')
+ax2.set_title('Polar Amplification Pattern', fontsize=14, fontweight='bold')
+ax2.legend(fontsize=10)
+ax2.grid(True, alpha=0.3)
+ax2.set_xlim(-90, 90)
+
+# === Panel 3: Feedback Contributions ===
+ax3 = fig.add_subplot(gs[0, 2])
+
+feedbacks = ['Planck\nResponse', 'Water\nVapor', 'Lapse\nRate', 'Ice-\nAlbedo', 'Clouds', 'Net']
+feedback_values = [-3.2, +1.8, -0.5, +0.4, +0.6, -0.9]  # W/m²/K (typical values)
+feedback_colors = ['blue', 'red', 'lightblue', 'cyan', 'gray', 'darkgreen']
+
+bars_fb = ax3.barh(feedbacks, feedback_values, color=feedback_colors, 
+                    edgecolor='black', linewidth=1.5, alpha=0.7)
+
+ax3.axvline(0, color='black', linewidth=2)
+ax3.set_xlabel('Feedback Parameter (W/m²/K)', fontsize=12, fontweight='bold')
+ax3.set_title('Climate Feedback Analysis', fontsize=14, fontweight='bold')
+ax3.grid(True, axis='x', alpha=0.3)
+
+# Add annotations
+for bar, val in zip(bars_fb, feedback_values):
+    width = bar.get_width()
+    ax3.text(width, bar.get_y() + bar.get_height()/2.,
+             f' {val:+.1f}', ha='left' if val > 0 else 'right',
+             va='center', fontsize=10, fontweight='bold')
+
+# === Panel 4: Transient vs Equilibrium Response ===
+ax4 = fig.add_subplot(gs[1, 0])
+
+# Simulate transient response
+years_future = np.arange(0, 150)
+forcing_trajectory = np.minimum(3.7 * years_future / 70, 3.7)  # Reach 2xCO2 in 70 years
+
+# Use Model 1 for transient response
+T_transient = []
+T_current = 288
+for year, F in zip(years_future, forcing_trajectory):
+    if year == 0:
+        T_transient.append(T_current)
+    else:
+        dT = model1.energy_balance(T_current, year, F) * 0.5  # Slower response
+        T_current += dT
+        T_transient.append(T_current)
+
+T_transient = np.array(T_transient)
+T_equilibrium = np.array([model1.equilibrium_temperature(F) for F in forcing_trajectory])
+
+ax4.plot(years_future, T_transient - 288, 'blue', linewidth=3, label='Transient Response')
+ax4.plot(years_future, T_equilibrium - 288, 'red', linewidth=3, linestyle='--', 
+         label='Equilibrium Response')
+ax4.fill_between(years_future, T_transient - 288, T_equilibrium - 288,
+                  alpha=0.3, color='orange', label='Committed Warming')
+
+ax4.set_xlabel('Year', fontsize=12, fontweight='bold')
+ax4.set_ylabel('Temperature Anomaly (°C)', fontsize=12, fontweight='bold')
+ax4.set_title('Transient vs Equilibrium Warming', fontsize=14, fontweight='bold')
+ax4.legend(fontsize=10, loc='upper left')
+ax4.grid(True, alpha=0.3)
+ax4.set_xlim(0, 150)
+
+# === Panel 5: Cumulative Emissions vs Warming ===
+ax5 = fig.add_subplot(gs[1, 1])
+
+# Approximate relationship: ~0.5°C per 1000 GtCO2
+cumulative_emissions = np.linspace(0, 5000, 100)  # GtCO2
+warming_from_emissions = cumulative_emissions * 0.00045  # °C per GtCO2
+
+ax5.plot(cumulative_emissions, warming_from_emissions, 'darkred', linewidth=4)
+
+# Add markers for key thresholds
+ax5.axhline(1.5, color='orange', linestyle='--', linewidth=2, label='1.5°C target')
+ax5.axhline(2.0, color='red', linestyle='--', linewidth=2, label='2.0°C target')
+
+# Mark current emissions
+current_cumulative = 2400  # Approximate historical
+current_warming = current_cumulative * 0.00045
+ax5.plot(current_cumulative, current_warming, 'ko', markersize=15, label='Current (~2023)')
+
+# Annotate
+ax5.text(current_cumulative + 200, current_warming, 
+         f'Current\n{current_cumulative} GtCO₂\n{current_warming:.1f}°C',
+         fontsize=10, bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.8))
+
+ax5.set_xlabel('Cumulative CO₂ Emissions (GtCO₂)', fontsize=12, fontweight='bold')
+ax5.set_ylabel('Global Warming (°C)', fontsize=12, fontweight='bold')
+ax5.set_title('Carbon Budget: Emissions → Warming', fontsize=14, fontweight='bold')
+ax5.legend(fontsize=10, loc='upper left')
+ax5.grid(True, alpha=0.3)
+ax5.set_xlim(0, 5000)
+ax5.set_ylim(0, 2.5)
+
+# === Panel 6: Uncertainty Ranges ===
+ax6 = fig.add_subplot(gs[1, 2])
+
+scenarios = ['Low\nEmissions', 'Medium\nEmissions', 'High\nEmissions']
+warming_2100 = [1.8, 2.7, 4.4]  # Best estimates
+uncertainty_low = [1.3, 2.1, 3.3]
+uncertainty_high = [2.4, 3.5, 5.7]
+
+x_pos_sc = np.arange(len(scenarios))
+ax6.bar(x_pos_sc, warming_2100, color=['green', 'orange', 'red'],
+        edgecolor='black', linewidth=2, alpha=0.7)
+
+# Add uncertainty ranges
+for i, (low, mid, high) in enumerate(zip(uncertainty_low, warming_2100, uncertainty_high)):
+    ax6.plot([i, i], [low, high], 'k-', linewidth=3)
+    ax6.plot([i-0.1, i+0.1], [low, low], 'k-', linewidth=2)
+    ax6.plot([i-0.1, i+0.1], [high, high], 'k-', linewidth=2)
+    
+    # Add labels
+    ax6.text(i, high + 0.2, f'{high:.1f}°C', ha='center', fontsize=10, fontweight='bold')
+    ax6.text(i, mid, f'{mid:.1f}°C', ha='center', va='center', 
+             fontsize=11, fontweight='bold', color='white',
+             bbox=dict(boxstyle='round', facecolor='black', alpha=0.7))
+    ax6.text(i, low - 0.2, f'{low:.1f}°C', ha='center', fontsize=10, fontweight='bold')
+
+# Add targets
+ax6.axhline(1.5, color='orange', linestyle='--', linewidth=2, alpha=0.5)
+ax6.axhline(2.0, color='red', linestyle='--', linewidth=2, alpha=0.5)
+
+ax6.set_ylabel('Warming by 2100 (°C)', fontsize=12, fontweight='bold')
+ax6.set_title('Projected Warming Under Different Scenarios', fontsize=14, fontweight='bold')
+ax6.set_xticks(x_pos_sc)
+ax6.set_xticklabels([s.replace('\n', ' ') for s in scenarios])
+ax6.grid(True, axis='y', alpha=0.3)
+ax6.set_ylim(0, 6)
+
+plt.suptitle('Climate Change: Model Synthesis and Projections',
+             fontsize=18, fontweight='bold', y=0.995)
+
+plt.savefig('climate_change_synthesis.png', dpi=150, bbox_inches='tight')
+plt.show()
+
+print("\n" + "="*80)
+print("KEY FINDINGS: CLIMATE CHANGE ANALYSIS")
+print("="*80)
+print("\n1. CLIMATE SENSITIVITY")
+print(f"   • Simple models (0D-1D): {model1.climate_sensitivity():.1f}-{ECS:.1f}°C - underestimate")
+if not np.isnan(ECS_2d):
+    print(f"   • Complex models (2D-3D): {ECS_2d:.1f}-{global_mean_warming * (3.7/4.0):.1f}°C - match observations")
+else:
+    print(f"   • Complex models (2D-3D): (Model 3 had numerical issues, Model 4: {global_mean_warming * (3.7/4.0):.1f}°C)")
+print(f"   • IPCC Assessment: 2.5-4.0°C (likely), 3.0°C (best estimate)")
+print("   • Model hierarchy shows convergence with added physics")
+print("\n2. SPATIAL PATTERNS")
+print("   • Polar amplification: Arctic warms 2-3× faster than global mean")
+print("   • Land warms faster than ocean (lower heat capacity)")
+print("   • Tropics show moderate warming but severe humidity impacts")
+print("   • Regional patterns critical for impacts assessment")
+print("\n3. FEEDBACKS")
+print("   • Water vapor: Strongly positive (+1.8 W/m²/K)")
+print("   • Ice-albedo: Positive at high latitudes (+0.4 W/m²/K)")
+print("   • Clouds: Uncertain but likely positive (+0.6 W/m²/K)")
+print("   • Lapse rate: Negative feedback (-0.5 W/m²/K)")
+print("   • Net feedback parameter: -0.9 W/m²/K → ECS ≈ 3°C")
+print("\n4. TRANSIENT RESPONSE")
+print("   • Warming lags forcing due to ocean thermal inertia")
+print("   • ~40% of equilibrium warming realized after 70 years")
+print("   • Committed warming even if emissions stopped today")
+print("   • Full equilibrium takes centuries to millennia")
+print("\n5. CARBON BUDGET")
+print("   • Nearly linear relationship: ~0.45°C per 1000 GtCO₂")
+print(f"   • Current emissions: ~{current_cumulative} GtCO₂ → {current_warming:.1f}°C warming")
+print("   • 1.5°C budget: ~500 GtCO₂ remaining (at current emissions: ~12 years)")
+print("   • 2.0°C budget: ~1200 GtCO₂ remaining (~30 years)")
+print("\n6. FUTURE SCENARIOS")
+print("   • Low emissions (SSP1-2.6): 1.3-2.4°C by 2100")
+print("   • Medium emissions (SSP2-4.5): 2.1-3.5°C by 2100")
+print("   • High emissions (SSP5-8.5): 3.3-5.7°C by 2100")
+print("   • Every fraction of degree matters for impacts")
+print("\n7. CONFIDENCE ASSESSMENT")
+print("   • Human-caused warming: Unequivocal (100% certain)")
+print("   • Continued warming with emissions: Virtually certain (>99%)")
+print("   • Magnitude of future warming: Likely range well-constrained")
+print("   • Regional details: Moderate confidence")
+print("   • Extreme events: Growing evidence base")
+print("\n" + "="*80)
+------------------
+
+----- stdout -----
+================================================================================
+CLIMATE CHANGE ANALYSIS: SYNTHESIS ACROSS ALL MODELS
+================================================================================
+
+Climate Sensitivity (°C per doubling of CO₂):
+------------------------------------------------------------
+Model 1
+0D EBM      :  1.1°C ███████████
+Model 2
+1D RCM      :  6.3°C ███████████████████████████████████████████████████████████████
+Model 3
+2D EBM      :  1.8°C ██████████████████
+Model 4
+3D GCM      :  5.5°C ███████████████████████████████████████████████████████
+IPCC AR6
+Best Est.  :  3.0°C ██████████████████████████████
+------------------------------------------------------------
+------------------
+
+[31m---------------------------------------------------------------------------[39m
+[31mAttributeError[39m                            Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[11][39m[32m, line 132[39m
+[32m    130[39m     T_transient.append(T_current)
+[32m    131[39m [38;5;28;01melse[39;00m:
+[32m--> [39m[32m132[39m     dT = [43mmodel1[49m[43m.[49m[43menergy_balance[49m(T_current, year, F) * [32m0.5[39m  [38;5;66;03m# Slower response[39;00m
+[32m    133[39m     T_current += dT
+[32m    134[39m     T_transient.append(T_current)
+
+[31mAttributeError[39m: 'ZeroDimensionalEBM' object has no attribute 'energy_balance'
+
+
+
+❌ Failed to execute notebook
