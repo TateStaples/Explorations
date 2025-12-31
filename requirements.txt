@@ -11,10 +11,11 @@ plotly>=5.14.0
 # Marimo (reactive Python notebook)
 marimo>=0.18.0
 
+# Machine learning and data analysis
+scikit-learn>=1.3.0
+torch>=2.0.0
+
 # Climate and weather data
 xarray>=2023.0.0
 netCDF4>=1.6.0
 cftime>=1.6.0
-
-# Machine learning (for GraphCast-style models)
-torch>=2.0.0

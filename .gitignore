@@ -58,3 +58,8 @@ Thumbs.db
 tmp/
 temp/
 *.tmp
+
+# Test outputs
+*_test.png
+*_test.pdf
+*_test.html
