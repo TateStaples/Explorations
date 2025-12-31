@@ -3,6 +3,31 @@ Marimo notebooks as a way to explore various topics
 
 ## Current Explorations
 
+### 📈 Portfolio Optimization: From Markowitz to Machine Learning
+
+**[`portfolio_optimization.py`](./portfolio_optimization.py)** - A comprehensive journey through portfolio optimization (Marimo format)
+
+This Marimo notebook presents a progressive exploration of 5 portfolio optimization approaches with increasing sophistication:
+1. **Mean-Variance Optimization (Markowitz)** - Foundation of modern portfolio theory
+2. **Capital Asset Pricing Model (CAPM)** - Market equilibrium and systematic risk
+3. **Risk Parity** - Equal risk contribution approach
+4. **Black-Litterman Model** - Combining equilibrium with investor views
+5. **Machine Learning-Based Optimization** - Modern data-driven approaches
+
+Each approach includes:
+- 2-page technical explanation of assumptions and methodology
+- Mathematical formulations and theoretical foundations
+- Practical implementation considerations
+- Comparative analysis and use cases
+
+**Key Insights**: Demonstrates evolution of portfolio theory from classical optimization to modern ML, compares strengths and limitations of each approach, and provides practical guidance on when to use each method.
+
+**Quick Start**: 
+```bash
+pip install -r requirements.txt
+marimo edit portfolio_optimization.py
+```
+
 ### 🌍 Climate Models: From Simple to GraphCast
 
 **[`climate_models_blog.py`](./climate_models_blog.py)** - A comprehensive journey through climate modeling (Marimo format)
