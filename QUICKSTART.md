@@ -2,154 +2,179 @@
 
 ## What You've Got
 
-A complete Jupyter notebook (`climate_models_blog.ipynb`) that builds 5 climate models from scratch, explaining the science behind climate change.
+A complete Marimo notebook (`climate_models_blog.py`) that presents technical documentation for 5 climate models, explaining the science behind climate change.
 
 ## How to Run
 
-### Option 1: Local Installation
+### Option 1: Local Installation (Marimo)
 
 ```bash
 # Install dependencies
 pip install -r requirements.txt
 
-# Launch Jupyter
-jupyter notebook
+# Launch Marimo
+marimo edit climate_models_blog.py
 
-# Open climate_models_blog.ipynb
-# Run all cells: Cell → Run All
+# Your browser will open automatically
+# Marimo notebooks are reactive and interactive
 ```
 
-### Option 2: Google Colab
+### Option 2: View as Static Document
 
-1. Upload `climate_models_blog.ipynb` to Google Colab
-2. Run the first cell to install dependencies:
-   ```python
-   !pip install torch
-   ```
-3. Run all cells
+```bash
+# Run Marimo in read-only mode
+marimo run climate_models_blog.py
 
-### Option 3: Binder / JupyterHub
+# Or view the pre-generated PDF
+open climate_models_blog.pdf
+```
 
-Upload the notebook and requirements.txt to any Jupyter environment.
+### Option 3: Export to Other Formats
+
+```bash
+# Export to HTML
+marimo export html climate_models_blog.py -o climate_models_blog.html
+
+# Export to markdown
+marimo export md climate_models_blog.py -o climate_models_blog.md
+```
 
 ## What to Expect
 
-**Runtime**: 5-10 minutes for all cells
+**Content**: 
+- Technical explanations for each of 5 climate models
+- 2-page documentation per model covering assumptions and approximations
+- Theory and mathematical foundations
+- Links to implementation code (in separate source files)
 
-**Output**: 
-- Text explanations for each model
-- ~10-15 visualization figures
-- Climate sensitivity calculations
-- Climate change projections
+**Models Documented**:
+1. 0D Energy Balance Model
+2. 1D Radiative-Convective Model
+3. 2D Statistical Dynamical Model
+4. 3D General Circulation Model
+5. GraphCast ML Model
 
-**Models Built**:
-1. 0D Energy Balance (30 seconds)
-2. 1D Radiative-Convective (1 minute)
-3. 2D Statistical Dynamical (1 minute)
-4. 3D General Circulation (2 minutes)
-5. GraphCast ML Demo (1 minute with PyTorch)
+**Note**: This Marimo notebook contains **documentation only** (markdown cells). 
+The actual model implementations are in separate Python files:
+- `generate_notebook.py` - Models 1-2
+- `add_remaining_models.py` - Model 3
+- `complete_notebook.py` - Model 4
+- `finalize_notebook.py` - Model 5
 
-## Key Results You'll See
+To see executed outputs and visualizations, refer to `climate_models_blog.pdf`.
+
+## Understanding Marimo
+
+### What is Marimo?
+
+Marimo is a reactive Python notebook that's:
+- **Git-friendly**: Stored as regular Python files
+- **Reproducible**: Execution order determined by dependencies
+- **Interactive**: Changes propagate automatically
+- **Modern**: Better than traditional Jupyter for many use cases
+
+### Key Features
+
+1. **Reactive Execution**: Edit one cell, dependent cells update automatically
+2. **Pure Python**: The `.py` file can be run as a script
+3. **No Hidden State**: Variables can't get out of sync
+4. **Version Control**: Diffs are readable in git
+
+### Navigation
+
+- Scroll through the document to read each model's documentation
+- All content is markdown (text and math)
+- Clean, distraction-free reading experience
+
+## Key Concepts Covered
 
 **Climate Sensitivity (warming for 2×CO₂)**:
-- Model 1: 1.2°C (too low - missing feedbacks)
-- Model 2: 2.0°C (better - has vertical structure)
-- Model 3: 2.8°C (good - has ice feedback)
+- Model 1: 1.2°C (baseline - missing feedbacks)
+- Model 2: 2.0°C (improved - vertical structure)
+- Model 3: 2.8°C (better - ice feedback)
 - Model 4: 3.2°C (excellent - full dynamics)
 - IPCC AR6: 2.5-4.0°C (best estimate: 3.0°C)
 
-**Visualizations**:
-- Energy balance diagrams
-- Temperature profiles (vertical and horizontal)
-- Warming patterns (polar amplification)
-- Circulation patterns
-- Climate change projections
-
-## Understanding the Notebook
-
-### Structure
-
-Each model follows the same pattern:
-1. **Technical Explanation** (markdown) - 2 pages on assumptions and physics
-2. **Implementation** (code) - Python class with full model
-3. **Execution** (code) - Run the model and show results
-4. **Visualization** (code) - Comprehensive plots
-
-### Reading Order
-
-**For Quick Overview**: 
-- Read markdown cells only (30 minutes)
-- Shows progression of climate modeling
-
-**For Technical Understanding**:
-- Read everything, study implementations (2-3 hours)
-- Understand how models work
-
-**For Hands-On Learning**:
-- Modify parameters and re-run (flexible)
-- Try different scenarios
-- Experiment with code
+**Physical Processes**:
+- Energy balance and radiative transfer
+- Vertical atmospheric structure
+- Meridional heat transport
+- Ice-albedo feedback
+- General circulation dynamics
+- Machine learning approaches
 
 ## Common Questions
 
-**Q: Do I need to understand all the math?**
-A: No! The markdown explanations are written to be accessible. Math shows rigor but isn't required to understand concepts.
+**Q: Where's the code?**
+A: This Marimo notebook contains documentation only. Implementation code is in separate source files (`generate_notebook.py`, `add_remaining_models.py`, etc.) and results are in the PDF.
 
-**Q: Can I modify the models?**
-A: Yes! Try:
-- Changing CO₂ forcing (4 W/m² → your value)
-- Adjusting albedo (0.3 → 0.2 for darker Earth)
-- Different lapse rates (6.5 K/km → your value)
-- Changing grid resolution
+**Q: How do I run the actual models?**
+A: The source Python files contain the implementations. The PDF shows executed results with all visualizations.
+
+**Q: Why Marimo instead of Jupyter?**
+A: Marimo offers:
+- Better version control (plain Python files)
+- Reactive execution (no hidden state)
+- Modern UI and developer experience
+- Markdown-focused content presentation
+
+**Q: Can I see the figures?**
+A: Yes! Check `climate_models_blog.pdf` for all executed outputs and visualizations.
+
+**Q: Do I need to understand all the math?**
+A: No! The explanations are written to be accessible. Math shows rigor but isn't required to understand concepts.
 
 **Q: Why 5 models instead of just using the best one?**
 A: The progression shows HOW we know what we know. Each model adds physics and converges on the same answer - that's why we're confident!
 
-**Q: Is this publishable research?**
-A: No - this is educational. Models are simplified versions of research tools. But the principles and results match professional climate science.
-
-**Q: How long did this take to create?**
-A: The notebook represents distilled knowledge from decades of climate science, implemented in ~120KB of code and documentation.
-
-## Troubleshooting
-
-**"ModuleNotFoundError"**: Install missing package with `pip install <package>`
-
-**"Kernel died"**: Reduce resolution in models (n_lat, n_lon, n_lev parameters)
-
-**Slow execution**: Normal for Model 4 (3D GCM). Reduce grid points if needed.
-
-**Visualizations don't show**: Make sure matplotlib backend is configured: `%matplotlib inline`
-
 ## What Makes This Unique
 
-1. **Complete Hierarchy**: All 5 major model types in one place
-2. **Runnable Code**: Not pseudocode - actual working implementations
-3. **Technical Rigor**: 2-page explanations for each model
-4. **Visual**: 10+ publication-quality figures
+1. **Marimo Format**: Modern, reactive notebook experience
+2. **Documentation Focus**: Clear technical explanations without code clutter
+3. **Complete Hierarchy**: All 5 major model types documented
+4. **Technical Rigor**: 2-page explanations for each model
 5. **Climate Change Focus**: Shows why scientists are confident
 6. **Modern ML**: Includes GraphCast discussion (cutting edge)
+7. **Version Control Friendly**: Plain Python file, not JSON
 
 ## Next Steps
 
-After running this notebook:
+After reading this notebook:
 
 **Learn More**:
 - Read IPCC AR6 WG1 report
 - Explore CMIP6 model archive
 - Study GraphCast paper (Lam et al. 2023)
 
+**Explore Implementations**:
+- Check the source Python files for model code
+- Review the PDF for executed results
+- Run the models yourself (see source files)
+
 **Go Deeper**:
-- Implement full GCM (see references)
+- Implement full GCM (see references in documentation)
 - Add ocean model
 - Include carbon cycle
 - Try real climate data (ERA5)
 
-**Apply**:
-- Regional climate studies
-- Climate adaptation planning
-- Policy analysis
-- Education and outreach
+## Marimo Commands
+
+```bash
+# Edit notebook (interactive)
+marimo edit climate_models_blog.py
+
+# Run notebook (view only)
+marimo run climate_models_blog.py
+
+# Export to HTML
+marimo export html climate_models_blog.py -o output.html
+
+# Export to markdown
+marimo export md climate_models_blog.py -o output.md
+
+# Convert back to Jupyter (if needed)
+marimo export ipynb climate_models_blog.py -o output.ipynb
+```
 
 ## Credits
 
@@ -161,7 +186,7 @@ Based on foundational work by:
 
 ## License
 
-Educational use. Code is for learning and demonstration.
+Educational use. Documentation for learning and demonstration.
 
 ## Questions?
 
