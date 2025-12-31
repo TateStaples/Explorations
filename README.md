@@ -33,3 +33,34 @@ marimo edit climate_models_blog.py
 📖 See [QUICKSTART.md](./QUICKSTART.md) for detailed instructions
 
 📚 See [CLIMATE_MODELS_README.md](./CLIMATE_MODELS_README.md) for full documentation
+
+---
+
+### 📊 Feature Analysis Techniques: A Visual Exploration
+
+**[`feature_analysis.py`](./feature_analysis.py)** - A comprehensive guide to data analysis and feature engineering (Marimo format)
+
+This Marimo notebook provides a detailed visual exploration of essential techniques for analyzing, understanding, and engineering features in machine learning and data science.
+
+**Topics Covered:**
+1. **Univariate Analysis** - Understanding individual features through distributions, statistics, and outlier detection
+2. **Bivariate Analysis** - Exploring relationships via correlation, scatter plots, and statistical tests
+3. **Feature Importance** - Identifying influential features using tree-based, permutation, and mutual information methods
+4. **Dimensionality Reduction** - Visualizing high-dimensional data with PCA, t-SNE, and UMAP
+5. **Feature Engineering & Selection** - Creating and selecting optimal features through scaling, encoding, and selection methods
+6. **Best Practices** - Real-world workflows and practical guidelines
+
+**Each Section Includes:**
+- Theoretical foundations and mathematical background
+- Complete Python implementations with real datasets
+- Comprehensive visualizations and interpretations
+- Practical tips and common pitfalls
+- Comparison of different techniques
+
+**Quick Start**: 
+```bash
+pip install -r requirements.txt
+marimo edit feature_analysis.py
+```
+
+**Key Features**: Interactive visualizations, hands-on examples using iris/wine datasets, comprehensive coverage from basics to advanced techniques, and practical guidance for real-world applications.
