@@ -48,9 +48,6 @@ def __(mo):
     ---
     """)
 
-if __name__ == "__main__":
-    app.run()
-
 @app.cell
 def __():
     # Import all necessary libraries
@@ -557,11 +554,21 @@ def __(iris_df, iris, np, pd, plt, RandomForestClassifier,
         axes[1, 0].grid(axis='x', alpha=0.3)
         
         # Plot 4: Comparison of all methods
+        # Use robust normalization that handles negative values and zeros
+        def safe_normalize(arr):
+            """Safely normalize array using absolute values"""
+            abs_arr = np.abs(arr)
+            total = abs_arr.sum()
+            if total > 1e-10:  # Small epsilon to avoid division by zero
+                return abs_arr / total
+            else:
+                return np.zeros_like(arr)
+        
         comparison_df = pd.DataFrame({
             'Feature': feature_names,
-            'MDI': mdi_importance / mdi_importance.sum(),  # Normalize
-            'Permutation': perm_imp_mean / perm_imp_mean.sum() if perm_imp_mean.sum() > 0 else perm_imp_mean,
-            'Mutual Info': mi_scores / mi_scores.sum() if mi_scores.sum() > 0 else mi_scores
+            'MDI': safe_normalize(mdi_importance),
+            'Permutation': safe_normalize(perm_imp_mean),
+            'Mutual Info': safe_normalize(mi_scores)
         })
         
         x_pos = np.arange(len(feature_names))
@@ -1089,3 +1096,6 @@ def __(mo):
     *Happy Feature Engineering!* 🎯📊🚀
     """)
 
+
+if __name__ == "__main__":
+    app.run()
