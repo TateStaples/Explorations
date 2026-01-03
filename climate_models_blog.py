@@ -1,3 +1,16 @@
+# /// script
+# requires-python = ">=3.11"
+# dependencies = [
+#     "marimo>=0.17.0",
+#     "matplotlib",
+#     "numpy",
+#     "pandas",
+#     "pyzmq",
+#     "scipy",
+#     "seaborn",
+# ]
+# ///
+
 import marimo
 
 __generated_with = "0.18.4"
@@ -366,26 +379,6 @@ def _(mo):
 
     **Note**: The original Jupyter notebook (`old scripts/climate_models_blog.ipynb`) contains complete implementations of all 5 models with extensive code, visualizations, and technical explanations. This marimo version demonstrates the structure with Model 1 fully implemented and serves as a template for adding Models 2-5.
     """)
-    return
-
-
-@app.cell
-def _():
-    return
-
-
-@app.cell
-def _():
-    return
-
-
-@app.cell
-def _():
-    return
-
-
-@app.cell
-def _():
     return
 
 
