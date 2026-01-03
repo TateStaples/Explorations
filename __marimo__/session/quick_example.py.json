@@ -1,0 +1,73 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.18.4"
+  },
+  "cells": [
+    {
+      "id": "MJUe",
+      "code_hash": "a072e49063a17b5225964d58afeeaf67",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">marimo knows how your cells are related, and can automatically update\noutputs like a spreadsheet. This eliminates hidden state and hidden bugs, accelerates data exploration,\nand makes it possible for marimo to run your notebooks as scripts and web apps.\nFor expensive notebooks, you can <a href=\"https://docs.marimo.io/guides/expensive_notebooks/\" rel=\"noopener noreferrer\" target=\"_blank\">turn this\nbehavior off</a> via the notebook footer.</span>\n<span class=\"paragraph\">Try updating the values of variables below and see what happens! You can also try deleting a cell.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "3dad28281778d5ef4b7a78c7bc7a6b09",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "5a6fb152b0e79d61bb16fd58014ba123",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "9dd4e461268c8034f5c8564e155c67a6",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<pre class='text-xs'>0</pre>"
+          }
+        }
+      ],
+      "console": []
+    }
+  ]
+}

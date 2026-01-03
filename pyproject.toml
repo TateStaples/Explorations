@@ -1,0 +1,24 @@
+[project]
+name = "climate-models-blog"
+version = "0.1.0"
+description = "Interactive climate modeling notebook with progressive complexity"
+authors = [{name = "Tate Staples"}]
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "pandas>=2.0.0",
+    "matplotlib>=3.7.0",
+    "seaborn>=0.12.0",
+    "plotly>=5.14.0",
+    "marimo>=0.18.0",
+    "xarray>=2023.0.0",
+    "netCDF4>=1.6.0",
+    "cftime>=1.6.0",
+    "torch>=2.0.0",
+    "torchtext>=0.15.0",
+    "spacy>=3.0.0",
+    "altair>=5.0.0",
+]
+
+
