@@ -1,0 +1,515 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.18.4"
+  },
+  "cells": [
+    {
+      "id": "MJUe",
+      "code_hash": "e22888f47c389de12c13d8e149d0d0a9",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"the-annotated-transformer\">The Annotated Transformer</h1>\n<span class=\"paragraph\">A line-by-line implementation of the \"Attention is All You Need\" paper.</span>\n<span class=\"paragraph\"><strong>Credits:</strong></span>\n<ul>\n<li>Original: Sasha Rush</li>\n<li>v2022: Austin Huang, Suraj Subramanian, Jonathan Sum, Khalid Almubarak, Stella Biderman</li>\n<li>Rebuilt as marimo notebook</li>\n</ul>\n<span class=\"paragraph\">The Transformer has been on a lot of people's minds over the last five years. This notebook presents an annotated version of the paper in the form of a line-by-line implementation. It reorders and deletes some sections from the original paper and adds comments throughout.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "010768b8c7692c39adb8c81ed0a6ae97",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"table-of-contents\">Table of Contents</h2></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "4baf0778a29de5120edfb71dfd7cf8de",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><ul>\n<li>\n<span class=\"paragraph\"><strong>Part 1: Model Architecture</strong></span>\n<ul>\n<li>Encoder and Decoder Stacks</li>\n<li>Attention Mechanism</li>\n<li>Position-wise Feed-Forward Networks</li>\n<li>Embeddings and Softmax</li>\n<li>Positional Encoding</li>\n<li>Full Model</li>\n<li>Inference</li>\n</ul>\n</li>\n<li>\n<span class=\"paragraph\"><strong>Part 2: Model Training</strong></span>\n<ul>\n<li>Batches and Masking</li>\n<li>Training Loop</li>\n<li>Optimizer and Learning Schedule</li>\n<li>Regularization (Label Smoothing)</li>\n</ul>\n</li>\n<li>\n<span class=\"paragraph\"><strong>Part 3: A Complete Example</strong></span>\n<ul>\n<li>Synthetic Data</li>\n<li>Loss Computation</li>\n<li>Greedy Decoding</li>\n</ul>\n</li>\n<li>\n<span class=\"paragraph\"><strong>Part 4: Real World Example</strong></span>\n<ul>\n<li>Data Loading</li>\n<li>Data Iterators</li>\n<li>Training</li>\n<li>Visualization</li>\n</ul>\n</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "778c85f0be65e7d3ebc3e9beec7ba3f5",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"part-1-model-architecture\">Part 1: Model Architecture</h1></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ecfG",
+      "code_hash": "f9763172fdc955c7d3bf4b80b730f159",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"part-2-model-training\">Part 2: Model Training</h1></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "AjVT",
+      "code_hash": "39fe3655ab4a1cb9a34c2e7a6cf1c367",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"part-3-a-simple-example-copy-task\">Part 3: A Simple Example (Copy Task)</h1></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TXez",
+      "code_hash": "ea377c19fc5ce7f8e25975bba6305966",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"example-training-a-simple-copy-task\">Example: Training a Simple Copy Task</h2>\n<span class=\"paragraph\">Let's train a small transformer to memorize and copy sequences.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "kqZH",
+      "code_hash": "6778f5acec5f66469e06ba58f08190fd",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"conclusion\">Conclusion</h1></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "wAgl",
+      "code_hash": "6af8156b49973ab844211ac5d7b42d06",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">This notebook implements the Transformer model from \"Attention is All You Need\" (Vaswani et al., 2017).</span>\n<h2 id=\"key-components\">Key Components:</h2>\n<ol>\n<li><strong>Encoder-Decoder Architecture</strong>: Stacked layers of self-attention and feed-forward networks</li>\n<li><strong>Multi-Head Attention</strong>: Allows the model to attend to different representation subspaces</li>\n<li><strong>Positional Encoding</strong>: Adds information about token positions using sine/cosine functions</li>\n<li><strong>Training</strong>: Uses Adam optimizer with a custom learning rate schedule and label smoothing</li>\n</ol>\n<h2 id=\"to-extend-this\">To Extend This:</h2>\n<ul>\n<li>Add real dataset support (WMT, Multi30k)</li>\n<li>Implement beam search for better decoding</li>\n<li>Add attention visualization</li>\n<li>Train on actual machine translation tasks</li>\n<li>Implement distributed training</li>\n</ul>\n<span class=\"paragraph\">The model has shown state-of-the-art results on machine translation tasks and forms the foundation\nfor modern large language models like GPT and BERT.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "8c3543fcf20c9bec0ad3b978a31fff16",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: 9b101206-e5d0-46b8-aca3-19f1128518b3",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "9a46148e6b47c261d7b1e1fe32a8ca4c",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: 6300eb4a-d7d7-4403-a7d1-bf2985f67571",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "13d1b46700b223b38082291c0e58928f",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: fede2b45-68b0-483b-a578-9830c80e6588",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "5e253611c8361a11c6e33e0f188b0a24",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: 57910c75-98b9-4d9f-9968-fb8bc712d606",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "4bcd5a0f866ce2c9578239d9d2a024b5",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: 223df5ed-b11c-4e8f-bad3-7468d47ac4e8",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "bf909e8df2265a9574927eca19eef59c",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: 67cfee63-19d2-41a7-ad8b-3988da19330c",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "05462138b64431443422e58396fad761",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: 6e28e4bd-00ec-4115-a154-a3a8039671ed",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hstk",
+      "code_hash": "4114d50f32dd8ca31f871e1266b2d26e",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: c7d92b7c-ab9a-4eee-bf85-d9e2c2f56520",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "5c9da84dcaaa06e6114eb544de57c3d2",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: 27880f51-608f-4b78-8070-47e187ccc019",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "iLit",
+      "code_hash": "57f7756a3de5d6903634bceed8ee08f8",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: c4b28bc8-ed52-45c9-a3e6-e9363fe5cee1",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZHCJ",
+      "code_hash": "022629353f51a06d35af0cdc393b1a49",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: dc4978d9-52e2-4f12-ac4c-ecc8524160c2",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ROlb",
+      "code_hash": "a89fb8c545cb5299e98ebe539c49b97c",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: 8a7f0988-771b-4559-a79c-362752141344",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "qnkX",
+      "code_hash": "a735091eb3fd11d348ec1cc4de3a417d",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: 5a561d1a-777d-4c7a-aa3c-5932c4a728e2",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TqIu",
+      "code_hash": "011126361163875f59101366d51d59a7",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: 0b65ba9e-10b7-4cf5-8d10-e28b08c32b71",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Vxnm",
+      "code_hash": "9f557946d0190278ef9084b2023197b6",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: 935ee947-284e-44b6-84ca-4fe24a3d5d35",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "DnEU",
+      "code_hash": "bd10648705989b936bf26e6b9bec5521",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: 86d0255b-934a-445b-a2bd-fd83389de096",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ulZA",
+      "code_hash": "05f5a19898fbe84fa473e8c103ff545d",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: c7b1d6d8-b8f7-4a19-b564-732c4ce85454",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Pvdt",
+      "code_hash": "fd55c5997ccaa2dd048076902b43a047",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: 4397cd51-5fcb-4183-99c3-e6878307c7cd",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZBYS",
+      "code_hash": "2250c1ec582be1a3733581d770136973",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "aLJB",
+      "code_hash": "325c1497017bfef88ed764595fb6b3f0",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: c9f7445a-42ca-4d27-82f2-2a0c51735e00",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nHfw",
+      "code_hash": "b7bf8d14fbcbee626533599ff3d57f95",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: 5ea072cf-a6a9-486f-b844-8414840fa07b",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "xXTn",
+      "code_hash": "5b5f44f8afbfd861e4ff9cacaf0808cc",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "pHFh",
+      "code_hash": "8f3b5c5116420946aa241e276803967a",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: ea35c022-b75e-46c3-b146-a6af22e34931",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "NCOB",
+      "code_hash": "ce7ebebeb25bc1a466c574e33480a515",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "aqbW",
+      "code_hash": "9acb21aec5098fceb37829157797eab9",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: 1c8b85d2-3967-4014-a53c-30784c3e23a0",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TRpd",
+      "code_hash": "5e36517d0fb109b78865e4a7a2338a90",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: b714e477-0383-4aa2-bfe7-3c1f0f0daef9",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "dNNg",
+      "code_hash": "86dd738ae6615fb3d449b89137c3c28e",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: 9ca57e57-ece5-4969-97db-c355425e95cc",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "yCnT",
+      "code_hash": "7414ff602cb7070e99f9cc967fbdd14a",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: c397f113-a5b4-4016-94f1-0b14536d335d",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "wlCL",
+      "code_hash": "bdfcfb59e61e58f51f541ef7a89c8e27",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: fc7a3f73-29e5-4f1d-94fc-5ff28749914f",
+          "traceback": []
+        }
+      ],
+      "console": []
+    }
+  ]
+}
