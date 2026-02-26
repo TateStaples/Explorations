@@ -16,13 +16,14 @@ Skill files live in `skills/` at the root of the repository:
 
 ```
 skills/
-  marimo.md    ← Marimo reactive-notebook patterns
-  altair.md    ← Altair visualization patterns
-  meta.md      ← This file
+  agent-instructions.md  ← Canonical agent entry-point (all platforms symlink here)
+  marimo.md              ← Marimo reactive-notebook patterns
+  altair.md              ← Altair visualization patterns
+  meta.md                ← This file
 ```
 
-They contain **only content** — no platform-specific frontmatter. Platform wrappers (symlinks
-or thin entry-point files) handle configuration; the skill itself stays portable.
+They contain **only content** — no platform-specific frontmatter. Platform wrappers (symlinks)
+point to these files; the skills themselves stay portable.
 
 ---
 
@@ -68,31 +69,19 @@ ln -s ../../skills/<topic>.md .cursor/rules/<topic>.mdc
 Cursor reads `.cursor/rules/*.mdc`. Without a `globs` frontmatter the rule is available
 for manual `@`-reference. Add a thin `.mdc` wrapper with `globs` if you want auto-injection.
 
-### Claude
+### Claude / Gemini / OpenCode / Copilot (agent entry-points)
 
-Add a bullet to `CLAUDE.md` under the **Skills** section pointing to `skills/<topic>.md`.
-Claude reads `CLAUDE.md` at session start and will follow the reference.
+All four root agent entry-point files are symlinks to `skills/agent-instructions.md`:
 
-### Gemini CLI / Gemini in IDEs
+```
+CLAUDE.md                       → skills/agent-instructions.md
+GEMINI.md                       → skills/agent-instructions.md
+AGENTS.md                       → skills/agent-instructions.md
+.github/copilot-instructions.md → ../skills/agent-instructions.md
+```
 
-Add a bullet to `GEMINI.md` under the **Skills** section pointing to `skills/<topic>.md`.
-
-### OpenCode / Codex / generic agents
-
-Add a bullet to `AGENTS.md` pointing to `skills/<topic>.md`.
-
----
-
-## Step 3 — Update the Entry-Point Files
-
-Open each of the four root entry-point files and add one line to the skills table:
-
-| File | Audience |
-|------|----------|
-| `CLAUDE.md` | Anthropic Claude (Claude.ai, API, VS Code extension) |
-| `GEMINI.md` | Google Gemini CLI and IDE integrations |
-| `AGENTS.md` | OpenCode, OpenAI Codex, and any agent reading `AGENTS.md` |
-| `.github/copilot-instructions.md` | GitHub Copilot (VS Code, JetBrains, CLI) |
+To update the skills table seen by every agent, edit **only**
+`skills/agent-instructions.md` — all platforms pick up the change automatically.
 
 ---
 
@@ -122,8 +111,6 @@ ln -s ~/skills/marimo.md  skills/marimo.md
 [ ] Create skills/<topic>.md with content (no platform frontmatter)
 [ ] ln -s ../../skills/<topic>.md  .github/instructions/<topic>.instructions.md
 [ ] ln -s ../../skills/<topic>.md  .cursor/rules/<topic>.mdc
-[ ] Add bullet to CLAUDE.md skill table
-[ ] Add bullet to GEMINI.md skill table
-[ ] Add bullet to AGENTS.md skill table
-[ ] Add row to .github/copilot-instructions.md skill table
+[ ] Add row to skills/agent-instructions.md skills table
+     (CLAUDE.md, GEMINI.md, AGENTS.md, .github/copilot-instructions.md auto-update via symlink)
 ```
