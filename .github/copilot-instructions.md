@@ -19,34 +19,27 @@ This repository contains interactive **Marimo notebooks** exploring data science
 
 ## Skill Files
 
-Domain-specific coding guidance lives in `.github/instructions/`:
+Domain-specific coding guidance lives in `skills/` as the **single source of truth**.
+The files in `.github/instructions/` are symlinks that point there.
 
-| File | Applies to | Purpose |
-|------|-----------|---------|
-| [`marimo.instructions.md`](./instructions/marimo.instructions.md) | `**/*.py` | Marimo notebook patterns |
-| [`altair.instructions.md`](./instructions/altair.instructions.md) | `**/*.py` | Altair visualization patterns |
+| Skill | Source file | Purpose |
+|-------|-------------|---------|
+| Marimo | [`skills/marimo.md`](../skills/marimo.md) | Marimo notebook patterns |
+| Altair | [`skills/altair.md`](../skills/altair.md) | Altair visualization patterns |
+| Meta | [`skills/meta.md`](../skills/meta.md) | How to create & register new skills |
 
 ## Symlinks — Multi-Repo Reuse
 
-To share these skills across multiple repositories without duplicating them, use symlinks:
+To share skills from this repository in another repository without duplicating content:
 
 ```bash
-# In a sibling repo, symlink to this repo's instructions:
-ln -s ../../Explorations/.github/instructions/marimo.instructions.md \
-      .github/instructions/marimo.instructions.md
+# In a sibling repo, symlink to the canonical skill files:
+ln -s ../../Explorations/skills/marimo.md  skills/marimo.md
+ln -s ../../Explorations/skills/altair.md  skills/altair.md
 
-ln -s ../../Explorations/.github/instructions/altair.instructions.md \
-      .github/instructions/altair.instructions.md
+# Then set up platform wrappers as described in skills/meta.md.
 ```
 
-Alternatively, maintain a dedicated `skills/` repository and symlink from there:
+Symlinked files are resolved by VS Code and all major AI tooling. Keep symlink targets
+under version control in their source repository so updates propagate automatically.
 
-```bash
-# Central skills repo at ~/skills/
-ln -s ~/skills/marimo.instructions.md .github/instructions/marimo.instructions.md
-ln -s ~/skills/altair.instructions.md .github/instructions/altair.instructions.md
-```
-
-Symlinked files are picked up by VS Code and GitHub Copilot just like regular files. Keep
-symlink targets under version control in their source repository so updates propagate
-automatically to all consumers.

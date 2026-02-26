@@ -25,9 +25,13 @@ Clear, specific instructions to enhance collaboration and code quality.
 - **Preserve chat context**: Keep responses concise; avoid unnecessary verbosity
 
 ## 🛠️ Skills & Copilot Instructions
-Domain-specific coding patterns live in `.github/instructions/` as `*.instructions.md` files.
-These are shared with GitHub Copilot via `.github/copilot-instructions.md`.
+Domain-specific coding patterns live in `skills/` as the single source of truth.
+Platform-specific wrappers (symlinks and entry-point files) point every AI agent there.
 
-- **Marimo patterns**: See `.github/instructions/marimo.instructions.md`
-- **Altair plotting**: See `.github/instructions/altair.instructions.md`
-- **Symlinks**: To reuse skills across multiple repos, symlink instruction files from a central location (see `.github/copilot-instructions.md` for details)
+| Skill | File | Topic |
+|-------|------|-------|
+| Marimo | [`skills/marimo.md`](./skills/marimo.md) | Reactive notebook cell patterns |
+| Altair | [`skills/altair.md`](./skills/altair.md) | Grammar-of-graphics visualization |
+| Meta | [`skills/meta.md`](./skills/meta.md) | How to create and register new skills |
+
+To add a new skill: create `skills/<topic>.md`, then follow the checklist in `skills/meta.md`.
