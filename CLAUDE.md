@@ -23,3 +23,11 @@ Clear, specific instructions to enhance collaboration and code quality.
 - **Centralize documentation**: Place all summaries, explanations, and reports in `copilot reports/` folder
   - Examples: README.md, completion reports, analysis summaries
 - **Preserve chat context**: Keep responses concise; avoid unnecessary verbosity
+
+## 🛠️ Skills & Copilot Instructions
+Domain-specific coding patterns live in `.github/instructions/` as `*.instructions.md` files.
+These are shared with GitHub Copilot via `.github/copilot-instructions.md`.
+
+- **Marimo patterns**: See `.github/instructions/marimo.instructions.md`
+- **Altair plotting**: See `.github/instructions/altair.instructions.md`
+- **Symlinks**: To reuse skills across multiple repos, symlink instruction files from a central location (see `.github/copilot-instructions.md` for details)
