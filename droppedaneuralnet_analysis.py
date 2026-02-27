@@ -13,7 +13,6 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import altair as alt
-    import io
     import json
     import html
     import marimo as mo
@@ -24,7 +23,7 @@ def _():
     import urllib.request
     import zipfile
     from pathlib import Path
-    return alt, html, io, json, mo, np, pd, re, torch, urllib, zipfile, Path
+    return alt, html, json, mo, np, pd, re, torch, urllib, zipfile, Path
 
 
 @app.cell
@@ -51,7 +50,7 @@ def _(api_url, app_url, html, json, readme_url, re, tree_url, urllib):
         return json.loads(fetch_text(url))
 
     def strip_frontmatter(readme_text: str) -> str:
-        frontmatter_match = re.match(r"^---\n.*?\n---\n", readme_text, flags=re.DOTALL)
+        frontmatter_match = re.match(r"^---\s*\n.*?\n---\s*\n?", readme_text, flags=re.DOTALL)
         if frontmatter_match:
             readme_text = readme_text[frontmatter_match.end() :]
         return readme_text.strip()
@@ -190,6 +189,9 @@ def _(archive_path, contents_df, pd, zipfile):
 
 @app.cell
 def _(alt, historical_df, np, pd):
+    SCATTER_SAMPLE_SIZE = 2500
+    RANDOM_SEED = 42
+    TOP_CORRELATIONS_COUNT = 10
     preview_df = historical_df.head(20)
     measurement_cols = [
         column for column in historical_df.columns if column.startswith("measurement_")
@@ -212,11 +214,10 @@ def _(alt, historical_df, np, pd):
         model_eval_df["error"] = model_eval_df["pred"] - model_eval_df["true"]
         model_eval_df["abs_error"] = model_eval_df["error"].abs()
         if measurement_cols:
-            corr_series = historical_df[measurement_cols + ["true"]].corr()["true"].drop("true")
+            corr_series = historical_df[measurement_cols].corrwith(historical_df["true"])
             feature_corr_df = (
                 corr_series.abs()
-                .sort_values(ascending=False)
-                .head(10)
+                .nlargest(TOP_CORRELATIONS_COUNT)
                 .rename_axis("feature")
                 .reset_index(name="corr_with_true")
             )
@@ -229,7 +230,7 @@ def _(alt, historical_df, np, pd):
                 },
                 {
                     "metric": "RMSE",
-                    "value": float(np.sqrt((model_eval_df["error"] ** 2).mean())),
+                    "value": float(np.sqrt(np.mean(model_eval_df["error"] ** 2))),
                 },
                 {
                     "metric": "corr(pred,true)",
@@ -267,7 +268,12 @@ def _(alt, historical_df, np, pd):
         else None
     )
     pred_true_scatter = (
-        alt.Chart(model_eval_df.sample(min(len(model_eval_df), 2500), random_state=42))
+        alt.Chart(
+            model_eval_df.sample(
+                min(len(model_eval_df), SCATTER_SAMPLE_SIZE),
+                random_state=RANDOM_SEED,
+            )
+        )
         .mark_point(opacity=0.35)
         .encode(
             x=alt.X("true:Q", title="true"),
@@ -308,10 +314,11 @@ def _(alt, historical_df, np, pd):
 
 @app.cell(hide_code=True)
 def _(archive_path, contents_df, historical_df, mo, source_file):
+    _piece_file_prefix = "pieces/piece_"
     if historical_df.empty:
         _display_output = mo.md("No tabular files were found in the archive for preliminary analysis.")
     else:
-        piece_count = int(contents_df["filename"].str.startswith("pieces/piece_").sum())
+        piece_count = int(contents_df["filename"].str.startswith(_piece_file_prefix).sum())
         _display_output = mo.vstack(
             [
                 mo.md(f"## Preliminary Data Analysis\nAnalyzed file: `{source_file}`"),
@@ -329,7 +336,8 @@ def _(archive_path, contents_df, historical_df, mo, source_file):
 
 
 @app.cell
-def _(archive_path, contents_df, io, pd, re, torch, zipfile):
+def _(archive_path, contents_df, pd, re, torch, zipfile):
+    _piece_file_prefix = "pieces/piece_"
     if archive_path is None:
         piece_df = pd.DataFrame(columns=["piece_index", "weight_shape", "bias_shape", "file_size"])
     else:
@@ -337,18 +345,28 @@ def _(archive_path, contents_df, io, pd, re, torch, zipfile):
         with zipfile.ZipFile(str(archive_path)) as archive:
             for _, row in contents_df.iterrows():
                 filename = row["filename"]
-                if not filename.startswith("pieces/piece_"):
+                if not filename.startswith(_piece_file_prefix):
                     continue
                 match = re.search(r"piece_(\d+)\.pth$", filename)
                 if not match:
                     continue
                 with archive.open(filename) as extracted:
-                    state = torch.load(io.BytesIO(extracted.read()), map_location="cpu")
+                    state = torch.load(
+                        extracted,
+                        map_location="cpu",
+                        weights_only=True,
+                    )
+                weight = state["weight"]
+                bias = state["bias"]
+                assert weight.dtype == torch.float32, f"Unexpected weight dtype: {weight.dtype}"
+                assert bias.dtype == torch.float32, f"Unexpected bias dtype: {bias.dtype}"
+                assert weight.ndim == 2, f"Unexpected weight ndim: {weight.ndim}"
+                assert bias.ndim == 1, f"Unexpected bias ndim: {bias.ndim}"
                 piece_rows.append(
                     {
                         "piece_index": int(match.group(1)),
-                        "weight_shape": str(tuple(state["weight"].shape)),
-                        "bias_shape": str(tuple(state["bias"].shape)),
+                        "weight_shape": str(tuple(weight.shape)),
+                        "bias_shape": str(tuple(bias.shape)),
                         "file_size": int(row["size_bytes"]),
                     }
                 )
@@ -405,9 +423,9 @@ def _(
             [
                 mo.md(
                     f"## Customized exploration for this puzzle data\n"
-                    f"- 48 measurement features (`measurement_0` to `measurement_47`)\n"
-                    f"- 97 model pieces in archive\n"
-                    f"- Piece shape mix suggests 48 `inp` layers, 48 `out` layers, and 1 last layer"
+                    f"- {len(measurement_cols)} measurement features\n"
+                    f"- {len(piece_df)} model pieces in archive\n"
+                    f"- Piece shape mix is summarized in the inventory section below"
                 ),
                 mo.md("### Model quality summary from provided `pred` and `true`"),
                 metrics_df,
