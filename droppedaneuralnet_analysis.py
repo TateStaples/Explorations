@@ -9,12 +9,13 @@ def _():
     import altair as alt
     import html
     import json
+    import marimo as mo
     import pandas as pd
     import re
     import urllib.request
     import zipfile
     from pathlib import Path
-    return alt, html, json, pd, re, urllib, zipfile, Path
+    return alt, html, json, mo, pd, re, urllib, zipfile, Path
 
 
 @app.cell
@@ -143,8 +144,6 @@ def _(archive_path, contents_df, pd, zipfile):
         return first_name, frame
 
     source_file, sample_df = read_first_tabular_file(archive_path, contents_df) if archive_path else ("", pd.DataFrame())
-    if not sample_df.empty:
-        assert sample_df.shape[0] > 0
     return sample_df, source_file
 
 
@@ -195,12 +194,6 @@ def _(contents_df, missing_chart, mo, numeric_summary, preview_df, sample_df, sc
         )
     display_output
     return
-
-
-@app.cell
-def _():
-    import marimo as mo
-    return (mo,)
 
 
 if __name__ == "__main__":
