@@ -1,3 +1,9 @@
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "marimo>=0.20.2",
+# ]
+# ///
 import marimo
 
 __generated_with = "0.18.4"
@@ -7,101 +13,130 @@ app = marimo.App(width="medium")
 @app.cell
 def _():
     import altair as alt
-    import html
+    import io
     import json
+    import html
     import marimo as mo
+    import numpy as np
     import pandas as pd
     import re
+    import torch
     import urllib.request
     import zipfile
     from pathlib import Path
-    return alt, html, json, mo, pd, re, urllib, zipfile, Path
+    return alt, html, io, json, mo, np, pd, re, torch, urllib, zipfile, Path
 
 
 @app.cell
 def _(Path):
-    space_url = "https://huggingface.co/spaces/jane-street/droppedaneuralnet"
+    space_id = "jane-street/droppedaneuralnet"
+    space_url = f"https://huggingface.co/spaces/{space_id}"
+    api_url = f"https://huggingface.co/api/spaces/{space_id}"
+    tree_url = f"{api_url}/tree/main"
+    readme_url = f"{space_url}/raw/main/README.md"
+    app_url = f"{space_url}/raw/main/app.py"
     data_dir = Path("data") / "droppedaneuralnet"
     data_dir.mkdir(parents=True, exist_ok=True)
-    return data_dir, space_url
+    return api_url, app_url, data_dir, readme_url, space_id, space_url, tree_url
 
 
 @app.cell
-def _(html, json, re, space_url, urllib):
+def _(api_url, app_url, html, json, readme_url, re, tree_url, urllib):
     def fetch_text(url: str) -> str:
         request = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
         with urllib.request.urlopen(request, timeout=30) as response:
             return response.read().decode("utf-8", errors="replace")
 
-    def extract_description(page_html: str) -> str:
-        patterns = [
-            r'<meta property="og:description" content="([^"]+)"',
-            r'<meta name="description" content="([^"]+)"',
-            r'"description":"((?:\\.|[^"])*)"',
-        ]
-        for pattern in patterns:
-            match = re.search(pattern, page_html)
-            if match:
-                raw_value = match.group(1)
-                if raw_value:
-                    if "\\u" in raw_value or '\\"' in raw_value:
-                        raw_value = json.loads(f'"{raw_value}"')
-                    return html.unescape(raw_value).strip()
-        return "Unable to automatically extract a description from the page HTML."
+    def fetch_json(url: str) -> dict | list:
+        return json.loads(fetch_text(url))
 
-    def extract_zip_links(page_html: str) -> list[str]:
-        matches = re.findall(r"https?://[^\s\"'>]+\.zip", page_html)
-        deduped_matches = sorted(set(matches))
-        return deduped_matches
+    def strip_frontmatter(readme_text: str) -> str:
+        frontmatter_match = re.match(r"^---\n.*?\n---\n", readme_text, flags=re.DOTALL)
+        if frontmatter_match:
+            readme_text = readme_text[frontmatter_match.end() :]
+        return readme_text.strip()
 
     try:
-        page_html = fetch_text(space_url)
-        description_text = extract_description(page_html)
-        zip_links = extract_zip_links(page_html)
+        api_metadata = fetch_json(api_url)
+        tree_listing = fetch_json(tree_url)
+        readme_text = fetch_text(readme_url)
+        app_text = fetch_text(app_url)
+        description_text = strip_frontmatter(readme_text)
+        description_preview_match = re.search(
+            r'<meta property="og:description" content="([^"]+)"',
+            fetch_text(f"https://huggingface.co/spaces/{api_metadata['id']}"),
+        )
+        preview_description = (
+            html.unescape(description_preview_match.group(1))
+            if description_preview_match
+            else "No preview description found."
+        )
     except Exception as error:
-        page_html = ""
+        api_metadata = {}
+        tree_listing = []
+        readme_text = ""
+        app_text = ""
         description_text = f"Unable to fetch source page in this environment: {error}"
-        zip_links = []
-    return description_text, page_html, zip_links
+        preview_description = ""
+    return api_metadata, app_text, description_text, preview_description, tree_listing
 
 
 @app.cell(hide_code=True)
-def _(description_text, mo, space_url, zip_links):
-    zip_markdown = "\n".join(f"- [{url}]({url})" for url in zip_links) or "- No .zip links found in page HTML"
+def _(api_metadata, description_text, mo, preview_description, space_url):
+    like_count = api_metadata.get("likes", "unknown")
+    sdk = api_metadata.get("sdk", "unknown")
+    last_modified = api_metadata.get("lastModified", "unknown")
     mo.md(
         f"""
         # Dropped a Neural Net: Problem Parsing and Data Exploration
 
         Source page: [{space_url}]({space_url})
 
-        ## Parsed Problem Description
-        {description_text}
+        **Space metadata:** likes={like_count}, sdk={sdk}, last_modified={last_modified}
 
-        ## Zip Files Found in Source HTML
-        {zip_markdown}
+        ## Puzzle Description (from README)
+        {description_text[:2500]}
+
+        ## Hugging Face preview description
+        {preview_description}
         """
     )
     return
 
 
 @app.cell
-def _(Path, data_dir, pd, zip_links, urllib):
-    def download_zip(zip_url: str, output_dir: Path) -> str:
+def _(app_text, data_dir, pd, re, space_url, tree_listing, urllib):
+    def discover_zip_urls(space_tree: list[dict], source_text: str) -> list[str]:
+        tree_links = [
+            f"{space_url}/resolve/main/{item['path']}"
+            for item in space_tree
+            if item.get("type") == "file" and str(item.get("path", "")).endswith(".zip")
+        ]
+        text_links = re.findall(r"https?://[^\s\"')]+\.zip", source_text)
+        return sorted(set(tree_links + text_links))
+
+    def download_zip(zip_url: str, output_dir: Path) -> Path:
         target_path = output_dir / zip_url.rsplit("/", 1)[-1].split("?", 1)[0]
         if not target_path.exists():
             urllib.request.urlretrieve(zip_url, target_path)
-        return str(target_path)
+        return target_path
 
+    zip_links = discover_zip_urls(tree_listing, app_text)
     selected_zip = zip_links[0] if zip_links else ""
-    archive_path = download_zip(selected_zip, data_dir) if selected_zip else ""
-    archive_df = pd.DataFrame({"zip_url": zip_links}) if zip_links else pd.DataFrame(columns=["zip_url"])
-    return archive_df, archive_path, selected_zip
+    archive_path = download_zip(selected_zip, data_dir) if selected_zip else None
+    archive_df = (
+        pd.DataFrame({"zip_url": zip_links}) if zip_links else pd.DataFrame(columns=["zip_url"])
+    )
+    return archive_df, archive_path, selected_zip, zip_links
 
 
 @app.cell(hide_code=True)
-def _(archive_df, archive_path, mo):
+def _(archive_df, archive_path, mo, zip_links):
     if archive_path:
-        mo.md(f"### Downloaded archive\n`{archive_path}`")
+        zip_markdown = "\n".join(f"- [{url}]({url})" for url in zip_links)
+        mo.md(
+            f"### Downloaded archive\n`{archive_path}`\n\n### Zip links discovered\n{zip_markdown}"
+        )
     else:
         mo.md("### Downloaded archive\nNo archive downloaded because no .zip link was detected.")
     archive_df
@@ -120,42 +155,91 @@ def _(archive_path, pd, zipfile):
                 }
             )
 
-    contents_df = list_archive_contents(archive_path) if archive_path else pd.DataFrame(columns=["filename", "size_bytes"])
+    contents_df = (
+        list_archive_contents(str(archive_path))
+        if archive_path
+        else pd.DataFrame(columns=["filename", "size_bytes"])
+    )
     return (contents_df,)
 
 
 @app.cell
 def _(archive_path, contents_df, pd, zipfile):
-    def read_first_tabular_file(zip_path: str, files_df: pd.DataFrame) -> tuple[str, pd.DataFrame]:
-        tabular_suffixes = (".csv", ".parquet", ".json")
-        candidates = files_df[files_df["filename"].str.lower().str.endswith(tabular_suffixes)]
-        if candidates.empty:
+    def read_historical_data(zip_path: str, files_df: pd.DataFrame) -> tuple[str, pd.DataFrame]:
+        csv_candidates = files_df[files_df["filename"].str.lower().str.endswith(".csv")]
+        preferred_name = "historical_data.csv"
+        if csv_candidates.empty:
             return "", pd.DataFrame()
-
-        first_name = candidates.iloc[0]["filename"]
+        selected_name = (
+            preferred_name
+            if preferred_name in csv_candidates["filename"].tolist()
+            else csv_candidates.iloc[0]["filename"]
+        )
         with zipfile.ZipFile(zip_path) as archive:
-            with archive.open(first_name) as extracted:
-                if first_name.lower().endswith(".csv"):
-                    frame = pd.read_csv(extracted)
-                elif first_name.lower().endswith(".json"):
-                    frame = pd.read_json(extracted)
-                else:
-                    frame = pd.read_parquet(extracted)
-        return first_name, frame
+            with archive.open(selected_name) as extracted:
+                frame = pd.read_csv(extracted)
+        return selected_name, frame
 
-    source_file, sample_df = read_first_tabular_file(archive_path, contents_df) if archive_path else ("", pd.DataFrame())
-    return sample_df, source_file
+    source_file, historical_df = (
+        read_historical_data(str(archive_path), contents_df)
+        if archive_path
+        else ("", pd.DataFrame())
+    )
+    return historical_df, source_file
 
 
 @app.cell
-def _(alt, pd, sample_df):
-    preview_df = sample_df.head(20)
+def _(alt, historical_df, np, pd):
+    preview_df = historical_df.head(20)
+    measurement_cols = [
+        column for column in historical_df.columns if column.startswith("measurement_")
+    ]
     schema_df = (
-        pd.DataFrame({"column": sample_df.columns, "dtype": [str(dtype) for dtype in sample_df.dtypes], "missing": sample_df.isna().sum().values})
-        if not sample_df.empty
+        pd.DataFrame(
+            {
+                "column": historical_df.columns,
+                "dtype": [str(dtype) for dtype in historical_df.dtypes],
+                "missing": historical_df.isna().sum().values,
+            }
+        )
+        if not historical_df.empty
         else pd.DataFrame(columns=["column", "dtype", "missing"])
     )
-    numeric_summary = sample_df.describe().T if not sample_df.empty else pd.DataFrame()
+    model_eval_df = pd.DataFrame()
+    feature_corr_df = pd.DataFrame(columns=["feature", "corr_with_true"])
+    if not historical_df.empty and {"pred", "true"}.issubset(historical_df.columns):
+        model_eval_df = historical_df[["pred", "true"]].copy()
+        model_eval_df["error"] = model_eval_df["pred"] - model_eval_df["true"]
+        model_eval_df["abs_error"] = model_eval_df["error"].abs()
+        if measurement_cols:
+            corr_series = historical_df[measurement_cols + ["true"]].corr()["true"].drop("true")
+            feature_corr_df = (
+                corr_series.abs()
+                .sort_values(ascending=False)
+                .head(10)
+                .rename_axis("feature")
+                .reset_index(name="corr_with_true")
+            )
+    metrics_df = (
+        pd.DataFrame(
+            [
+                {
+                    "metric": "MAE",
+                    "value": float(model_eval_df["abs_error"].mean()),
+                },
+                {
+                    "metric": "RMSE",
+                    "value": float(np.sqrt((model_eval_df["error"] ** 2).mean())),
+                },
+                {
+                    "metric": "corr(pred,true)",
+                    "value": float(model_eval_df["pred"].corr(model_eval_df["true"])),
+                },
+            ]
+        )
+        if not model_eval_df.empty
+        else pd.DataFrame(columns=["metric", "value"])
+    )
     missing_chart = (
         alt.Chart(schema_df)
         .mark_bar()
@@ -169,30 +253,182 @@ def _(alt, pd, sample_df):
         if not schema_df.empty
         else None
     )
-    return missing_chart, numeric_summary, preview_df, schema_df
+    error_hist = (
+        alt.Chart(model_eval_df)
+        .mark_bar()
+        .encode(
+            x=alt.X("error:Q", bin=alt.Bin(maxbins=60), title="Prediction Error (pred - true)"),
+            y=alt.Y("count():Q", title="Count"),
+            tooltip=["count():Q"],
+        )
+        .properties(title="Error Distribution")
+        .interactive()
+        if not model_eval_df.empty
+        else None
+    )
+    pred_true_scatter = (
+        alt.Chart(model_eval_df.sample(min(len(model_eval_df), 2500), random_state=42))
+        .mark_point(opacity=0.35)
+        .encode(
+            x=alt.X("true:Q", title="true"),
+            y=alt.Y("pred:Q", title="pred"),
+            tooltip=["true:Q", "pred:Q", "error:Q"],
+        )
+        .properties(title="Pred vs True (sample)")
+        .interactive()
+        if not model_eval_df.empty
+        else None
+    )
+    top_feature_chart = (
+        alt.Chart(feature_corr_df)
+        .mark_bar()
+        .encode(
+            x=alt.X("corr_with_true:Q", title="|Correlation| with true"),
+            y=alt.Y("feature:N", sort="-x", title="Feature"),
+            tooltip=["feature:N", "corr_with_true:Q"],
+        )
+        .properties(title="Top Measurement Correlations with true")
+        .interactive()
+        if not feature_corr_df.empty
+        else None
+    )
+    return (
+        error_hist,
+        feature_corr_df,
+        measurement_cols,
+        metrics_df,
+        missing_chart,
+        model_eval_df,
+        pred_true_scatter,
+        preview_df,
+        schema_df,
+        top_feature_chart,
+    )
 
 
 @app.cell(hide_code=True)
-def _(contents_df, missing_chart, mo, numeric_summary, preview_df, sample_df, schema_df, source_file):
-    if sample_df.empty:
-        display_output = mo.md("No tabular files were found in the archive for preliminary analysis.")
+def _(archive_path, contents_df, historical_df, mo, source_file):
+    if historical_df.empty:
+        _display_output = mo.md("No tabular files were found in the archive for preliminary analysis.")
     else:
-        display_output = mo.vstack(
+        piece_count = int(contents_df["filename"].str.startswith("pieces/piece_").sum())
+        _display_output = mo.vstack(
             [
                 mo.md(f"## Preliminary Data Analysis\nAnalyzed file: `{source_file}`"),
-                mo.md(f"Rows: **{sample_df.shape[0]}** | Columns: **{sample_df.shape[1]}**"),
+                mo.md(
+                    f"Archive path: `{archive_path}`\n\n"
+                    f"Rows: **{historical_df.shape[0]}** | Columns: **{historical_df.shape[1]}** | "
+                    f"Piece files: **{piece_count}**"
+                ),
                 mo.md("### Archive contents"),
                 contents_df,
-                mo.md("### Data preview"),
-                preview_df,
-                mo.md("### Schema and missingness"),
-                schema_df,
-                mo.md("### Numeric summary statistics"),
-                numeric_summary,
-                missing_chart,
             ]
         )
-    display_output
+    _display_output
+    return
+
+
+@app.cell
+def _(archive_path, contents_df, io, pd, re, torch, zipfile):
+    if archive_path is None:
+        piece_df = pd.DataFrame(columns=["piece_index", "weight_shape", "bias_shape", "file_size"])
+    else:
+        piece_rows = []
+        with zipfile.ZipFile(str(archive_path)) as archive:
+            for _, row in contents_df.iterrows():
+                filename = row["filename"]
+                if not filename.startswith("pieces/piece_"):
+                    continue
+                match = re.search(r"piece_(\d+)\.pth$", filename)
+                if not match:
+                    continue
+                with archive.open(filename) as extracted:
+                    state = torch.load(io.BytesIO(extracted.read()), map_location="cpu")
+                piece_rows.append(
+                    {
+                        "piece_index": int(match.group(1)),
+                        "weight_shape": str(tuple(state["weight"].shape)),
+                        "bias_shape": str(tuple(state["bias"].shape)),
+                        "file_size": int(row["size_bytes"]),
+                    }
+                )
+        piece_df = pd.DataFrame(piece_rows).sort_values("piece_index").reset_index(drop=True)
+    piece_type_summary = (
+        piece_df.groupby(["weight_shape", "bias_shape"], as_index=False)
+        .agg(count=("piece_index", "count"))
+        .sort_values("count", ascending=False)
+        if not piece_df.empty
+        else pd.DataFrame(columns=["weight_shape", "bias_shape", "count"])
+    )
+    return piece_df, piece_type_summary
+
+
+@app.cell
+def _(alt, piece_type_summary):
+    piece_type_chart = (
+        alt.Chart(piece_type_summary)
+        .mark_bar()
+        .encode(
+            x=alt.X("count:Q", title="Count"),
+            y=alt.Y("weight_shape:N", sort="-x", title="Weight shape"),
+            color=alt.Color("bias_shape:N", title="Bias shape"),
+            tooltip=["weight_shape:N", "bias_shape:N", "count:Q"],
+        )
+        .properties(title="Model Piece Type Counts")
+        .interactive()
+        if not piece_type_summary.empty
+        else None
+    )
+    return (piece_type_chart,)
+
+
+@app.cell(hide_code=True)
+def _(
+    error_hist,
+    feature_corr_df,
+    measurement_cols,
+    metrics_df,
+    missing_chart,
+    mo,
+    piece_df,
+    piece_type_chart,
+    piece_type_summary,
+    pred_true_scatter,
+    preview_df,
+    schema_df,
+    top_feature_chart,
+):
+    if preview_df.empty:
+        _custom_output = mo.md("Data preview unavailable.")
+    else:
+        _custom_output = mo.vstack(
+            [
+                mo.md(
+                    f"## Customized exploration for this puzzle data\n"
+                    f"- 48 measurement features (`measurement_0` to `measurement_47`)\n"
+                    f"- 97 model pieces in archive\n"
+                    f"- Piece shape mix suggests 48 `inp` layers, 48 `out` layers, and 1 last layer"
+                ),
+                mo.md("### Model quality summary from provided `pred` and `true`"),
+                metrics_df,
+                pred_true_scatter,
+                error_hist,
+                mo.md("### Top correlated measurements with `true`"),
+                feature_corr_df,
+                top_feature_chart,
+                mo.md("### Schema and missingness checks"),
+                schema_df,
+                missing_chart,
+                mo.md("### Piece inventory"),
+                piece_type_summary,
+                piece_type_chart,
+                mo.md("### Piece index preview"),
+                piece_df.head(20),
+                mo.md(f"### Raw data preview ({len(measurement_cols)} measurement columns)"),
+                preview_df,
+            ]
+        )
+    _custom_output
     return
 
 
