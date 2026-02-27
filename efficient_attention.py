@@ -423,8 +423,10 @@ def _(mo):
         Q["Q  (n×d)"] --> Pool_Q["Segment-mean pool\n→ Q̃ (m×d)"]
         K["K  (n×d)"] --> Pool_K["Segment-mean pool\n→ K̃ (m×d)"]
         Pool_Q --> Amm["A_mm = softmax(Q̃ K̃ᵀ/√d)\n(m×m)"]
-        Pool_Q --> Anm["A_nm = softmax(Q K̃ᵀ/√d)\n(n×m)"]
-        K --> Amn["A_mn = softmax(Q̃ Kᵀ/√d)\n(m×n)"]
+        Q --> Anm["A_nm = softmax(Q K̃ᵀ/√d)\n(n×m)"]
+        Pool_K --> Anm
+        Pool_Q --> Amn["A_mn = softmax(Q̃ Kᵀ/√d)\n(m×n)"]
+        K --> Amn
         Amm --> Pinv["Pseudoinverse A_mm⁺"]
         Anm --> Approx["A ≈ A_nm A_mm⁺ A_mn"]
         Pinv --> Approx
@@ -545,7 +547,7 @@ def _(alt, pd):
             "Reformer", "Longformer", "BigBird",
             "Nyströmformer", "Linear Transformer",
         ],
-        "speed": [1.0, 3.5, 4.2, 2.1, 3.8, 2.8, 3.2, 5.0],
+        "speed": [1.0, 3.5, 4.2, 2.1, 3.8, 2.8, 3.2, 5.0],  # relative to full transformer (wall-clock, seq_len=4096, single GPU)
         "accuracy": [48.5, 53.9, 53.8, 52.9, 57.8, 59.7, 59.0, 42.3],
     })
 
