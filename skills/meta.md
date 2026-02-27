@@ -50,6 +50,7 @@ All platform directories are **directory-level symlinks** pointing to `skills/`:
 ```
 .github/instructions  → ../skills   (GitHub Copilot reads every file here)
 .cursor/rules         → ../skills   (Cursor reads every file here)
+.agents/skills        → ../skills   (Codex reads every file here)
 ```
 
 Because the directories themselves are symlinks, **every new `skills/<topic>.md` file is
