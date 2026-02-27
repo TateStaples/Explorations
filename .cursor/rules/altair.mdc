@@ -1,1 +1,0 @@
-../../skills/altair.md

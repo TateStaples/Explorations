@@ -43,31 +43,18 @@ Keep each pattern block under ~30 lines. Prefer real code over prose.
 
 ---
 
-## Step 2 — Wire Up Platform Symlinks
+## Step 2 — Platform Wiring (already done — no extra work needed)
 
-After creating `skills/<topic>.md`, register the skill with each platform by creating a
-**symlink** from that platform's expected location to the canonical file. Symlinks keep the
-content in sync automatically — editing `skills/<topic>.md` updates every platform at once.
+All platform directories are **directory-level symlinks** pointing to `skills/`:
 
-### GitHub Copilot
-
-```bash
-# From repo root
-ln -s ../../skills/<topic>.md .github/instructions/<topic>.instructions.md
+```
+.github/instructions  → ../skills   (GitHub Copilot reads every file here)
+.cursor/rules         → ../skills   (Cursor reads every file here)
 ```
 
-Copilot reads all files in `.github/instructions/` automatically. Without a `applyTo`
-frontmatter the rule applies globally; add a thin wrapper if you need file scoping.
-
-### Cursor
-
-```bash
-mkdir -p .cursor/rules
-ln -s ../../skills/<topic>.md .cursor/rules/<topic>.mdc
-```
-
-Cursor reads `.cursor/rules/*.mdc`. Without a `globs` frontmatter the rule is available
-for manual `@`-reference. Add a thin `.mdc` wrapper with `globs` if you want auto-injection.
+Because the directories themselves are symlinks, **every new `skills/<topic>.md` file is
+automatically visible to Copilot and Cursor** with no additional wiring. Just create the
+skill file and you're done.
 
 ### Claude / Gemini / OpenCode / Copilot (agent entry-points)
 
@@ -109,8 +96,6 @@ ln -s ~/skills/marimo.md  skills/marimo.md
 
 ```
 [ ] Create skills/<topic>.md with content (no platform frontmatter)
-[ ] ln -s ../../skills/<topic>.md  .github/instructions/<topic>.instructions.md
-[ ] ln -s ../../skills/<topic>.md  .cursor/rules/<topic>.mdc
-[ ] Add row to skills/agent-instructions.md skills table
-     (CLAUDE.md, GEMINI.md, AGENTS.md, .github/copilot-instructions.md auto-update via symlink)
+     → Copilot (.github/instructions/) and Cursor (.cursor/rules/) pick it up automatically
+     → Add a row to skills/agent-instructions.md skills table for Claude/Gemini/OpenCode
 ```
