@@ -209,6 +209,7 @@ def _(alt, historical_df, np, pd):
     )
     model_eval_df = pd.DataFrame()
     feature_corr_df = pd.DataFrame(columns=["feature", "corr_with_true"])
+    hypothesis_df = pd.DataFrame(columns=["hypothesis", "evidence"])
     if not historical_df.empty and {"pred", "true"}.issubset(historical_df.columns):
         model_eval_df = historical_df[["pred", "true"]].copy()
         model_eval_df["error"] = model_eval_df["pred"] - model_eval_df["true"]
@@ -221,6 +222,35 @@ def _(alt, historical_df, np, pd):
                 .rename_axis("feature")
                 .reset_index(name="corr_with_true")
             )
+        mse = float(np.mean(model_eval_df["error"] ** 2))
+        true_var = float(np.var(model_eval_df["true"]))
+        true_std = float(np.std(model_eval_df["true"]))
+        mae = float(model_eval_df["abs_error"].mean())
+        pred_true_corr = float(model_eval_df["pred"].corr(model_eval_df["true"]))
+        hypothesis_df = pd.DataFrame(
+            [
+                {
+                    "hypothesis": "Provided `pred` approximates a strong baseline model output",
+                    "evidence": f"corr(pred,true)={pred_true_corr:.3f}, MAE/σ(true)={mae / true_std:.3f}",
+                },
+                {
+                    "hypothesis": "Residual task signal is mostly linear and captured by measurements",
+                    "evidence": f"Top feature |corr| with true reaches {feature_corr_df['corr_with_true'].max():.3f}",
+                },
+                {
+                    "hypothesis": "Error magnitude depends on target scale (heteroskedasticity check)",
+                    "evidence": f"corr(|error|,|true|)={model_eval_df['abs_error'].corr(model_eval_df['true'].abs()):.3f}",
+                },
+                {
+                    "hypothesis": "Puzzle architecture likely 48 residual blocks + one final projection",
+                    "evidence": "Piece inventory contains 48 (96,48), 48 (48,96), and one (1,48) weight tensors.",
+                },
+                {
+                    "hypothesis": "Model fit remains imperfect, leaving recoverable puzzle signal",
+                    "evidence": f"Estimated R²={1 - (mse / true_var):.3f} on historical_data.csv",
+                },
+            ]
+        )
     metrics_df = (
         pd.DataFrame(
             [
@@ -301,6 +331,7 @@ def _(alt, historical_df, np, pd):
     return (
         error_hist,
         feature_corr_df,
+        hypothesis_df,
         measurement_cols,
         metrics_df,
         missing_chart,
@@ -404,6 +435,7 @@ def _(alt, piece_type_summary):
 def _(
     error_hist,
     feature_corr_df,
+    hypothesis_df,
     measurement_cols,
     metrics_df,
     missing_chart,
@@ -434,6 +466,8 @@ def _(
                 mo.md("### Top correlated measurements with `true`"),
                 feature_corr_df,
                 top_feature_chart,
+                mo.md("### Working hypotheses from this dataset"),
+                hypothesis_df,
                 mo.md("### Schema and missingness checks"),
                 schema_df,
                 missing_chart,
