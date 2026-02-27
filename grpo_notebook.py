@@ -35,7 +35,7 @@ def _(mo):
     | **No critic needed** | Baseline comes from the group mean reward — no separate value network |
     | **PPO-style clipped objective** | Surrogate loss with $\epsilon$-clipping prevents large policy updates |
     | **KL regularizer** | Penalizes deviation from a reference policy, maintaining stability |
-    | **Empirical gains** | GSM8K: PPO 82.9 % → GRPO **88.2 %**; MATH: 46.8 % → **51.7 %** |
+    | **Empirical gains** | GSM8K: PPO 82.9% → GRPO **88.2%**; MATH: 46.8% → **51.7%** |
 
     GRPO has since spawned several variants: **Dr. GRPO**, **DAPO**, **VAPO**,
     **Group-Robust PO**, and **Hybrid-GRPO**, each addressing different failure modes
@@ -214,7 +214,7 @@ def _(alt, pd):
         ],
         "GRPO": [
             "Not needed", "Group-normalised", "Low (1× LLM)",
-            "Outcome-level", "Yes", "Explicit β·KL",
+            "Outcome-level", "Yes", "Explicit β·D_KL",
         ],
     })
 
@@ -587,10 +587,10 @@ def _(mo):
 
     | Benchmark | SFT Baseline | PPO | **GRPO** | GRPO Δ vs PPO |
     |-----------|:------------:|:---:|:--------:|:-------------:|
-    | GSM8K | 74.8 % | 82.9 % | **88.2 %** | +5.3 pp |
-    | MATH | 35.9 % | 46.8 % | **51.7 %** | +4.9 pp |
-    | CMATH | 76.6 % | 84.6 % | **88.8 %** | +4.2 pp |
-    | OCW Courses | 12.8 % | 15.1 % | **16.6 %** | +1.5 pp |
+    | GSM8K | 74.8% | 82.9% | **88.2%** | +5.3 pp |
+    | MATH | 35.9% | 46.8% | **51.7%** | +4.9 pp |
+    | CMATH | 76.6% | 84.6% | **88.8%** | +4.2 pp |
+    | OCW Courses | 12.8% | 15.1% | **16.6%** | +1.5 pp |
 
     GRPO consistently outperforms PPO across all math benchmarks while using
     **half the GPU memory** (no value model) and achieving faster wall-clock
