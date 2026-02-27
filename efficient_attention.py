@@ -5,6 +5,7 @@
 #     "altair>=5.0.0",
 #     "numpy>=1.24.0",
 #     "pandas>=2.0.0",
+#     "vl-convert-python>=1.0.0",
 # ]
 # ///
 
@@ -25,6 +26,7 @@ def _():
     import numpy as np
     import pandas as pd
     import altair as alt
+    alt.renderers.enable("svg")
     return alt, np, pd
 
 
@@ -172,14 +174,14 @@ def _(alt, mo, np, pd):
         "Reformer (LSH Blocks)": _reformer_pattern(_N),
         "BigBird (Sparse)": _bigbird_pattern(_N),
     }
-    _tab_content = {
-        name: _heatmap(_mat_to_df(mat), name)
-        for name, mat in _patterns.items()
-    }
+    _charts = [_heatmap(_mat_to_df(mat), name) for name, mat in _patterns.items()]
 
-    attention_tabs = mo.tabs(_tab_content)
-    attention_tabs
-    return (attention_tabs,)
+    attention_heatmaps = mo.hstack([
+        mo.hstack(_charts[:2]),
+        mo.hstack(_charts[2:]),
+    ], justify="center")
+    attention_heatmaps
+    return (attention_heatmaps,)
 
 
 @app.cell(hide_code=True)
