@@ -15,6 +15,7 @@ def _():
     import numpy as np
     import pandas as pd
     import altair as alt
+    alt.data_transformers.disable_max_rows()
     return alt, np, pd
 
 
@@ -258,19 +259,20 @@ def _(mo):
 
 @app.cell
 def _(alt, np, pd):
-    alt.data_transformers.disable_max_rows()
-
     _rho = np.linspace(0.5, 1.5, 200)
     _eps = 0.2
+    _clipped_rho = np.clip(_rho, 1 - _eps, 1 + _eps)
 
-    _records = []
-    for _rho_val in _rho:
-        for _A, _a_label in [(1.0, "A = +1 (positive)"), (-1.0, "A = -1 (negative)")]:
-            _unclipped = _rho_val * _A
-            _clipped_rho = float(np.clip(_rho_val, 1 - _eps, 1 + _eps))
-            _clipped = _clipped_rho * _A
-            _records.append({"rho": _rho_val, "value": _unclipped, "type": "Unclipped", "advantage": _a_label})
-            _records.append({"rho": _rho_val, "value": _clipped, "type": "Clipped", "advantage": _a_label})
+    _advantage_specs = [(1.0, "A = +1 (positive)"), (-1.0, "A = -1 (negative)")]
+    _records = [
+        {"rho": rho_val, "value": rho_val * A, "type": "Unclipped", "advantage": label}
+        for rho_val, clipped_val in zip(_rho, _clipped_rho)
+        for A, label in _advantage_specs
+    ] + [
+        {"rho": rho_val, "value": clipped_val * A, "type": "Clipped", "advantage": label}
+        for rho_val, clipped_val in zip(_rho, _clipped_rho)
+        for A, label in _advantage_specs
+    ]
 
     _clip_df = pd.DataFrame(_records)
 
@@ -400,8 +402,6 @@ def _(mo):
 
 @app.cell
 def _(alt, np, pd):
-    alt.data_transformers.disable_max_rows()
-
     def _logistic(x: np.ndarray, L: float, k: float, x0: float) -> np.ndarray:
         return L / (1.0 + np.exp(-k * (x - x0)))
 
