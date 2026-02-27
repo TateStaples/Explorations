@@ -589,13 +589,13 @@ def _(
     if preview_df.empty:
         _custom_output = mo.md("Data preview unavailable.")
     else:
-        if greedy_steps_df.empty:
+        if greedy_steps_df.empty or "full_corr_pred" not in greedy_steps_df.columns:
             _greedy_result_note = "No greedy reconstruction steps were produced."
         else:
             _best_full_corr = float(greedy_steps_df["full_corr_pred"].max())
             _greedy_result_note = (
                 f"Best reconstructed corr(model, pred): **{_best_full_corr:.6f}** "
-                f"across **{len(greedy_steps_df)}** selected residual blocks."
+                f"across **{len(greedy_steps_df)}** greedy steps."
             )
         _custom_output = mo.vstack(
             [
@@ -619,6 +619,7 @@ def _(
                     "At each step, choose the remaining `(96,48)` expansion and `(48,96)` contraction "
                     "pair that maximizes corr(model(measurements), pred) on a score sample."
                 ),
+                mo.md("**PDF verification marker:** greedy algorithm results are shown directly below."),
                 mo.md(_greedy_result_note),
                 greedy_summary_df,
                 greedy_steps_df.head(20),
