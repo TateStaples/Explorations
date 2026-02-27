@@ -251,7 +251,8 @@ def _(np, pd):
 
 @app.cell
 def _(alt, df_paths):
-    subset = df_paths[df_paths["particle"] < 8].copy()  # 8 particles: enough diversity without overcrowding
+    n_display = 8  # enough diversity without overcrowding
+    subset = df_paths[df_paths["particle"] < n_display].copy()
 
     trajectory_chart = (
         alt.Chart(subset)
@@ -379,7 +380,10 @@ def _(alt, comparison_data):
             color=alt.Color("Path:N", scale=alt.Scale(scheme="tableau10")),
             tooltip=["Model", "NLL (BPD)", "FID", "NFE"],
         )
-        .properties(width=350, height=180, title="Negative Log-Likelihood (lower is better)")
+        .properties(
+            width=350, height=180, title="Negative Log-Likelihood (lower ↓ is better)"
+        )
+        .interactive()
     )
 
     nfe_chart = (
@@ -391,7 +395,8 @@ def _(alt, comparison_data):
             color=alt.Color("Path:N", scale=alt.Scale(scheme="tableau10"), legend=None),
             tooltip=["Model", "NFE", "NLL (BPD)", "FID"],
         )
-        .properties(width=350, height=180, title="Sampling Cost (NFE, lower is better)")
+        .properties(width=350, height=180, title="Sampling Cost (NFE, lower ↓ is better)")
+        .interactive()
     )
 
     comparison_charts = (nll_chart & nfe_chart).resolve_scale(color="shared")
@@ -490,6 +495,7 @@ def _(alt, df_interp, t_val):
             height=300,
             title=f"OT Interpolated Distribution at t={t_val:.2f}",
         )
+        .interactive()
     )
     return (interp_chart,)
 
