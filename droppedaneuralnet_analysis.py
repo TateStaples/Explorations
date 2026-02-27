@@ -371,8 +371,10 @@ def _(archive_path, contents_df, pd, re, torch, zipfile):
     _piece_file_prefix = "pieces/piece_"
     if archive_path is None:
         piece_df = pd.DataFrame(columns=["piece_index", "weight_shape", "bias_shape", "file_size"])
+        piece_state_by_index = {}
     else:
         piece_rows = []
+        piece_state_by_index = {}
         with zipfile.ZipFile(str(archive_path)) as archive:
             for _, row in contents_df.iterrows():
                 filename = row["filename"]
@@ -393,9 +395,14 @@ def _(archive_path, contents_df, pd, re, torch, zipfile):
                 assert bias.dtype == torch.float32, f"Unexpected bias dtype: {bias.dtype}"
                 assert weight.ndim == 2, f"Unexpected weight ndim: {weight.ndim}"
                 assert bias.ndim == 1, f"Unexpected bias ndim: {bias.ndim}"
+                piece_index = int(match.group(1))
+                piece_state_by_index[piece_index] = {
+                    "weight": weight.clone(),
+                    "bias": bias.clone(),
+                }
                 piece_rows.append(
                     {
-                        "piece_index": int(match.group(1)),
+                        "piece_index": piece_index,
                         "weight_shape": str(tuple(weight.shape)),
                         "bias_shape": str(tuple(bias.shape)),
                         "file_size": int(row["size_bytes"]),
@@ -409,7 +416,136 @@ def _(archive_path, contents_df, pd, re, torch, zipfile):
         if not piece_df.empty
         else pd.DataFrame(columns=["weight_shape", "bias_shape", "count"])
     )
-    return piece_df, piece_type_summary
+    return piece_df, piece_state_by_index, piece_type_summary
+
+
+@app.cell
+def _(historical_df, np, pd, piece_df, piece_state_by_index, torch):
+    GREEDY_SCORE_SAMPLE_SIZE = 384
+    _RANDOM_SEED = 42
+
+    def _safe_corr(a: np.ndarray, b: np.ndarray) -> float:
+        if a.std() == 0 or b.std() == 0:
+            return float("nan")
+        return float(np.corrcoef(a, b)[0, 1])
+
+    if historical_df.empty or "pred" not in historical_df.columns or piece_df.empty:
+        greedy_steps_df = pd.DataFrame(
+            columns=["step", "expand_piece", "contract_piece", "score_corr_pred"]
+        )
+        greedy_summary_df = pd.DataFrame(columns=["metric", "value"])
+    else:
+        _measurement_cols = sorted(
+            column for column in historical_df.columns if column.startswith("measurement_")
+        )
+        x_full = torch.tensor(
+            historical_df[_measurement_cols].to_numpy(dtype=np.float32), dtype=torch.float32
+        )
+        pred_target_full = historical_df["pred"].to_numpy(dtype=np.float32)
+        sample_size = min(GREEDY_SCORE_SAMPLE_SIZE, len(historical_df))
+        sampled = historical_df.sample(sample_size, random_state=_RANDOM_SEED)
+        x_score = torch.tensor(
+            sampled[_measurement_cols].to_numpy(dtype=np.float32), dtype=torch.float32
+        )
+        pred_target_score = sampled["pred"].to_numpy(dtype=np.float32)
+
+        final_candidates = piece_df[
+            piece_df["weight_shape"].isin(["(1, 48)", "(48, 1)"])
+            & piece_df["bias_shape"].isin(["(1,)", "(48,)"])
+        ]["piece_index"].tolist()
+        final_index = final_candidates[0] if final_candidates else None
+        expanding_pool = piece_df[piece_df["weight_shape"] == "(96, 48)"]["piece_index"].tolist()
+        contracting_pool = piece_df[piece_df["weight_shape"] == "(48, 96)"]["piece_index"].tolist()
+
+        greedy_rows = []
+        if final_index is not None:
+            final_weight = piece_state_by_index[final_index]["weight"]
+            final_bias = piece_state_by_index[final_index]["bias"]
+            x_score_current = x_score.clone()
+            x_full_current = x_full.clone()
+            step = 0
+            while expanding_pool and contracting_pool:
+                best = None
+                for expand_idx in expanding_pool:
+                    expand_state = piece_state_by_index[expand_idx]
+                    expanded = torch.relu(
+                        x_score_current @ expand_state["weight"].T + expand_state["bias"]
+                    )
+                    for contract_idx in contracting_pool:
+                        contract_state = piece_state_by_index[contract_idx]
+                        block_output = expanded @ contract_state["weight"].T + contract_state["bias"]
+                        x_candidate = x_score_current + block_output
+                        if tuple(final_weight.shape) == (1, 48):
+                            pred_candidate = x_candidate @ final_weight.T + final_bias
+                        else:
+                            pred_candidate = x_candidate @ final_weight + final_bias
+                        score = _safe_corr(
+                            pred_candidate.detach().cpu().numpy().reshape(-1),
+                            pred_target_score,
+                        )
+                        if not np.isfinite(score):
+                            continue
+                        if best is None or score > best["score"]:
+                            best = {
+                                "expand_idx": int(expand_idx),
+                                "contract_idx": int(contract_idx),
+                                "score": float(score),
+                            }
+                if best is None:
+                    break
+                step += 1
+                expand_state = piece_state_by_index[best["expand_idx"]]
+                contract_state = piece_state_by_index[best["contract_idx"]]
+                x_score_current = x_score_current + (
+                    torch.relu(x_score_current @ expand_state["weight"].T + expand_state["bias"])
+                    @ contract_state["weight"].T
+                    + contract_state["bias"]
+                )
+                x_full_current = x_full_current + (
+                    torch.relu(x_full_current @ expand_state["weight"].T + expand_state["bias"])
+                    @ contract_state["weight"].T
+                    + contract_state["bias"]
+                )
+                if tuple(final_weight.shape) == (1, 48):
+                    pred_full = x_full_current @ final_weight.T + final_bias
+                else:
+                    pred_full = x_full_current @ final_weight + final_bias
+                greedy_rows.append(
+                    {
+                        "step": step,
+                        "expand_piece": best["expand_idx"],
+                        "contract_piece": best["contract_idx"],
+                        "score_corr_pred": best["score"],
+                        "full_corr_pred": _safe_corr(
+                            pred_full.detach().cpu().numpy().reshape(-1), pred_target_full
+                        ),
+                    }
+                )
+                expanding_pool.remove(best["expand_idx"])
+                contracting_pool.remove(best["contract_idx"])
+        greedy_steps_df = pd.DataFrame(greedy_rows)
+        greedy_summary_df = (
+            pd.DataFrame(
+                [
+                    {"metric": "final_layer_piece", "value": final_index},
+                    {
+                        "metric": "greedy_steps_completed",
+                        "value": int(greedy_steps_df["step"].max()) if not greedy_steps_df.empty else 0,
+                    },
+                    {
+                        "metric": "best_full_corr_pred",
+                        "value": (
+                            float(greedy_steps_df["full_corr_pred"].max())
+                            if not greedy_steps_df.empty
+                            else float("nan")
+                        ),
+                    },
+                ]
+            )
+            if final_index is not None
+            else pd.DataFrame([{"metric": "error", "value": "No final layer found in pieces"}])
+        )
+    return greedy_steps_df, greedy_summary_df
 
 
 @app.cell
@@ -435,6 +571,8 @@ def _(alt, piece_type_summary):
 def _(
     error_hist,
     feature_corr_df,
+    greedy_steps_df,
+    greedy_summary_df,
     hypothesis_df,
     measurement_cols,
     metrics_df,
@@ -468,6 +606,13 @@ def _(
                 top_feature_chart,
                 mo.md("### Working hypotheses from this dataset"),
                 hypothesis_df,
+                mo.md("### Greedy residual reconstruction (seeded from final layer)"),
+                mo.md(
+                    "At each step, choose the remaining `(96,48)` expansion and `(48,96)` contraction "
+                    "pair that maximizes corr(model(measurements), pred) on a score sample."
+                ),
+                greedy_summary_df,
+                greedy_steps_df.head(20),
                 mo.md("### Schema and missingness checks"),
                 schema_df,
                 missing_chart,
