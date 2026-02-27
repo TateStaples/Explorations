@@ -231,7 +231,7 @@ def _(np, pd):
         for t in t_steps:
             # OT path: straight line
             xt_ot = (1 - t) * x0[i] + t * x1[i]
-            # Gaussian diffusion path: curved due to noise injection
+            # Gaussian diffusion path: alpha_t*x1 + sigma_t*eps (alpha_t=1-t, sigma_t=t)
             noise = rng.normal(0, 1, 2)
             xt_diff = (1 - t) * x1[i] + t * noise
             records.append({
@@ -251,7 +251,7 @@ def _(np, pd):
 
 @app.cell
 def _(alt, df_paths):
-    subset = df_paths[df_paths["particle"] < 8].copy()
+    subset = df_paths[df_paths["particle"] < 8].copy()  # 8 particles: enough diversity without overcrowding
 
     trajectory_chart = (
         alt.Chart(subset)
