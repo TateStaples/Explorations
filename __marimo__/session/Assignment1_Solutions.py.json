@@ -1,0 +1,528 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.19.4"
+  },
+  "cells": [
+    {
+      "id": "MJUe",
+      "code_hash": "503fbef78919286160e965ae55abeea8",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"assignment-1-solutions\">Assignment 1 Solutions</h1></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "923f5d223909de95704be427f14f29d9",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"problem-1-eccmma-164\">Problem 1 (ECCMMA 16.4)</h2>\n<span class=\"paragraph\">Consider the functions\n$<marimo-tex class=\"arithmatex\">||(f(x_1, \\dots, x_9) = f_1(x_1, x_3) f_2(x_1, x_4, x_5) f_3(x_1, x_6, x_7) f_4(x_4, x_8, x_9)||)</marimo-tex>$</span>\n<span class=\"paragraph\">and\n$<marimo-tex class=\"arithmatex\">||(g_1(x_1) = \\sum_{x_{\\setminus 1}} f(x_1, \\dots, x_9)||)</marimo-tex>$</span>\n<span class=\"paragraph\">Assume that each <marimo-tex class=\"arithmatex\">||(x_i||)</marimo-tex> comes from an alphabet <marimo-tex class=\"arithmatex\">||(\\mathcal{X}||)</marimo-tex> with <marimo-tex class=\"arithmatex\">||(|\\mathcal{X}| = q||)</marimo-tex>.</span>\n<ul>\n<li><strong>(a)</strong> Determine the number of computations required to compute <marimo-tex class=\"arithmatex\">||(g_1(x_1)||)</marimo-tex> for all <marimo-tex class=\"arithmatex\">||(x_1||)</marimo-tex> if the factorization is not used.</li>\n<li><strong>(b)</strong> Draw the factor graph associated with the given factorization of <marimo-tex class=\"arithmatex\">||(f||)</marimo-tex>.</li>\n<li><strong>(c)</strong> What is the complexity of computing <marimo-tex class=\"arithmatex\">||(g_1(x_1)||)</marimo-tex> for all <marimo-tex class=\"arithmatex\">||(x_1 \\in \\mathcal{X}||)</marimo-tex> with message passing if only the relevant messages are computed? Determine the messages passed on each edge of the tree for this computation.</li>\n<li><strong>(d)</strong> If only the relevant messages are computed, how many additional computations are required to compute:\n$<marimo-tex class=\"arithmatex\">||(g_7(x_7) = \\sum_{x_{\\setminus 7}} f(x_1, \\dots, x_9)||)</marimo-tex>$</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "e0ec074165fe331e1b2dcbe9d6f203eb",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"1-eccmma-164-complexity-and-factor-graphs\">1. (ECCMMA 16.4) Complexity and Factor Graphs</h3>\n<h4 id=\"a-computations-without-factorization\">(a) Computations without factorization</h4>\n<span class=\"paragraph\">To compute <marimo-tex class=\"arithmatex\">||(g_1(x_1)||)</marimo-tex> for all <marimo-tex class=\"arithmatex\">||(x_1||)</marimo-tex>, we must sum over <marimo-tex class=\"arithmatex\">||(x_2, \\dots, x_9||)</marimo-tex>.\nTotal variables <marimo-tex class=\"arithmatex\">||(N=9||)</marimo-tex> and domain size <marimo-tex class=\"arithmatex\">||(q||)</marimo-tex>.</span>\n<span class=\"paragraph\">Note that <marimo-tex class=\"arithmatex\">||(x_2||)</marimo-tex> does not appear in the function <marimo-tex class=\"arithmatex\">||(f||)</marimo-tex>, which generally depends on <marimo-tex class=\"arithmatex\">||(\\{x_1, x_3, x_4, x_5, x_6, x_7, x_8, x_9\\}||)</marimo-tex>. Thus, <marimo-tex class=\"arithmatex\">||(x_2||)</marimo-tex> is an isolated variable. Summing over <marimo-tex class=\"arithmatex\">||(x_2||)</marimo-tex> simply contributes a scalar factor of <marimo-tex class=\"arithmatex\">||(q||)</marimo-tex>.</span>\n<span class=\"paragraph\">The remaining summation involves 7 variables (<marimo-tex class=\"arithmatex\">||(x_3, x_4, x_5, x_6, x_7, x_8, x_9||)</marimo-tex>).\nPerforming this naive summation for each of the <marimo-tex class=\"arithmatex\">||(q||)</marimo-tex> values of <marimo-tex class=\"arithmatex\">||(x_1||)</marimo-tex> requires iterating over <marimo-tex class=\"arithmatex\">||(q^7||)</marimo-tex> configurations.</span>\n<span class=\"paragraph\"><strong>Complexity:</strong> Approximately <marimo-tex class=\"arithmatex\">||(O(q^9)||)</marimo-tex> if strictly iterating all variables, or <marimo-tex class=\"arithmatex\">||(O(q^8)||)</marimo-tex> if the isolated variable is handled separately.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "8964b358dd21a8e7cf5f526d87b70205",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h4 id=\"b-factor-graph\">(b) Factor Graph</h4></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "77ded1f987dba35611ab94d32be015b4",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">Here is the factor graph representation for the given factorization:\n$<marimo-tex class=\"arithmatex\">||(f(x_1, \\dots, x_9) = f_1(x_1, x_3) f_2(x_1, x_4, x_5) f_3(x_1, x_6, x_7) f_4(x_4, x_8, x_9)||)</marimo-tex>$</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "46bb94d06758c215397d93326b36baa0",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><ul>\n<li><strong>Variable Nodes:</strong> <marimo-tex class=\"arithmatex\">||(x_1, x_3, x_4, x_5, x_6, x_7, x_8, x_9||)</marimo-tex>. (Factor graph usually shows variables in the scope).</li>\n<li>\n<span class=\"paragraph\"><strong>Factor Nodes:</strong></span>\n<ul>\n<li><marimo-tex class=\"arithmatex\">||(f_1||)</marimo-tex> connected to <marimo-tex class=\"arithmatex\">||(\\{1, 3\\}||)</marimo-tex></li>\n<li><marimo-tex class=\"arithmatex\">||(f_2||)</marimo-tex> connected to <marimo-tex class=\"arithmatex\">||(\\{1, 4, 5\\}||)</marimo-tex></li>\n<li><marimo-tex class=\"arithmatex\">||(f_3||)</marimo-tex> connected to <marimo-tex class=\"arithmatex\">||(\\{1, 6, 7\\}||)</marimo-tex></li>\n<li><marimo-tex class=\"arithmatex\">||(f_4||)</marimo-tex> connected to <marimo-tex class=\"arithmatex\">||(\\{4, 8, 9\\}||)</marimo-tex></li>\n</ul>\n</li>\n</ul>\n<span class=\"paragraph\">Structure is a tree. <marimo-tex class=\"arithmatex\">||(x_1||)</marimo-tex> is a hub connected to <marimo-tex class=\"arithmatex\">||(f_1, f_2, f_3||)</marimo-tex>.\n<marimo-tex class=\"arithmatex\">||(f_2||)</marimo-tex> connects to <marimo-tex class=\"arithmatex\">||(x_4||)</marimo-tex>, which connects to <marimo-tex class=\"arithmatex\">||(f_4||)</marimo-tex>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "546d26beca2ea6cd055a5027ad97bc3b",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h4 id=\"c-message-passing-complexity-for-g_1x_1\">(c) Message Passing Complexity for <marimo-tex class=\"arithmatex\">||(g_1(x_1)||)</marimo-tex></h4>\n<span class=\"paragraph\">We root at <marimo-tex class=\"arithmatex\">||(x_1||)</marimo-tex> and pass messages in.\nLeaves: <marimo-tex class=\"arithmatex\">||(x_3, x_5, x_6, x_7, x_8, x_9||)</marimo-tex>.\nMessages:</span>\n<ul>\n<li><marimo-tex class=\"arithmatex\">||(\\mu_{3 \\to 1}(x_1) = \\sum_{x_3} f_1(x_1, x_3)||)</marimo-tex> (<marimo-tex class=\"arithmatex\">||(q^2||)</marimo-tex>)</li>\n<li>\n<span class=\"paragraph\"><marimo-tex class=\"arithmatex\">||(\\mu_{f_3 \\to 1}||)</marimo-tex> branch:</span>\n<ul>\n<li><marimo-tex class=\"arithmatex\">||(6 \\to f_3||)</marimo-tex> (<marimo-tex class=\"arithmatex\">||(1||)</marimo-tex>), <marimo-tex class=\"arithmatex\">||(7 \\to f_3||)</marimo-tex> (<marimo-tex class=\"arithmatex\">||(1||)</marimo-tex>)</li>\n<li><marimo-tex class=\"arithmatex\">||(\\mu_{f_3 \\to 1}(x_1) = \\sum_{x_6, x_7} f_3(x_1, x_6, x_7)||)</marimo-tex> (<marimo-tex class=\"arithmatex\">||(q^3||)</marimo-tex>)</li>\n</ul>\n</li>\n<li>\n<span class=\"paragraph\"><marimo-tex class=\"arithmatex\">||(\\mu_{f_2 \\to 1}||)</marimo-tex> branch:</span>\n<ul>\n<li>Need message from <marimo-tex class=\"arithmatex\">||(x_4||)</marimo-tex>.</li>\n<li><marimo-tex class=\"arithmatex\">||(x_4||)</marimo-tex> needs message from <marimo-tex class=\"arithmatex\">||(f_4||)</marimo-tex>.</li>\n<li><marimo-tex class=\"arithmatex\">||(8 \\to f_4||)</marimo-tex>, <marimo-tex class=\"arithmatex\">||(9 \\to f_4||)</marimo-tex>.</li>\n<li><marimo-tex class=\"arithmatex\">||(\\mu_{f_4 \\to 4}(x_4) = \\sum_{x_8, x_9} f_4(x_4, x_8, x_9)||)</marimo-tex> (<marimo-tex class=\"arithmatex\">||(q^3||)</marimo-tex>)</li>\n<li><marimo-tex class=\"arithmatex\">||(\\mu_{4 \\to f_2}(x_4) = \\mu_{f_4 \\to 4}(x_4)||)</marimo-tex></li>\n<li><marimo-tex class=\"arithmatex\">||(5 \\to f_2||)</marimo-tex>.</li>\n<li><marimo-tex class=\"arithmatex\">||(\\mu_{f_2 \\to 1}(x_1) = \\sum_{x_4, x_5} f_2(x_1, x_4, x_5) \\mu_{4 \\to f_2}(x_4)||)</marimo-tex> (<marimo-tex class=\"arithmatex\">||(q^3||)</marimo-tex>)</li>\n</ul>\n</li>\n</ul>\n<span class=\"paragraph\">Final at <marimo-tex class=\"arithmatex\">||(x_1||)</marimo-tex>: Multiply incoming.\nBottleneck complexity: Summing factors with 3 variables (<marimo-tex class=\"arithmatex\">||(f_2, f_3, f_4||)</marimo-tex>).\nComplexity: <strong><marimo-tex class=\"arithmatex\">||(O(q^3)||)</marimo-tex></strong>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "53e48f73b48e7a3f18c68cdb68633d68",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h4 id=\"d-additional-for-g_7x_7\">(d) Additional for <marimo-tex class=\"arithmatex\">||(g_7(x_7)||)</marimo-tex></h4>\n<span class=\"paragraph\">We need marginal at <marimo-tex class=\"arithmatex\">||(x_7||)</marimo-tex>.\nWe have messages towards root <marimo-tex class=\"arithmatex\">||(x_1||)</marimo-tex>. Need messages towards <marimo-tex class=\"arithmatex\">||(x_7||)</marimo-tex>.\nPath: <marimo-tex class=\"arithmatex\">||(x_1 \\to f_3 \\to x_7||)</marimo-tex>.</span>\n<ul>\n<li>\n<span class=\"paragraph\">Need <marimo-tex class=\"arithmatex\">||(\\mu_{1 \\to f_3}||)</marimo-tex>.</span>\n<ul>\n<li><marimo-tex class=\"arithmatex\">||(x_1||)</marimo-tex> accumulates <marimo-tex class=\"arithmatex\">||(\\mu_{f_1 \\to 1}||)</marimo-tex> and <marimo-tex class=\"arithmatex\">||(\\mu_{f_2 \\to 1}||)</marimo-tex>.</li>\n<li><marimo-tex class=\"arithmatex\">||(\\mu_{1 \\to f_3}(x_1) = \\mu_{f_1 \\to 1}(x_1) \\mu_{f_2 \\to 1}(x_1)||)</marimo-tex> (<marimo-tex class=\"arithmatex\">||(q||)</marimo-tex>)</li>\n</ul>\n</li>\n<li>Need <marimo-tex class=\"arithmatex\">||(\\mu_{f_3 \\to 7}(x_7) = \\sum_{x_1, x_6} f_3(x_1, x_6, x_7) \\mu_{1 \\to f_3}(x_1)||)</marimo-tex> (<marimo-tex class=\"arithmatex\">||(q^3||)</marimo-tex>)</li>\n</ul>\n<span class=\"paragraph\">Complexity: <strong><marimo-tex class=\"arithmatex\">||(O(q^3)||)</marimo-tex></strong>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "2273481bab511771f8369430b36dffcd",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"problem-2-eccmma-167\">Problem 2 (ECCMMA 16.7)</h2>\n<span class=\"paragraph\">Let <marimo-tex class=\"arithmatex\">||(p(x_1, x_2, x_3, x_4)||)</marimo-tex> be a joint probability mass function for the random variables <marimo-tex class=\"arithmatex\">||(X_1, X_2, X_3, X_4||)</marimo-tex>.</span>\n<ul>\n<li><strong>(a)</strong> Draw the (un) factor graph representing <marimo-tex class=\"arithmatex\">||(p(x_1, x_2, x_3, x_4)||)</marimo-tex>.</li>\n<li><strong>(b)</strong> Draw the factor graph representing standard decomposition:\n$<marimo-tex class=\"arithmatex\">||(p(x_1, x_2, x_3, x_4) = p(x_1)p(x_2|x_1)p(x_3|x_1, x_2)p(x_4|x_1, x_2, x_3)||)</marimo-tex>$</li>\n<li><strong>(c)</strong> Assume <marimo-tex class=\"arithmatex\">||(X_1 \\to X_2 \\to X_3 \\to X_4||)</marimo-tex> form a Markov chain and draw the factor graph associated with the factorization:\n$<marimo-tex class=\"arithmatex\">||(p(x_1, x_2, x_3, x_4) = p(x_1)p(x_2|x_1)p(x_3|x_2)p(x_4|x_3)||)</marimo-tex>$</li>\n<li><strong>(d)</strong> Suppose that the <marimo-tex class=\"arithmatex\">||(X_i||)</marimo-tex> are observed indirectly through <marimo-tex class=\"arithmatex\">||(Y_i||)</marimo-tex>. Draw the factor graph for the hidden Markov model (HMM) implied by the factorization:\n$<marimo-tex class=\"arithmatex\">||(p(y_{1:N}, x_{1:N}) = p(y_1) \\prod_{i=2}^N p(y_i|y_{i-1}) \\prod_{i=1}^N p(x_i|y_i)||)</marimo-tex>$\nwhere it is assumed that <marimo-tex class=\"arithmatex\">||(p(x_i|y_{1:N}, x_{\\setminus i}) = p(x_i|y_i)||)</marimo-tex> (e.g., <marimo-tex class=\"arithmatex\">||(X_i||)</marimo-tex> is independent of <marimo-tex class=\"arithmatex\">||(Y_{\\setminus i}||)</marimo-tex> given <marimo-tex class=\"arithmatex\">||(Y_i||)</marimo-tex>).</li>\n</ul>\n<hr />\n<h3 id=\"2-eccmma-167-factor-graphs-and-hmms\">2. (ECCMMA 16.7) Factor Graphs and HMMs</h3></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hstk",
+      "code_hash": "8ee0d3085c5c1bdbfa01efe231c16269",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h4 id=\"a-unfactor-graph\">(a) (Un)factor graph</h4>\n<span class=\"paragraph\">Representing <marimo-tex class=\"arithmatex\">||(p(x_1, x_2, x_3, x_4)||)</marimo-tex> without specific structure requires a single factor node connected to all four variable nodes <marimo-tex class=\"arithmatex\">||(x_1, x_2, x_3, x_4||)</marimo-tex>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "iLit",
+      "code_hash": "fa839c304bd7a4b27e04634d4eaa4a00",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h4 id=\"b-standard-decomposition\">(b) Standard Decomposition</h4>\n<span class=\"paragraph\">Factorization: <marimo-tex class=\"arithmatex\">||(p(x_1, x_2, x_3, x_4) = p(x_1) p(x_2|x_1) p(x_3|x_1, x_2) p(x_4|x_1, x_2, x_3, x_4)||)</marimo-tex>.</span>\n<span class=\"paragraph\">Graph has 4 factor nodes creating a fully connected structure.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ROlb",
+      "code_hash": "0f1bff8cc06daafe233dcbbc3838ca2b",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h4 id=\"c-markov-chain\">(c) Markov Chain</h4>\n<span class=\"paragraph\">Factorization: <marimo-tex class=\"arithmatex\">||(p(x_{1:4}) = p(x_1) p(x_2|x_1) p(x_3|x_2) p(x_4|x_3)||)</marimo-tex>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TqIu",
+      "code_hash": "6a7e73e413c30972b7f6be69456f7727",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h4 id=\"d-hidden-markov-model-hmm\">(d) Hidden Markov Model (HMM)</h4>\n<span class=\"paragraph\">Factorization: <marimo-tex class=\"arithmatex\">||(p(y_{1:N}, x_{1:N}) = p(y_1) \\prod_{i=2}^N p(y_i|y_{i-1}) \\prod_{i=1}^N p(x_i|y_i)||)</marimo-tex>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "DnEU",
+      "code_hash": "7381c5e0aba59844220939f22b544015",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"problem-3-fgml-13\">Problem 3 (FGML 1.3)</h2>\n<span class=\"paragraph\">A TA wants to graduate (G), which depends on papers (P) and proposal (R). Papers and theorems (T) are generated by drinking coffee (C). Coffee depends on the university providing it (U) and their favorite coffee shop, Tazza D'Oro (D), being open. All variables are binary {T, F}.</span>\n<span class=\"paragraph\"><strong>CPT Parameters:</strong></span>\n<ul>\n<li><marimo-tex class=\"arithmatex\">||(P(U=T) = 0.1||)</marimo-tex></li>\n<li><marimo-tex class=\"arithmatex\">||(P(D=T|U=T) = 0.6, \\quad P(D=T|U=F) = 0.5||)</marimo-tex></li>\n<li><marimo-tex class=\"arithmatex\">||(P(C=T|U=T, D=T) = 0.7, \\quad P(C=T|U=T, D=F) = 0.5||)</marimo-tex></li>\n<li><marimo-tex class=\"arithmatex\">||(P(C=T|U=F, D=T) = 0.6, \\quad P(C=T|U=F, D=F) = 0.05||)</marimo-tex></li>\n<li><marimo-tex class=\"arithmatex\">||(P(P=T|C=T) = 0.8, \\quad P(P=T|C=F) = 0.6||)</marimo-tex></li>\n<li><marimo-tex class=\"arithmatex\">||(P(T=T|C=T) = 0.7, \\quad P(T=T|C=F) = 0.6||)</marimo-tex></li>\n<li><marimo-tex class=\"arithmatex\">||(P(R=T|P=T) = 0.7, \\quad P(R=T|P=F) = 0.1||)</marimo-tex></li>\n<li><marimo-tex class=\"arithmatex\">||(P(G=T|P=T,R=T) = 0.9, \\quad P(G=T|P=T,R=F) = 0.3||)</marimo-tex></li>\n<li><marimo-tex class=\"arithmatex\">||(P(G=T|P=F,R=T) = 0.5, \\quad P(G=T|P=F,R=F) = 0.1||)</marimo-tex></li>\n</ul>\n<span class=\"paragraph\"><strong>Graduation Probabilities (Explicit):</strong></span>\n<ul>\n<li><marimo-tex class=\"arithmatex\">||(P(G=T|P=T, R=T) = 0.9||)</marimo-tex></li>\n<li><marimo-tex class=\"arithmatex\">||(P(G=T|P=T, R=F) = 0.3||)</marimo-tex></li>\n<li><marimo-tex class=\"arithmatex\">||(P(G=T|P=F, R=T) = 0.5||)</marimo-tex></li>\n<li><marimo-tex class=\"arithmatex\">||(P(G=T|P=F, R=F) = 0.1||)</marimo-tex></li>\n</ul>\n<span class=\"paragraph\"><strong>Inference Tasks:</strong></span>\n<ul>\n<li><strong>(a)</strong> How likely is the TA to graduate if her coffee supply runs out? <marimo-tex class=\"arithmatex\">||(P(G = T | C = F) = ?||)</marimo-tex></li>\n<li><strong>(b)</strong> How likely is the TA to graduate if Tazzo is open all the time? <marimo-tex class=\"arithmatex\">||(P(G = T | D = T) = ?||)</marimo-tex></li>\n<li><strong>(c)</strong> Should we even be worried about her coffee supply running out? <marimo-tex class=\"arithmatex\">||(P(C = T) = ?||)</marimo-tex></li>\n<li><strong>(d)</strong> If she is writing theorems, does this mean she will also publish? <marimo-tex class=\"arithmatex\">||(P(P = T | T = T) = ?||)</marimo-tex></li>\n<li>Report the ordering and factors produced after eliminating each variable for query (a).</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ecfG",
+      "code_hash": "521a799462afbc1770d6a3ae6e571fc3",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><hr />\n<h3 id=\"3-fgml-13-solution\">3. (FGML 1.3) Solution</h3></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZBYS",
+      "code_hash": "8968f09685c27acd1c838975bb73616d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h4 id=\"efficiency-order\">Efficiency Order:</h4>\n<span class=\"paragraph\">When eliminating for <marimo-tex class=\"arithmatex\">||(P(G|C=F)||)</marimo-tex>, we can use order: <marimo-tex class=\"arithmatex\">||(U, D, T, P, R||)</marimo-tex>.</span>\n<ol>\n<li><strong>Eliminate <marimo-tex class=\"arithmatex\">||(U||)</marimo-tex></strong>: Sum <marimo-tex class=\"arithmatex\">||(\\sum_U P(U)P(D|U)||)</marimo-tex> to produce factor <marimo-tex class=\"arithmatex\">||(\\tau_1(D)||)</marimo-tex>.</li>\n<li><strong>Eliminate <marimo-tex class=\"arithmatex\">||(D||)</marimo-tex></strong>: Sum <marimo-tex class=\"arithmatex\">||(\\sum_D \\tau_1(D) P(C=F|U,D)||)</marimo-tex>. Note that the factor <marimo-tex class=\"arithmatex\">||(P(C|U,D)||)</marimo-tex> links <marimo-tex class=\"arithmatex\">||(U, D, C||)</marimo-tex>. After eliminating <marimo-tex class=\"arithmatex\">||(U||)</marimo-tex>, we have a factor on <marimo-tex class=\"arithmatex\">||(D, C||)</marimo-tex>. Since <marimo-tex class=\"arithmatex\">||(C||)</marimo-tex> is observed (<marimo-tex class=\"arithmatex\">||(C=F||)</marimo-tex>), this becomes a factor on <marimo-tex class=\"arithmatex\">||(D||)</marimo-tex> alone. Eliminating <marimo-tex class=\"arithmatex\">||(D||)</marimo-tex> yields a scalar.</li>\n<li><strong>Eliminate <marimo-tex class=\"arithmatex\">||(T||)</marimo-tex></strong>: The factor <marimo-tex class=\"arithmatex\">||(P(T|C)||)</marimo-tex> depends only on <marimo-tex class=\"arithmatex\">||(C||)</marimo-tex>. Since <marimo-tex class=\"arithmatex\">||(C||)</marimo-tex> is observed, <marimo-tex class=\"arithmatex\">||(\\sum_T P(T|C=F) = 1||)</marimo-tex>, so this branch sums to 1.</li>\n<li><strong>Eliminate <marimo-tex class=\"arithmatex\">||(P||)</marimo-tex></strong>: We compute <marimo-tex class=\"arithmatex\">||(\\tau_P(R, G) = \\sum_P P(P|C=F)P(R|P)P(G|P,R)||)</marimo-tex>. This involves summing a product of three terms over <marimo-tex class=\"arithmatex\">||(P||)</marimo-tex>, producing a factor on <marimo-tex class=\"arithmatex\">||(\\{R, G\\}||)</marimo-tex>.</li>\n<li><strong>Eliminate <marimo-tex class=\"arithmatex\">||(R||)</marimo-tex></strong>: Finally, compute <marimo-tex class=\"arithmatex\">||(\\tau_R(G) = \\sum_R \\tau_P(R, G)||)</marimo-tex>.</li>\n<li><strong>Normalize</strong>: Normalize the resulting factor <marimo-tex class=\"arithmatex\">||(\\tau_R(G)||)</marimo-tex> to get <marimo-tex class=\"arithmatex\">||(P(G|C=F)||)</marimo-tex>.</li>\n</ol></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "aLJB",
+      "code_hash": "76c5b5f3ec060d7e1f50b27249ced617",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"problem-4-mct-24\">Problem 4 (MCT 2.4)</h2>\n<span class=\"paragraph\">Schoolchildren form a tree graph where they only see/communicate with nearest neighbors.</span>\n<ul>\n<li>Construct a message-passing algorithm to count all classmates in a distributed fashion.</li>\n<li>What is the initialization and what are the message-passing rules?</li>\n<li>How can you modify it to only count a subset (e.g., girls)?</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nHfw",
+      "code_hash": "1071115bcbcffc6100608122860b7f17",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"4-mct-24-distributed-counting-algorithm\">4. (MCT 2.4) Distributed Counting Algorithm</h3></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "xXTn",
+      "code_hash": "87f8e7f4bc514a87c1a7b9873757f92e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h4 id=\"initialization-rules\">Initialization &amp; Rules</h4>\n<span class=\"paragraph\">To count the total number of nodes <marimo-tex class=\"arithmatex\">||(N||)</marimo-tex> in a tree using message passing:</span>\n<ol>\n<li><strong>Initialization:</strong> Every child (leaf node) initializes a message with value 1 (counting itself).</li>\n<li><strong>Message Passing Rule (<marimo-tex class=\"arithmatex\">||(i \\to j||)</marimo-tex>):</strong>\nNode <marimo-tex class=\"arithmatex\">||(i||)</marimo-tex> sends to neighbor <marimo-tex class=\"arithmatex\">||(j||)</marimo-tex>:\n$<marimo-tex class=\"arithmatex\">||(\\mu_{i \\to j} = 1 + \\sum_{k \\in N(i) \\setminus j} \\mu_{k \\to i}||)</marimo-tex>$</li>\n</ol>\n<blockquote>\n<span class=\"paragraph\">(My count = 1 + sum of counts from all my other neighbors).</span>\n</blockquote>\n<ol start=\"3\">\n<li><strong>Determination:</strong> Any node can compute the total count by summing all incoming messages plus 1: <marimo-tex class=\"arithmatex\">||(N = 1 + \\sum_{k \\in N(i)} \\mu_{k \\to i}||)</marimo-tex>.</li>\n<li><strong>Wolf Detection:</strong> If the \"group\" forms a tree, checking the total count against the expected class roster (e.g., <marimo-tex class=\"arithmatex\">||(N_{expected}||)</marimo-tex>) reveals if anyone is missing. If the graph is disconnected (eaten children broke links), the count will be <marimo-tex class=\"arithmatex\">||(&lt; N_{expected}||)</marimo-tex>.</li>\n</ol></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "AjVT",
+      "code_hash": "545a141a91d6180ba2d371949d8a310d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h4 id=\"modification-for-subset-girls\">Modification for Subset (Girls)</h4>\n<span class=\"paragraph\">Modify the local contribution term.</span>\n<ul>\n<li>Let <marimo-tex class=\"arithmatex\">||(c_i = 1||)</marimo-tex> if child <marimo-tex class=\"arithmatex\">||(i||)</marimo-tex> is a girl, else 0.</li>\n<li>Message: <marimo-tex class=\"arithmatex\">||(\\mu_{i \\to j} = c_i + \\sum_{k \\in N(i) \\setminus j} \\mu_{k \\to i}||)</marimo-tex>.</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "pHFh",
+      "code_hash": "1b198c4a5bfff51e24d5756a88b50656",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"problem-5-fgml-15\">Problem 5 (FGML 1.5)</h2>\n<span class=\"paragraph\">Model independent sets <marimo-tex class=\"arithmatex\">||(x_1, \\dots, x_N||)</marimo-tex> on an undirected graph <marimo-tex class=\"arithmatex\">||(G=(V,E)||)</marimo-tex>.</span>\n<ul>\n<li><strong>(a)</strong> Use binary variables <marimo-tex class=\"arithmatex\">||(x_i \\in \\{0, 1\\}||)</marimo-tex> (<marimo-tex class=\"arithmatex\">||(x_i=1||)</marimo-tex> if chosen). Define pairwise factors <marimo-tex class=\"arithmatex\">||(\\psi_{ij}(x_i, x_j)||)</marimo-tex> such that <marimo-tex class=\"arithmatex\">||(\\prod_{(i,j)\\in E} \\psi_{ij}||)</marimo-tex> is 1 if <marimo-tex class=\"arithmatex\">||(x||)</marimo-tex> is an independent set and 0 otherwise.</li>\n<li><strong>(b)</strong> Explain why the partition function <marimo-tex class=\"arithmatex\">||(Z = \\sum_x \\prod \\psi_{ij}||)</marimo-tex> counts the number of independent sets.</li>\n<li>\n<span class=\"paragraph\"><strong>(c) Weighted Variant:</strong> With <marimo-tex class=\"arithmatex\">||(w &gt; 0||)</marimo-tex>, define <marimo-tex class=\"arithmatex\">||(p(x) \\propto w^{\\sum_i x_i} \\prod_{(i,j)} \\psi_{ij}||)</marimo-tex>.</span>\n<ul>\n<li>i. Interpret <marimo-tex class=\"arithmatex\">||(Z(w)||)</marimo-tex> as a generating function.</li>\n<li>ii. Express <marimo-tex class=\"arithmatex\">||(E[Size]||)</marimo-tex> in terms of <marimo-tex class=\"arithmatex\">||(Z(w)||)</marimo-tex>.</li>\n</ul>\n</li>\n<li>\n<span class=\"paragraph\"><strong>(d) Computation on Tree (Fig 1):</strong> Root the tree at vertex 1.</span>\n<ul>\n<li>i. Write <marimo-tex class=\"arithmatex\">||(\\mu_{4 \\to 2}||)</marimo-tex> and <marimo-tex class=\"arithmatex\">||(\\mu_{5 \\to 2}||)</marimo-tex> explicitly.</li>\n<li>ii. Compute <marimo-tex class=\"arithmatex\">||(\\mu_{2 \\to 1}||)</marimo-tex> as a simplified polynomial in <marimo-tex class=\"arithmatex\">||(w||)</marimo-tex>.</li>\n<li>iii. Evaluate at <marimo-tex class=\"arithmatex\">||(w=1||)</marimo-tex>.</li>\n<li>iv. Compute the marginal <marimo-tex class=\"arithmatex\">||(p(x_1=1)||)</marimo-tex>.</li>\n<li>v. Describe how to efficiently sample independent sets.</li>\n</ul>\n</li>\n</ul>\n<hr />\n<h3 id=\"5-fgml-15-independent-sets\">5. (FGML 1.5) Independent Sets</h3></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "NCOB",
+      "code_hash": "dcae17da567ee6b80b75c0f60ac08fa2",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h4 id=\"a-pairwise-factor-graph\">(a) Pairwise Factor Graph</h4>\n<span class=\"paragraph\">Let <marimo-tex class=\"arithmatex\">||(x_i \\in \\{0, 1\\}||)</marimo-tex>. Define pairwise factors for edges <marimo-tex class=\"arithmatex\">||((i, j) \\in E||)</marimo-tex>:\n$<marimo-tex class=\"arithmatex\">||(\\psi_{ij}(x_i, x_j) = \\begin{cases} 0 &amp; \\text{if } x_i=1, x_j=1 \\\\ 1 &amp; \\text{otherwise} \\end{cases} = \\text{NAND}(x_i, x_j)||)</marimo-tex>$</span>\n<span class=\"paragraph\">The function <marimo-tex class=\"arithmatex\">||(f(x) = \\prod_{(i,j)} \\psi_{ij}(x_i, x_j)||)</marimo-tex> is 1 if and only if no two adjacent vertices are both 1 (valid independent set), and 0 otherwise.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "aqbW",
+      "code_hash": "e545c17f7b3ba6fbe4db6b99af482872",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h4 id=\"b-partition-function\">(b) Partition Function</h4>\n<span class=\"paragraph\">$<marimo-tex class=\"arithmatex\">||(Z = \\sum_x \\prod_{(i,j)} \\psi_{ij}(x_i, x_j)||)</marimo-tex>$\nThe product of <marimo-tex class=\"arithmatex\">||(\\psi_{ij}||)</marimo-tex> over all edges <marimo-tex class=\"arithmatex\">||((i,j)||)</marimo-tex> is 1 if and only if <marimo-tex class=\"arithmatex\">||(x||)</marimo-tex> is an independent set, and 0 otherwise. Summing over all possible assignments <marimo-tex class=\"arithmatex\">||(x||)</marimo-tex> counts the number of independent sets.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TRpd",
+      "code_hash": "b93271378206c182bbf4b5b550148086",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h4 id=\"c-weighted-variant-generating-function\">(c) Weighted Variant (Generating Function)</h4>\n<span class=\"paragraph\">With <marimo-tex class=\"arithmatex\">||(\\phi_i(x_i) = \\lambda^{x_i}||)</marimo-tex>:\n$<marimo-tex class=\"arithmatex\">||(p_\\lambda(x) = \\frac{1}{Z(\\lambda)} \\prod_i \\lambda^{x_i} \\prod_{(i,j)} \\psi_{ij}(x_i, x_j) = \\frac{1}{Z(\\lambda)} \\lambda^{\\sum x_i} \\mathbb{I}(x \\in IS)||)</marimo-tex>$</span>\n<span class=\"paragraph\"><strong>i. Generating Function:</strong>\nThe partition function sums the unnormalized probability weight over all possible configurations <marimo-tex class=\"arithmatex\">||(x||)</marimo-tex>:\n$<marimo-tex class=\"arithmatex\">||(Z(\\lambda) = \\sum_x \\lambda^{\\sum x_i} \\mathbb{I}(x \\in IS)||)</marimo-tex>$\nGroup the terms by the size of the independent set <marimo-tex class=\"arithmatex\">||(k = \\sum x_i||)</marimo-tex>:\n$<marimo-tex class=\"arithmatex\">||(Z(\\lambda) = \\sum_{k=0}^{|V|} N_k \\lambda^k||)</marimo-tex>$\nwhere <marimo-tex class=\"arithmatex\">||(N_k||)</marimo-tex> is the number of independent sets of size <marimo-tex class=\"arithmatex\">||(k||)</marimo-tex>. Thus, <marimo-tex class=\"arithmatex\">||(Z(\\lambda)||)</marimo-tex> is the <strong>generating function</strong> for the counts of independent sets, with <marimo-tex class=\"arithmatex\">||(\\lambda||)</marimo-tex> acting as the formal variable.</span>\n<span class=\"paragraph\"><strong>ii. Expectation of Size:</strong>\nLet <marimo-tex class=\"arithmatex\">||(|S| = \\sum_i X_i||)</marimo-tex> be the size of the random independent set.\n$<marimo-tex class=\"arithmatex\">||(E[|S|] = \\sum_x \\left(\\sum_i x_i\\right) p_\\lambda(x) = \\frac{1}{Z(\\lambda)} \\sum_x \\left(\\sum_i x_i\\right) \\lambda^{\\sum x_i} \\mathbb{I}(x \\in IS)||)</marimo-tex>$\nNotice that <marimo-tex class=\"arithmatex\">||(\\frac{\\partial}{\\partial \\lambda} (\\lambda^k) = k \\lambda^{k-1}||)</marimo-tex>, so <marimo-tex class=\"arithmatex\">||(\\lambda \\frac{\\partial}{\\partial \\lambda} (\\lambda^k) = k \\lambda^k||)</marimo-tex>.\nApplying this operator to <marimo-tex class=\"arithmatex\">||(Z(\\lambda)||)</marimo-tex>:\n$<marimo-tex class=\"arithmatex\">||(\\lambda \\frac{\\partial}{\\partial \\lambda} Z(\\lambda) = \\sum_x \\left(\\sum_i x_i\\right) \\lambda^{\\sum x_i} \\mathbb{I}(x \\in IS)||)</marimo-tex>$\nTherefore:\n$<marimo-tex class=\"arithmatex\">||(E[|S|] = \\frac{1}{Z(\\lambda)} \\left( \\lambda \\frac{\\partial Z(\\lambda)}{\\partial \\lambda} \\right) = \\lambda \\frac{\\partial}{\\partial \\lambda} \\log Z(\\lambda)||)</marimo-tex>$</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TXez",
+      "code_hash": "70de6ed0f7ef814001ad4b744e97a72b",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h4 id=\"d-exact-computation-on-figure-1\">(d) Exact Computation on Figure 1</h4>\n<span class=\"paragraph\">Tree: Root 1, children 2,3. Children of 2 are 4,5. Children of 3 are 6,7.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "yCnT",
+      "code_hash": "5c80dfe71c5495e7fa942b82b1a426f2",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h4 id=\"e-messages-4-to-2\">(e) Messages <marimo-tex class=\"arithmatex\">||(4 \\to 2||)</marimo-tex></h4>\n<marimo-tex class=\"arithmatex\">||[m_{4 \\to 2}(x_2) = \\sum_{x_4} \\lambda^{x_4} \\psi(x_4, x_2)||]</marimo-tex><ul>\n<li>If <marimo-tex class=\"arithmatex\">||(x_2=0||)</marimo-tex>: <marimo-tex class=\"arithmatex\">||(x_4||)</marimo-tex> can be 0 (value 1) or 1 (value <marimo-tex class=\"arithmatex\">||(\\lambda||)</marimo-tex>), so the sum is <marimo-tex class=\"arithmatex\">||(1 + \\lambda||)</marimo-tex>.</li>\n<li>If <marimo-tex class=\"arithmatex\">||(x_2=1||)</marimo-tex>: <marimo-tex class=\"arithmatex\">||(x_4||)</marimo-tex> must be 0 (value 1), so the sum is <marimo-tex class=\"arithmatex\">||(1||)</marimo-tex>.</li>\n</ul>\n<span class=\"paragraph\">Message vector: <marimo-tex class=\"arithmatex\">||([1+\\lambda, 1]||)</marimo-tex>. By symmetry, the message <marimo-tex class=\"arithmatex\">||(5 \\to 2||)</marimo-tex> is identical.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "wlCL",
+      "code_hash": "b57cd71594fc740eb01643a82a3e2aac",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h4 id=\"f-zlambda\">(f) <marimo-tex class=\"arithmatex\">||(Z(\\lambda)||)</marimo-tex></h4>\n<span class=\"paragraph\">Message <marimo-tex class=\"arithmatex\">||(2 \\to 1||)</marimo-tex>:\n$<marimo-tex class=\"arithmatex\">||(m_{2 \\to 1}(x_1) = \\sum_{x_2} \\lambda^{x_2} \\psi(x_2, x_1) m_{4 \\to 2}(x_2) m_{5 \\to 2}(x_2)||)</marimo-tex>$</span>\n<ul>\n<li>\n<span class=\"paragraph\">For <marimo-tex class=\"arithmatex\">||(x_1=0||)</marimo-tex>:</span>\n<ul>\n<li><marimo-tex class=\"arithmatex\">||(x_2=0||)</marimo-tex>: Term is <marimo-tex class=\"arithmatex\">||(1 \\cdot 1 \\cdot (1+\\lambda)^2 = (1+\\lambda)^2||)</marimo-tex>.</li>\n<li><marimo-tex class=\"arithmatex\">||(x_2=1||)</marimo-tex>: Term is <marimo-tex class=\"arithmatex\">||(\\lambda \\cdot 1 \\cdot (1)^2 = \\lambda||)</marimo-tex>.</li>\n<li>Total: <marimo-tex class=\"arithmatex\">||(m_{2 \\to 1}(0) = (1+\\lambda)^2 + \\lambda = 1 + 3\\lambda + \\lambda^2||)</marimo-tex>.</li>\n</ul>\n</li>\n<li>\n<span class=\"paragraph\">For <marimo-tex class=\"arithmatex\">||(x_1=1||)</marimo-tex>:</span>\n<ul>\n<li><marimo-tex class=\"arithmatex\">||(x_2=0||)</marimo-tex>: Term is <marimo-tex class=\"arithmatex\">||(1 \\cdot 1 \\cdot (1+\\lambda)^2 = (1+\\lambda)^2||)</marimo-tex>.</li>\n<li><marimo-tex class=\"arithmatex\">||(x_2=1||)</marimo-tex>: Constraint violation (<marimo-tex class=\"arithmatex\">||(\\psi=0||)</marimo-tex>), term is 0.</li>\n<li>Total: <marimo-tex class=\"arithmatex\">||(m_{2 \\to 1}(1) = (1+\\lambda)^2||)</marimo-tex>.</li>\n</ul>\n</li>\n</ul>\n<span class=\"paragraph\">At Root 1:\n$<marimo-tex class=\"arithmatex\">||(Z(\\lambda) = \\sum_{x_1} \\lambda^{x_1} m_{2 \\to 1}(x_1) m_{3 \\to 1}(x_1)||)</marimo-tex>$\n(Node 3 branch is identical to 2).\n<marimo-tex class=\"arithmatex\">||(x_1=0||)</marimo-tex>: <marimo-tex class=\"arithmatex\">||(1 \\cdot ((1+\\lambda)^2+\\lambda)^2||)</marimo-tex>.\n<marimo-tex class=\"arithmatex\">||(x_1=1||)</marimo-tex>: <marimo-tex class=\"arithmatex\">||(\\lambda \\cdot ( (1+\\lambda)^2 )^2||)</marimo-tex>.</span>\n<marimo-tex class=\"arithmatex\">||[Z(\\lambda) = (1 + 3\\lambda + \\lambda^2)^2 + \\lambda(1 + 2\\lambda + \\lambda^2)^2||]</marimo-tex></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "kqZH",
+      "code_hash": "cf878cdceb61d89d2710abaefed36542",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h4 id=\"g-evaluate-at-lambda1\">(g) Evaluate at <marimo-tex class=\"arithmatex\">||(\\lambda=1||)</marimo-tex></h4>\n<span class=\"paragraph\"><marimo-tex class=\"arithmatex\">||(Z(1) = (5)^2 + 1(4)^2 = 25 + 16 = 41||)</marimo-tex>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "wAgl",
+      "code_hash": "17467b986f6524bb0035dda91581eeb0",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h4 id=\"h-marginal-px_11\">(h) Marginal <marimo-tex class=\"arithmatex\">||(p(X_1=1)||)</marimo-tex></h4>\n<marimo-tex class=\"arithmatex\">||[p(X_1=1) = \\frac{\\lambda (1+\\lambda)^4}{Z(\\lambda)}||]</marimo-tex></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "rEll",
+      "code_hash": "387179a1e3a355af2e09ccf187edd13d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h4 id=\"i-sampling\">(i) Sampling</h4>\n<span class=\"paragraph\">Standard root-to-leaf sampling.</span>\n<ol>\n<li>Sample <marimo-tex class=\"arithmatex\">||(x_1 \\sim p(x_1)||)</marimo-tex>.</li>\n<li>Given <marimo-tex class=\"arithmatex\">||(x_i||)</marimo-tex>, sample neighbor <marimo-tex class=\"arithmatex\">||(x_j||)</marimo-tex> with probs proportional to <marimo-tex class=\"arithmatex\">||(\\lambda^{x_j} \\psi(x_i, x_j) \\times \\text{incoming msgs from below}||)</marimo-tex>.</li>\n</ol></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "9605677c4b40106179a8455c14818886",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-mermaid data-diagram='&quot;&#92;n    graph TD&#92;n        x1((x1))&#92;n        x3((x3))&#92;n        x4((x4))&#92;n        x5((x5))&#92;n        x6((x6))&#92;n        x7((x7))&#92;n        x8((x8))&#92;n        x9((x9))&#92;n&#92;n        f1[f1]&#92;n        f2[f2]&#92;n        f3[f3]&#92;n        f4[f4]&#92;n&#92;n        x1 --- f1&#92;n        x3 --- f1&#92;n&#92;n        x1 --- f2&#92;n        x4 --- f2&#92;n        x5 --- f2 &#92;n&#92;n        x1 --- f3&#92;n        x6 --- f3&#92;n        x7 --- f3&#92;n&#92;n        x4 --- f4&#92;n        x8 --- f4&#92;n        x9 --- f4&#92;n    &quot;'></marimo-mermaid>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "711bc644c10f428dcb9173fba9be507c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-mermaid data-diagram='&quot;&#92;n    graph TD&#92;n        x1((x1)) --- f1[f1] --- x3((x3))&#92;n        x1 --- f2[f2]&#92;n        f2 --- x4((x4))&#92;n        f2 --- x5((x5))&#92;n        x4 --- f4[f4]&#92;n        f4 --- x8((x8))&#92;n        f4 --- x9((x9))&#92;n&#92;n        x1 --- f3[f3]&#92;n        f3 --- x6((x6))&#92;n        f3 --- x7((x7))&#92;n    &quot;'></marimo-mermaid>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "ab1a64b5cd24d45181dfbb26ec3d69b3",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-mermaid data-diagram='&quot;&#92;n    graph TD&#92;n        x1((x1)); x2((x2)); x3((x3)); x4((x4))&#92;n        F[P]&#92;n        F --- x1; F --- x2; F --- x3; F --- x4&#92;n        style F fill:#eee,stroke:#333,shape:rect&#92;n    &quot;'></marimo-mermaid>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZHCJ",
+      "code_hash": "c2b44a1f58ae438ced04deb8e8050c2e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-mermaid data-diagram='&quot;&#92;n    graph TD&#92;n        x1((x1)); x2((x2)); x3((x3)); x4((x4))&#92;n        f1[f1]; f2[f2]; f3[f3]; f4[f4]&#92;n        f1 --- x1&#92;n        f2 --- x1; f2 --- x2&#92;n        f3 --- x1; f3 --- x2; f3 --- x3&#92;n        f4 --- x1; f4 --- x2; f4 --- x3; f4 --- x4&#92;n        style f1 fill:#eee,stroke:#333,shape:rect&#92;n        style f2 fill:#eee,stroke:#333,shape:rect&#92;n        style f3 fill:#eee,stroke:#333,shape:rect&#92;n        style f4 fill:#eee,stroke:#333,shape:rect&#92;n    &quot;'></marimo-mermaid>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "qnkX",
+      "code_hash": "a2dbdb5e6c7438242f187c43bc188946",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-mermaid data-diagram='&quot;&#92;n    graph LR&#92;n        x1((x1)) --- f2[f2] --- x2((x2)) --- f3[f3] --- x3((x3)) --- f4[f4] --- x4((x4))&#92;n        f1[f1] --- x1&#92;n        style f1 fill:#eee,stroke:#333,shape:rect&#92;n        style f2 fill:#eee,stroke:#333,shape:rect&#92;n        style f3 fill:#eee,stroke:#333,shape:rect&#92;n        style f4 fill:#eee,stroke:#333,shape:rect&#92;n    &quot;'></marimo-mermaid>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Vxnm",
+      "code_hash": "7679c00322f26cae98a5d7c0a2d87b3a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-mermaid data-diagram='&quot;&#92;n    graph TD&#92;n        y1((y1)); y2((y2)); y3((y3)); y4((y4))&#92;n        x1((x1)); x2((x2)); x3((x3)); x4((x4))&#92;n&#92;n        f_init[&#92;&quot;p(y1)&#92;&quot;] --- y1&#92;n&#92;n        y1 --- f_t1[trans] --- y2&#92;n        y2 --- f_t2[trans] --- y3&#92;n        y3 --- f_t3[trans] --- y4&#92;n&#92;n        y1 --- f_e1[emit] --- x1&#92;n        y2 --- f_e2[emit] --- x2&#92;n        y3 --- f_e3[emit] --- x3&#92;n        y4 --- f_e4[emit] --- x4&#92;n&#92;n    &quot;'></marimo-mermaid>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ulZA",
+      "code_hash": "2cb8c33b29726e63ff60fbf0651f3639",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-mermaid data-diagram='&quot;&#92;n    graph TD&#92;n        U((Univ)) --&gt; D((&#92;&quot;Tazza D&#x27;Oro&#92;&quot;))&#92;n        U --&gt; C((Coffee))&#92;n        D --&gt; C&#92;n        C --&gt; T((Theorems))&#92;n        C --&gt; P((Papers))&#92;n        P --&gt; R((Propose))&#92;n        P --&gt; G((Graduate))&#92;n        R --&gt; G&#92;n&#92;n        style U fill:#fff,stroke:#333&#92;n        style D fill:#fff,stroke:#333&#92;n        style C fill:#fff,stroke:#333&#92;n        style T fill:#fff,stroke:#333&#92;n        style P fill:#fff,stroke:#333&#92;n        style R fill:#fff,stroke:#333&#92;n        style G fill:#fff,stroke:#333&#92;n    &quot;'></marimo-mermaid>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Pvdt",
+      "code_hash": "2522800df9cee9526738f71cd65a7f29",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h4 id=\"calculated-results\">Calculated Results:</h4>\n<ul>\n<li><strong>(a) P(G=T | C=F)</strong> = 0.4880</li>\n<li><strong>(b) P(G=T | D=T)</strong> = 0.5590</li>\n<li><strong>(c) P(C=T)</strong> = 0.3545</li>\n<li><strong>(d) P(P=T | T=T)</strong> = 0.6781</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "dNNg",
+      "code_hash": "c666736291b335edcd05bc2b7130974f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-mermaid data-diagram='&quot;&#92;n    graph TD&#92;n        1((1)) --- 2((2))&#92;n        1 --- 3((3))&#92;n        2 --- 4((4))&#92;n        2 --- 5((5))&#92;n        3 --- 6((6))&#92;n        3 --- 7((7))&#92;n    &quot;'></marimo-mermaid>"
+          }
+        }
+      ],
+      "console": []
+    }
+  ]
+}

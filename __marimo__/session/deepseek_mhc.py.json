@@ -1,0 +1,411 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.19.4"
+  },
+  "cells": [
+    {
+      "id": "MJUe",
+      "code_hash": "90a0c58df87102cf4bab867076670217",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"the-manifold-dial-visualizing-why-deepseeks-mhc-stabilizes-deep-networks\">The Manifold Dial: Visualizing Why DeepSeek's mHC Stabilizes Deep Networks</h1>\n<span class=\"paragraph\">Interactive Demo: Explore how mHC stabilizes deep networks with the <a href=\"https://subhadipmitra.com/mhc-visualizer/\" rel=\"noopener noreferrer\" target=\"_blank\">Manifold Dial visualizer</a> \u2197</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "690620f31064a0d949c664719eb93d9b",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"nine-years-of-good-enough\">Nine Years of \u201cGood Enough\u201d</h2>\n<span class=\"paragraph\">Residual connections haven\u2019t changed since 2016. He et al. introduced them in ResNet, the formula stuck (output = layer(x) + x), and we\u2019ve been using the same thing ever since. Attention mechanisms evolved. Normalization techniques multiplied. FFN architectures got reworked a dozen times. But skip connections? Untouched.</span>\n<div class=\"language-python codehilite\"><pre><span></span><code><span class=\"n\">output</span> <span class=\"o\">=</span> <span class=\"n\">layer</span><span class=\"p\">(</span><span class=\"n\">x</span><span class=\"p\">)</span> <span class=\"o\">+</span> <span class=\"n\">x</span>\n</code></pre></div>\n<span class=\"paragraph\">It\u2019s not that nobody tried. There\u2019s been work on dense connections, highway networks, various gating mechanisms. Most added complexity without clear wins. The simple additive skip connection kept winning.\nThen Hyper-Connections came along and showed genuine improvements by expanding the residual stream - multiple parallel paths instead of one, with learned mixing between them. Promising results. But also a problem that becomes obvious only at scale: the networks become unstable during training. Loss spikes. Gradient explosions. The deeper you go, the worse it gets.\nDeepSeek\u2019s mHC paper explains why this happens and how to fix it. The fix involves projecting matrices onto something called the Birkhoff polytope using an algorithm from 1967. I built an interactive tool to visualize what\u2019s actually going on, because the equations alone don\u2019t convey how dramatic the difference is.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "7acb9b793150134a748cf7bc68bcdc1e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"what-hyper-connections-actually-do\">What Hyper-Connections Actually Do</h2>\n<span class=\"paragraph\">Standard residual: you compute a layer\u2019s output and add back the input. One stream in, one stream out.\nHyper-Connections expand this to <marimo-tex class=\"arithmatex\">||(n||)</marimo-tex> parallel streams (typically 4). Instead of simple addition, you get learned mixing matrices that control how information flows between streams:\nThree matrices per layer: one to mix the residual streams (<marimo-tex class=\"arithmatex\">||(H^{res}||)</marimo-tex>), one to aggregate streams into the layer input (<marimo-tex class=\"arithmatex\">||(H^{pre}||)</marimo-tex>), one to distribute the layer output back to streams (<marimo-tex class=\"arithmatex\">||(H^{post}||)</marimo-tex>).\nThe paper\u2019s ablation study shows <marimo-tex class=\"arithmatex\">||(H^{res}||)</marimo-tex> matters most. That\u2019s the mixing within the residual stream itself - how information from different streams combines as it flows through the network.\nMore expressivity should mean better performance, and it does. HC improves over standard residuals in their experiments. The catch is what happens when you stack 60+ layers.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "a6dae60d74bfaf2d713e2bed599d788d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"the-composite-mapping-problem\">The Composite Mapping Problem</h2>\n<span class=\"paragraph\">Each layer multiplies by its <marimo-tex class=\"arithmatex\">||(H^{res}||)</marimo-tex> matrix. Through <marimo-tex class=\"arithmatex\">||(L||)</marimo-tex> layers, the effective transformation is:\nThis product determines how signals from early layers reach later ones. With unconstrained learned matrices, small amplifications compound. A matrix with spectral norm 1.05 seems harmless. Sixty of them multiplied together? That\u2019s <marimo-tex class=\"arithmatex\">||(1.05^{60} \\approx 18||)</marimo-tex>. And real HC matrices aren\u2019t limited to 1.05.\nThe paper measured this directly. Figure 3 shows the \u201cAmax Gain Magnitude\u201d - essentially the worst-case amplification through the composite mapping. For HC at depth 64, gains can reach 10\u00b3 to 10\u2075 depending on initialization. In our toy simulation with random matrices, it\u2019s even more extreme - up to 10\u00b9\u2076. The composite mapping amplifies signals catastrophically.\nThat\u2019s why training becomes unstable. Gradients flow backward through the same composite mapping. A 3000x amplification in the forward pass means 3000x amplification in the backward pass. Gradient clipping helps, but you\u2019re fighting the architecture itself.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "4827e2a57e4969debd020ea67c89b962",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"the-fix-doubly-stochastic-matrices\">The Fix: Doubly Stochastic Matrices</h2>\n<span class=\"paragraph\">mHC constrains <marimo-tex class=\"arithmatex\">||(H^{res}||)</marimo-tex> to be doubly stochastic - all entries non-negative, all rows sum to 1, all columns sum to 1.\nWhy this specific constraint? Three properties matter:\nSpectral norm is bounded by 1. A doubly stochastic matrix cannot amplify signals. Each row summing to 1 means the weighted combination of inputs never exceeds the maximum input. No amplification, no explosion.\nClosure under multiplication. Multiply two doubly stochastic matrices and you get another doubly stochastic matrix. This is the key insight. It doesn\u2019t matter how many layers you stack - the composite mapping stays doubly stochastic, stays bounded.\nGeometric interpretation. The set of doubly stochastic matrices forms the Birkhoff polytope, which is the convex hull of permutation matrices. Every doubly stochastic matrix can be written as a weighted average of permutations. Permutations just shuffle; they don\u2019t amplify. Weighted averages of shuffles don\u2019t amplify either.\nThe result: composite gains stay near 1 regardless of depth. The paper shows mHC at depth 64 has composite gain around 1.6. Compare that to HC\u2019s explosive growth.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "15b23ddff04e9187cbbcd70ecf3595cc",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"sinkhorn-knopp-1967-meets-2025\">Sinkhorn-Knopp: 1967 Meets 2025</h2>\n<span class=\"paragraph\">To make a learned matrix doubly stochastic, mHC uses the Sinkhorn-Knopp algorithm. Published in 1967 for balancing matrices in numerical analysis, it turns out to be exactly what\u2019s needed here.\nThe algorithm is simple: exponentiate entries to make them positive, then alternate between normalizing rows and normalizing columns. Repeat until convergence. The iteration provably converges to a doubly stochastic matrix.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "571523c7ebf17f49d3a5aeaf4703c29d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"interactive-controls\">Interactive Controls</h2>\n<span class=\"paragraph\">Adjust the parameters below to see how they affect signal propagation stability.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hstk",
+      "code_hash": "91347352ccd3f1be2555e96d4d6d176d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"signal-propagation-the-explosion-problem\">Signal Propagation: The Explosion Problem</h2>\n<span class=\"paragraph\">The real issue isn't single-layer behavior - it's what happens when we <strong>compose many layers</strong>.</span>\n<span class=\"paragraph\">In a deep network, the effective transformation is:\n$<marimo-tex class=\"arithmatex\">||(H_{composite} = H_L \\cdot H_{L-1} \\cdot ... \\cdot H_1||)</marimo-tex>$</span>\n<span class=\"paragraph\">Watch the chart below: <strong>HC (red) explodes exponentially, while mHC (blue) stays bounded!</strong></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "iLit",
+      "code_hash": "5a37556874f111826cd81b6655bb1d99",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"eigenvalue-decay-the-convergence-story\">Eigenvalue Decay: The Convergence Story</h2>\n<span class=\"paragraph\">The commenter on Reddit raised an excellent point: while doubly stochastic matrices keep gains bounded,\ntheir eigenvalues (except \u03bb\u2081=1) get pushed toward zero with each multiplication.</span>\n<span class=\"paragraph\">This means the composite matrix converges toward the <strong>uniform averaging matrix</strong> (all entries = 1/n).</span>\n<span class=\"paragraph\">The chart below shows |\u03bb\u2082| (second-largest eigenvalue magnitude) - this controls the rate of convergence:</span>\n<ul>\n<li><strong>Baseline (Identity)</strong>: |\u03bb\u2082| = 1 forever (no mixing)</li>\n<li><strong>HC</strong>: Eigenvalues can grow unboundedly</li>\n<li><strong>mHC</strong>: |\u03bb\u2082| &lt; 1, decays toward 0 (gradual averaging)</li>\n</ul>\n<span class=\"paragraph\">This is the fundamental tradeoff: <strong>bounded gains</strong> (stable training) vs <strong>information mixing</strong> (convergence to uniformity).</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "DnEU",
+      "code_hash": "365b5e66e115851cd57afb6533854fc7",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"the-manifold-dial-varying-sinkhorn-iterations\">The Manifold Dial: Varying Sinkhorn Iterations</h2>\n<span class=\"paragraph\">Watch how the matrix transforms as we increase iterations:</span>\n<ul>\n<li><strong>k=0</strong>: Raw random matrix (same as HC) - unconstrained</li>\n<li><strong>k=1-5</strong>: Partial projection, rapid stabilization</li>\n<li><strong>k=10-20</strong>: Fully doubly stochastic</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "aLJB",
+      "code_hash": "e8bbfe7b5ffbbaee5fabcdd65634ca4c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"community-discussion-convergence-to-uniformity\">Community Discussion: Convergence to Uniformity</h2>\n<span class=\"paragraph\">A great question was raised in a discussion regarding the math behind this:</span>\n<blockquote>\n<span class=\"paragraph\"><strong>Question:</strong> \"Something I was interested in was seeing what multiplying 64 of these matrices look like? On the one hand, they are closed under multiplication, but the eigenvalues are systematically pushed down to 0 except one that is by construction always equal to 1. So do the last layers necessarily only have the average of the first layer? (the matrix with 1/N on each entry)\"</span>\n<span class=\"paragraph\"><strong>Subhadip Mitra:</strong> \"Products of doubly stochastic matrices do converge to the uniform 1/N matrix. eigenvalue 1 sticks around (eigenvector = all ones) but everything else has |\u03bb| &lt; 1 so it decays toward zero. classic ergodicity stuff</span>\n<span class=\"paragraph\">but a few things worth noting:</span>\n<ol>\n<li>rate of convergence matters\nat 64 layers with random DS matrices we're not actually AT the uniform matrix yet - somewhere in between. depends on the spectral gap (second largest eigenvalue).</li>\n<li>the real mHC arch isnt pure matrix multiplication\nLooking at the pytorch impl, the actual update is more like:\n<code>output = x + \u03b1 * (H @ x) + layer_output</code>\nso you've got:\n- residual identity term (<code>+ x</code>) preserving original signal\n- tiny <marimo-tex class=\"arithmatex\">||(\u03b1||)</marimo-tex> (init at 0.01) so its basically identity + small perturbation\n- fresh info injection every layer from the actual layer computation\neven if the <marimo-tex class=\"arithmatex\">||(H||)</marimo-tex> products trend toward averaging, new signal keeps getting added\"</li>\n</ol>\n</blockquote>\n<span class=\"paragraph\">Let's visualize exactly what the composite matrix looks like over 64 layers to see this convergence to <marimo-tex class=\"arithmatex\">||(1/N||)</marimo-tex> in action!</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "AjVT",
+      "code_hash": "16377c94081e340d0bd1fded8ad9074a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"what-i-find-interesting\">What I Find Interesting</h2>\n<span class=\"paragraph\">A few things stood out reading this paper:\nThe instability isn\u2019t subtle. Three orders of magnitude in signal amplification isn\u2019t a minor numerical issue you can tune away. It\u2019s a fundamental architectural problem. HC was probably hitting this wall in ways that weren\u2019t always diagnosed correctly.\nThe fix comes from constraints, not regularization. You could try to penalize large gains with loss terms, but that\u2019s fighting the architecture. Constraining to doubly stochastic matrices makes explosion structurally impossible. The geometry of the constraint does the work.\nThe 1967 algorithm works. Machine learning keeps rediscovering techniques from optimization and numerical analysis. Sinkhorn-Knopp wasn\u2019t designed for neural networks, but it slots in perfectly here. There\u2019s probably more useful machinery sitting in old papers.\nMacro-architecture gets less attention than it deserves. We spend enormous effort on attention variants and FFN structures, but how layers connect to each other - the topology of the network - might have similar headroom for improvement.</span>\n<h2 id=\"code\">Code</h2>\n<span class=\"paragraph\">I implemented both the visualization and a PyTorch module you can actually use:</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "NCOB",
+      "code_hash": "3adb9125507cb21a6bbc65c60541c398",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\">The repository includes the interactive demo source, Python implementation with tests, and a Colab notebook if you want to experiment without local setup.</span>\n<h2 id=\"links\">Links</h2>\n<ul>\n<li><a href=\"https://subhadipmitra.com/mhc-visualizer\" rel=\"noopener noreferrer\" target=\"_blank\">Interactive Demo</a> - the manifold dial visualization</li>\n<li><a href=\"https://github.com/bassrehab/mhc-visualizer\" rel=\"noopener noreferrer\" target=\"_blank\">GitHub Repository</a> - full source, PyTorch module, tests</li>\n<li><a href=\"https://colab.research.google.com/github/bassrehab/mhc-visualizer/blob/main/notebook/mhc_exploration.ipynb\" rel=\"noopener noreferrer\" target=\"_blank\">Colab Notebook</a> - run it yourself</li>\n<li><a href=\"https://arxiv.org/abs/2512.24880\" rel=\"noopener noreferrer\" target=\"_blank\">mHC Paper</a> - the original DeepSeek paper</li>\n</ul>\n<h2 id=\"references\">References</h2>\n<span class=\"paragraph\">Xie, Z., Wei, Y., Cao, H., et al. (2025). mHC: Manifold-Constrained Hyper-Connections. arXiv preprint arXiv:2512.24880.\nHe, K., Zhang, X., Ren, S., &amp; Sun, J. (2016). Deep Residual Learning for Image Recognition. CVPR.\nSinkhorn, R., &amp; Knopp, P. (1967). Concerning nonnegative matrices and doubly stochastic matrices. Pacific Journal of Mathematics, 21(2), 343-348.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hbol",
+      "code_hash": "3d3f16b97bc1806700c6ce7fe116a8be",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "c378c7c738ce86bc807a71ad2743ed4e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "506e556b6f38249913f861b6c4eeaec0",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<div style='display: flex;flex: 1;flex-direction: row;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 2rem'><marimo-ui-element object-id='RGSE-0' random-id='531a8f4d-5dd8-d02b-401d-8639908cb846'><marimo-slider data-initial-value='20' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Sinkhorn Iterations (k)&lt;/span&gt;&lt;/span&gt;&quot;' data-start='0' data-stop='30' data-step='1' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element><marimo-ui-element object-id='RGSE-1' random-id='88740a9a-8593-0fda-785e-34b11933382c'><marimo-slider data-initial-value='64' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Network Depth&lt;/span&gt;&lt;/span&gt;&quot;' data-start='10' data-stop='200' data-step='10' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element><marimo-ui-element object-id='RGSE-2' random-id='0a8638bc-cf7e-5f26-bcb9-b91a638186cc'><marimo-dropdown data-initial-value='[&quot;4&quot;]' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Number of Streams (n)&lt;/span&gt;&lt;/span&gt;&quot;' data-options='[&quot;2&quot;,&quot;4&quot;,&quot;8&quot;]' data-allow-select-none='false' data-searchable='false' data-full-width='false'></marimo-dropdown></marimo-ui-element><marimo-ui-element object-id='RGSE-3' random-id='303a2c27-b7e0-2d7c-6048-f68ceabbe089'><marimo-number data-initial-value='42' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Random Seed&lt;/span&gt;&lt;/span&gt;&quot;' data-start='0' data-stop='10000' data-debounce='false' data-full-width='false' data-disabled='false'></marimo-number></marimo-ui-element></div>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "591a2c47fbac6a98a3f3108a6fd22e2e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<div style='display: flex;flex: 1;flex-direction: row;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 1rem'><marimo-ui-element object-id='Kclp-0' random-id='a7e58254-4756-71fc-65d6-a1435147d2a1'><marimo-button data-initial-value='0' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Default&lt;/span&gt;&lt;/span&gt;&quot;' data-kind='&quot;neutral&quot;' data-disabled='false' data-full-width='false'></marimo-button></marimo-ui-element><marimo-ui-element object-id='Kclp-1' random-id='fb407809-d46a-2e98-ecb5-5dff50be6228'><marimo-button data-initial-value='0' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;HC Explosion (k=0)&lt;/span&gt;&lt;/span&gt;&quot;' data-kind='&quot;neutral&quot;' data-disabled='false' data-full-width='false'></marimo-button></marimo-ui-element><marimo-ui-element object-id='Kclp-2' random-id='358fdfea-1ee5-c032-acb4-484360eb2a53'><marimo-button data-initial-value='0' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Minimal Projection (k=5)&lt;/span&gt;&lt;/span&gt;&quot;' data-kind='&quot;neutral&quot;' data-disabled='false' data-full-width='false'></marimo-button></marimo-ui-element><marimo-ui-element object-id='Kclp-3' random-id='6c493d5f-8598-9f08-d91b-f58e4615c6d6'><marimo-button data-initial-value='0' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Deep Network (200)&lt;/span&gt;&lt;/span&gt;&quot;' data-kind='&quot;neutral&quot;' data-disabled='false' data-full-width='false'></marimo-button></marimo-ui-element><marimo-ui-element object-id='Kclp-4' random-id='313a4305-671f-4688-a78c-5b6fad8a3651'><marimo-button data-initial-value='0' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Randomize Seed&lt;/span&gt;&lt;/span&gt;&quot;' data-kind='&quot;neutral&quot;' data-disabled='false' data-full-width='false'></marimo-button></marimo-ui-element></div>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "bc5b6cc8d025d7402ed5b90c59321013",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "8d5e7d6be7c128f57b354b8c9c58c30f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-ui-element object-id='nWHF-0' random-id='1b0dc96d-776f-e70c-7211-074512656aa0'><marimo-vega data-initial-value='{}' data-label='null' data-spec='{&quot;config&quot;:{&quot;view&quot;:{&quot;continuousWidth&quot;:300,&quot;continuousHeight&quot;:300}},&quot;data&quot;:{&quot;url&quot;:&quot;./@file/6898-28750051-2ZdTCmJF.arrow&quot;,&quot;format&quot;:{&quot;type&quot;:&quot;arrow&quot;}},&quot;mark&quot;:{&quot;type&quot;:&quot;line&quot;,&quot;strokeWidth&quot;:2.5},&quot;encoding&quot;:{&quot;color&quot;:{&quot;field&quot;:&quot;method&quot;,&quot;legend&quot;:{&quot;title&quot;:&quot;Method&quot;},&quot;scale&quot;:{&quot;domain&quot;:[&quot;BASELINE&quot;,&quot;HC&quot;,&quot;mHC&quot;],&quot;range&quot;:[&quot;#10b981&quot;,&quot;#ef4444&quot;,&quot;#3b82f6&quot;]},&quot;type&quot;:&quot;nominal&quot;},&quot;strokeDash&quot;:{&quot;field&quot;:&quot;method&quot;,&quot;legend&quot;:null,&quot;scale&quot;:{&quot;domain&quot;:[&quot;BASELINE&quot;,&quot;HC&quot;,&quot;mHC&quot;],&quot;range&quot;:[[1,0],[1,0],[1,0]]},&quot;type&quot;:&quot;nominal&quot;},&quot;x&quot;:{&quot;field&quot;:&quot;layer&quot;,&quot;scale&quot;:{&quot;domain&quot;:[1,64]},&quot;title&quot;:&quot;Layer Depth&quot;,&quot;type&quot;:&quot;quantitative&quot;},&quot;y&quot;:{&quot;field&quot;:&quot;gain&quot;,&quot;scale&quot;:{&quot;type&quot;:&quot;log&quot;},&quot;title&quot;:&quot;Composite Forward Gain (log scale)&quot;,&quot;type&quot;:&quot;quantitative&quot;}},&quot;height&quot;:400,&quot;title&quot;:&quot;The Manifold Dial: HC Explosion vs mHC Stability&quot;,&quot;width&quot;:700,&quot;&#36;schema&quot;:&quot;https://vega.github.io/schema/vega-lite/v6.1.0.json&quot;}' data-chart-selection='true' data-field-selection='true' data-embed-options='{}'></marimo-vega></marimo-ui-element>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZHCJ",
+      "code_hash": "a07c23d91568721f2c10a94537aaa7bd",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<marimo-ui-element object-id='ZHCJ-0' random-id='5073f7f7-e4e1-eeb8-b9b7-0725a0032f7d'><marimo-vega data-initial-value='{}' data-label='null' data-spec='{&quot;config&quot;:{&quot;view&quot;:{&quot;continuousWidth&quot;:300,&quot;continuousHeight&quot;:300}},&quot;data&quot;:{&quot;url&quot;:&quot;./@file/6946-28750051-QWplySMg.arrow&quot;,&quot;format&quot;:{&quot;type&quot;:&quot;arrow&quot;}},&quot;mark&quot;:{&quot;type&quot;:&quot;line&quot;,&quot;strokeWidth&quot;:2.5},&quot;encoding&quot;:{&quot;color&quot;:{&quot;field&quot;:&quot;method&quot;,&quot;legend&quot;:{&quot;title&quot;:&quot;Method&quot;},&quot;scale&quot;:{&quot;domain&quot;:[&quot;BASELINE&quot;,&quot;HC&quot;,&quot;mHC&quot;],&quot;range&quot;:[&quot;#10b981&quot;,&quot;#ef4444&quot;,&quot;#3b82f6&quot;]},&quot;type&quot;:&quot;nominal&quot;},&quot;x&quot;:{&quot;field&quot;:&quot;layer&quot;,&quot;scale&quot;:{&quot;domain&quot;:[1,64]},&quot;title&quot;:&quot;Layer Depth&quot;,&quot;type&quot;:&quot;quantitative&quot;},&quot;y&quot;:{&quot;field&quot;:&quot;eigenvalue&quot;,&quot;scale&quot;:{&quot;domain&quot;:[1e-16,10000000000.0],&quot;type&quot;:&quot;log&quot;},&quot;title&quot;:&quot;|\u03bb\u2082| Second Eigenvalue (log scale)&quot;,&quot;type&quot;:&quot;quantitative&quot;}},&quot;height&quot;:300,&quot;title&quot;:&quot;Eigenvalue Decay: Convergence to Uniform Matrix&quot;,&quot;width&quot;:700,&quot;&#36;schema&quot;:&quot;https://vega.github.io/schema/vega-lite/v6.1.0.json&quot;}' data-chart-selection='true' data-field-selection='true' data-embed-options='{}'></marimo-vega></marimo-ui-element>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ROlb",
+      "code_hash": "9914b86128ea90f062c1e86f581933b9",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "qnkX",
+      "code_hash": "bee415b841b0e65e2234eae6e22b0704",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"stability-metrics-at-layer-64\">Stability Metrics at Layer 64</h3>\n<table>\n<thead>\n<tr>\n<th>Metric</th>\n<th>Baseline</th>\n<th>HC (Unconstrained)</th>\n<th>mHC (Sinkhorn)</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Forward Gain</td>\n<td>1.0000</td>\n<td>5.20e+16</td>\n<td>1.0000</td>\n</tr>\n<tr>\n<td>Backward Gain</td>\n<td>1.0000</td>\n<td>5.94e+14</td>\n<td>1.0000</td>\n</tr>\n<tr>\n<td>Spectral Norm</td>\n<td>1.0000</td>\n<td>6.20e+15</td>\n<td>1.0000</td>\n</tr>\n<tr>\n<td>|\u03bb\u2081| (largest)</td>\n<td>1.0000</td>\n<td>6.20e+15</td>\n<td>1.0000</td>\n</tr>\n<tr>\n<td>|\u03bb\u2082| (2nd)</td>\n<td>1.0000</td>\n<td>3.06e+09</td>\n<td>0.0000</td>\n</tr>\n<tr>\n<td>Row Sum Dev</td>\n<td>0.00e+00</td>\n<td>5.20e+16</td>\n<td>5.82e-10</td>\n</tr>\n<tr>\n<td>Col Sum Dev</td>\n<td>0.00e+00</td>\n<td>5.94e+14</td>\n<td>8.88e-16</td>\n</tr>\n</tbody>\n</table></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TqIu",
+      "code_hash": "b01f62a98fcf40638c479ac55ce1ac5e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "application/vnd.vegalite.v5+json": "{\n  \"$schema\": \"https://vega.github.io/schema/vega-lite/v6.1.0.json\",\n  \"config\": {\n    \"view\": {\n      \"continuousHeight\": 300,\n      \"continuousWidth\": 300\n    }\n  },\n  \"datasets\": {\n    \"data-077d985b130777f0f22edcea408fc5b1\": [\n      {\n        \"col\": \"0\",\n        \"row\": \"0\",\n        \"type\": \"HC\",\n        \"value\": 0.30471707975443135\n      },\n      {\n        \"col\": \"1\",\n        \"row\": \"0\",\n        \"type\": \"HC\",\n        \"value\": -1.0399841062404955\n      },\n      {\n        \"col\": \"2\",\n        \"row\": \"0\",\n        \"type\": \"HC\",\n        \"value\": 0.7504511958064572\n      },\n      {\n        \"col\": \"3\",\n        \"row\": \"0\",\n        \"type\": \"HC\",\n        \"value\": 0.9405647163912139\n      },\n      {\n        \"col\": \"0\",\n        \"row\": \"1\",\n        \"type\": \"HC\",\n        \"value\": -1.9510351886538364\n      },\n      {\n        \"col\": \"1\",\n        \"row\": \"1\",\n        \"type\": \"HC\",\n        \"value\": -1.302179506862318\n      },\n      {\n        \"col\": \"2\",\n        \"row\": \"1\",\n        \"type\": \"HC\",\n        \"value\": 0.12784040316728537\n      },\n      {\n        \"col\": \"3\",\n        \"row\": \"1\",\n        \"type\": \"HC\",\n        \"value\": -0.3162425923435822\n      },\n      {\n        \"col\": \"0\",\n        \"row\": \"2\",\n        \"type\": \"HC\",\n        \"value\": -0.016801157504288795\n      },\n      {\n        \"col\": \"1\",\n        \"row\": \"2\",\n        \"type\": \"HC\",\n        \"value\": -0.85304392757358\n      },\n      {\n        \"col\": \"2\",\n        \"row\": \"2\",\n        \"type\": \"HC\",\n        \"value\": 0.8793979748628286\n      },\n      {\n        \"col\": \"3\",\n        \"row\": \"2\",\n        \"type\": \"HC\",\n        \"value\": 0.7777919354289483\n      },\n      {\n        \"col\": \"0\",\n        \"row\": \"3\",\n        \"type\": \"HC\",\n        \"value\": 0.06603069756121605\n      },\n      {\n        \"col\": \"1\",\n        \"row\": \"3\",\n        \"type\": \"HC\",\n        \"value\": 1.1272412069680329\n      },\n      {\n        \"col\": \"2\",\n        \"row\": \"3\",\n        \"type\": \"HC\",\n        \"value\": 0.4675093422520456\n      },\n      {\n        \"col\": \"3\",\n        \"row\": \"3\",\n        \"type\": \"HC\",\n        \"value\": -0.8592924628832382\n      }\n    ],\n    \"data-46bc894a5353e386e57dfec074013cd0\": [\n      {\n        \"col\": \"0\",\n        \"row\": \"0\",\n        \"type\": \"mHC\",\n        \"value\": 0.36079296113615306\n      },\n      {\n        \"col\": \"1\",\n        \"row\": \"0\",\n        \"type\": \"mHC\",\n        \"value\": 0.08480689623251658\n      },\n      {\n        \"col\": \"2\",\n        \"row\": \"0\",\n        \"type\": \"mHC\",\n        \"value\": 0.21880562908723383\n      },\n      {\n        \"col\": \"3\",\n        \"row\": \"0\",\n        \"type\": \"mHC\",\n        \"value\": 0.3355945135439799\n      },\n      {\n        \"col\": \"0\",\n        \"row\": \"1\",\n        \"type\": \"mHC\",\n        \"value\": 0.11966757271555452\n      },\n      {\n        \"col\": \"1\",\n        \"row\": \"1\",\n        \"type\": \"mHC\",\n        \"value\": 0.20650964597491137\n      },\n      {\n        \"col\": \"2\",\n        \"row\": \"1\",\n        \"type\": \"mHC\",\n        \"value\": 0.37157051783649553\n      },\n      {\n        \"col\": \"3\",\n        \"row\": \"1\",\n        \"type\": \"mHC\",\n        \"value\": 0.30225226347299017\n      },\n      {\n        \"col\": \"0\",\n        \"row\": \"2\",\n        \"type\": \"mHC\",\n        \"value\": 0.2913265087403427\n      },\n      {\n        \"col\": \"1\",\n        \"row\": \"2\",\n        \"type\": \"mHC\",\n        \"value\": 0.11386068746316685\n      },\n      {\n        \"col\": \"2\",\n        \"row\": \"2\",\n        \"type\": \"mHC\",\n        \"value\": 0.27721384057855025\n      },\n      {\n        \"col\": \"3\",\n        \"row\": \"2\",\n        \"type\": \"mHC\",\n        \"value\": 0.31759896321784054\n      },\n      {\n        \"col\": \"0\",\n        \"row\": \"3\",\n        \"type\": \"mHC\",\n        \"value\": 0.22821295740794964\n      },\n      {\n        \"col\": \"1\",\n        \"row\": \"3\",\n        \"type\": \"mHC\",\n        \"value\": 0.5948227703294052\n      },\n      {\n        \"col\": \"2\",\n        \"row\": \"3\",\n        \"type\": \"mHC\",\n        \"value\": 0.13241001249772036\n      },\n      {\n        \"col\": \"3\",\n        \"row\": \"3\",\n        \"type\": \"mHC\",\n        \"value\": 0.04455425976518931\n      }\n    ]\n  },\n  \"hconcat\": [\n    {\n      \"data\": {\n        \"name\": \"data-077d985b130777f0f22edcea408fc5b1\"\n      },\n      \"encoding\": {\n        \"color\": {\n          \"field\": \"value\",\n          \"legend\": {\n            \"title\": \"Value\"\n          },\n          \"scale\": {\n            \"domain\": [\n              -2,\n              2\n            ],\n            \"scheme\": \"redblue\"\n          },\n          \"type\": \"quantitative\"\n        },\n        \"tooltip\": [\n          {\n            \"field\": \"row\",\n            \"type\": \"nominal\"\n          },\n          {\n            \"field\": \"col\",\n            \"type\": \"nominal\"\n          },\n          {\n            \"field\": \"value\",\n            \"format\": \".3f\",\n            \"type\": \"quantitative\"\n          }\n        ],\n        \"x\": {\n          \"axis\": {\n            \"labelAngle\": 0\n          },\n          \"field\": \"col\",\n          \"title\": \"Column\",\n          \"type\": \"ordinal\"\n        },\n        \"y\": {\n          \"field\": \"row\",\n          \"title\": \"Row\",\n          \"type\": \"ordinal\"\n        }\n      },\n      \"height\": 180,\n      \"mark\": {\n        \"type\": \"rect\"\n      },\n      \"title\": \"HC (Random)\",\n      \"width\": 180\n    },\n    {\n      \"data\": {\n        \"name\": \"data-46bc894a5353e386e57dfec074013cd0\"\n      },\n      \"encoding\": {\n        \"color\": {\n          \"field\": \"value\",\n          \"legend\": {\n            \"title\": \"Value\"\n          },\n          \"scale\": {\n            \"domain\": [\n              0,\n              0.6\n            ],\n            \"scheme\": \"blues\"\n          },\n          \"type\": \"quantitative\"\n        },\n        \"tooltip\": [\n          {\n            \"field\": \"row\",\n            \"type\": \"nominal\"\n          },\n          {\n            \"field\": \"col\",\n            \"type\": \"nominal\"\n          },\n          {\n            \"field\": \"value\",\n            \"format\": \".3f\",\n            \"type\": \"quantitative\"\n          }\n        ],\n        \"x\": {\n          \"axis\": {\n            \"labelAngle\": 0\n          },\n          \"field\": \"col\",\n          \"title\": \"Column\",\n          \"type\": \"ordinal\"\n        },\n        \"y\": {\n          \"field\": \"row\",\n          \"title\": \"Row\",\n          \"type\": \"ordinal\"\n        }\n      },\n      \"height\": 180,\n      \"mark\": {\n        \"type\": \"rect\"\n      },\n      \"title\": \"mHC (k=20)\",\n      \"width\": 180\n    }\n  ],\n  \"usermeta\": {\n    \"embedOptions\": {}\n  }\n}"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Vxnm",
+      "code_hash": "41123e6a1fc78a289f13270445e0947d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><strong>Row/Column Sums:</strong></span>\n<table>\n<thead>\n<tr>\n<th></th>\n<th>HC</th>\n<th>mHC</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Row Sums</td>\n<td>[ 0.96 -3.44  0.79  0.8 ]</td>\n<td>[1. 1. 1. 1.]</td>\n</tr>\n<tr>\n<td>Col Sums</td>\n<td>[-1.6  -2.07  2.23  0.54]</td>\n<td>[1. 1. 1. 1.]</td>\n</tr>\n<tr>\n<td>Max Row Dev from 1</td>\n<td>4.4416</td>\n<td>2.64e-13</td>\n</tr>\n<tr>\n<td>Max Col Dev from 1</td>\n<td>3.0680</td>\n<td>1.11e-16</td>\n</tr>\n</tbody>\n</table>\n<span class=\"paragraph\">Notice how mHC row/column sums are all ~1.0 (doubly stochastic)!</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ulZA",
+      "code_hash": "402ff0e9110fb75f54b66343198665fb",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "application/vnd.vegalite.v5+json": "{\n  \"$schema\": \"https://vega.github.io/schema/vega-lite/v6.1.0.json\",\n  \"config\": {\n    \"view\": {\n      \"continuousHeight\": 300,\n      \"continuousWidth\": 300\n    }\n  },\n  \"data\": {\n    \"name\": \"data-d6a0805d7b8fdf6eff0e4fa42d2ffe8f\"\n  },\n  \"datasets\": {\n    \"data-d6a0805d7b8fdf6eff0e4fa42d2ffe8f\": [\n      {\n        \"col\": \"0\",\n        \"k\": \"k=0\",\n        \"row\": \"0\",\n        \"value\": 0.30471707975443135\n      },\n      {\n        \"col\": \"1\",\n        \"k\": \"k=0\",\n        \"row\": \"0\",\n        \"value\": -1.0399841062404955\n      },\n      {\n        \"col\": \"2\",\n        \"k\": \"k=0\",\n        \"row\": \"0\",\n        \"value\": 0.7504511958064572\n      },\n      {\n        \"col\": \"3\",\n        \"k\": \"k=0\",\n        \"row\": \"0\",\n        \"value\": 0.9405647163912139\n      },\n      {\n        \"col\": \"0\",\n        \"k\": \"k=0\",\n        \"row\": \"1\",\n        \"value\": -1.9510351886538364\n      },\n      {\n        \"col\": \"1\",\n        \"k\": \"k=0\",\n        \"row\": \"1\",\n        \"value\": -1.302179506862318\n      },\n      {\n        \"col\": \"2\",\n        \"k\": \"k=0\",\n        \"row\": \"1\",\n        \"value\": 0.12784040316728537\n      },\n      {\n        \"col\": \"3\",\n        \"k\": \"k=0\",\n        \"row\": \"1\",\n        \"value\": -0.3162425923435822\n      },\n      {\n        \"col\": \"0\",\n        \"k\": \"k=0\",\n        \"row\": \"2\",\n        \"value\": -0.016801157504288795\n      },\n      {\n        \"col\": \"1\",\n        \"k\": \"k=0\",\n        \"row\": \"2\",\n        \"value\": -0.85304392757358\n      },\n      {\n        \"col\": \"2\",\n        \"k\": \"k=0\",\n        \"row\": \"2\",\n        \"value\": 0.8793979748628286\n      },\n      {\n        \"col\": \"3\",\n        \"k\": \"k=0\",\n        \"row\": \"2\",\n        \"value\": 0.7777919354289483\n      },\n      {\n        \"col\": \"0\",\n        \"k\": \"k=0\",\n        \"row\": \"3\",\n        \"value\": 0.06603069756121605\n      },\n      {\n        \"col\": \"1\",\n        \"k\": \"k=0\",\n        \"row\": \"3\",\n        \"value\": 1.1272412069680329\n      },\n      {\n        \"col\": \"2\",\n        \"k\": \"k=0\",\n        \"row\": \"3\",\n        \"value\": 0.4675093422520456\n      },\n      {\n        \"col\": \"3\",\n        \"k\": \"k=0\",\n        \"row\": \"3\",\n        \"value\": -0.8592924628832382\n      },\n      {\n        \"col\": \"0\",\n        \"k\": \"k=1\",\n        \"row\": \"0\",\n        \"value\": 0.3470570950875741\n      },\n      {\n        \"col\": \"1\",\n        \"k\": \"k=1\",\n        \"row\": \"0\",\n        \"value\": 0.07419348731760876\n      },\n      {\n        \"col\": \"2\",\n        \"k\": \"k=1\",\n        \"row\": \"0\",\n        \"value\": 0.22242155773703798\n      },\n      {\n        \"col\": \"3\",\n        \"k\": \"k=1\",\n        \"row\": \"0\",\n        \"value\": 0.3479154416922947\n      },\n      {\n        \"col\": \"0\",\n        \"k\": \"k=1\",\n        \"row\": \"1\",\n        \"value\": 0.10194679479063277\n      },\n      {\n        \"col\": \"1\",\n        \"k\": \"k=1\",\n        \"row\": \"1\",\n        \"value\": 0.1600033886436505\n      },\n      {\n        \"col\": \"2\",\n        \"k\": \"k=1\",\n        \"row\": \"1\",\n        \"value\": 0.33451366061506377\n      },\n      {\n        \"col\": \"3\",\n        \"k\": \"k=1\",\n        \"row\": \"1\",\n        \"value\": 0.27751255577652945\n      },\n      {\n        \"col\": \"0\",\n        \"k\": \"k=1\",\n        \"row\": \"2\",\n        \"value\": 0.2681488112182574\n      },\n      {\n        \"col\": \"1\",\n        \"k\": \"k=1\",\n        \"row\": \"2\",\n        \"value\": 0.09531503630163549\n      },\n      {\n        \"col\": \"2\",\n        \"k\": \"k=1\",\n        \"row\": \"2\",\n        \"value\": 0.26964122871401774\n      },\n      {\n        \"col\": \"3\",\n        \"k\": \"k=1\",\n        \"row\": \"2\",\n        \"value\": 0.31505830265145013\n      },\n      {\n        \"col\": \"0\",\n        \"k\": \"k=1\",\n        \"row\": \"3\",\n        \"value\": 0.2828472989035357\n      },\n      {\n        \"col\": \"1\",\n        \"k\": \"k=1\",\n        \"row\": \"3\",\n        \"value\": 0.6704880877371052\n      },\n      {\n        \"col\": \"2\",\n        \"k\": \"k=1\",\n        \"row\": \"3\",\n        \"value\": 0.17342355293388043\n      },\n      {\n        \"col\": \"3\",\n        \"k\": \"k=1\",\n        \"row\": \"3\",\n        \"value\": 0.059513699879725886\n      },\n      {\n        \"col\": \"0\",\n        \"k\": \"k=2\",\n        \"row\": \"0\",\n        \"value\": 0.3542916327192521\n      },\n      {\n        \"col\": \"1\",\n        \"k\": \"k=2\",\n        \"row\": \"0\",\n        \"value\": 0.0810096525099674\n      },\n      {\n        \"col\": \"2\",\n        \"k\": \"k=2\",\n        \"row\": \"0\",\n        \"value\": 0.21617343915626822\n      },\n      {\n        \"col\": \"3\",\n        \"k\": \"k=2\",\n        \"row\": \"0\",\n        \"value\": 0.33388975281148797\n      },\n      {\n        \"col\": \"0\",\n        \"k\": \"k=2\",\n        \"row\": \"1\",\n        \"value\": 0.11807689338087862\n      },\n      {\n        \"col\": \"1\",\n        \"k\": \"k=2\",\n        \"row\": \"1\",\n        \"value\": 0.19821272803871046\n      },\n      {\n        \"col\": \"2\",\n        \"k\": \"k=2\",\n        \"row\": \"1\",\n        \"value\": 0.36886774905479397\n      },\n      {\n        \"col\": \"3\",\n        \"k\": \"k=2\",\n        \"row\": \"1\",\n        \"value\": 0.3021644702474904\n      },\n      {\n        \"col\": \"0\",\n        \"k\": \"k=2\",\n        \"row\": \"2\",\n        \"value\": 0.28627521276474427\n      },\n      {\n        \"col\": \"1\",\n        \"k\": \"k=2\",\n        \"row\": \"2\",\n        \"value\": 0.10883793768329963\n      },\n      {\n        \"col\": \"2\",\n        \"k\": \"k=2\",\n        \"row\": \"2\",\n        \"value\": 0.2740688346407606\n      },\n      {\n        \"col\": \"3\",\n        \"k\": \"k=2\",\n        \"row\": \"2\",\n        \"value\": 0.31620462411201117\n      },\n      {\n        \"col\": \"0\",\n        \"k\": \"k=2\",\n        \"row\": \"3\",\n        \"value\": 0.24135626113512496\n      },\n      {\n        \"col\": \"1\",\n        \"k\": \"k=2\",\n        \"row\": \"3\",\n        \"value\": 0.6119396817680225\n      },\n      {\n        \"col\": \"2\",\n        \"k\": \"k=2\",\n        \"row\": \"3\",\n        \"value\": 0.14088997714817725\n      },\n      {\n        \"col\": \"3\",\n        \"k\": \"k=2\",\n        \"row\": \"3\",\n        \"value\": 0.047741152829010605\n      },\n      {\n        \"col\": \"0\",\n        \"k\": \"k=5\",\n        \"row\": \"0\",\n        \"value\": 0.3606928020790196\n      },\n      {\n        \"col\": \"1\",\n        \"k\": \"k=5\",\n        \"row\": \"0\",\n        \"value\": 0.08474977071743309\n      },\n      {\n        \"col\": \"2\",\n        \"k\": \"k=5\",\n        \"row\": \"0\",\n        \"value\": 0.2187568797299903\n      },\n      {\n        \"col\": \"3\",\n        \"k\": \"k=5\",\n        \"row\": \"0\",\n        \"value\": 0.3355546979108282\n      },\n      {\n        \"col\": \"0\",\n        \"k\": \"k=5\",\n        \"row\": \"1\",\n        \"value\": 0.11965680908541124\n      },\n      {\n        \"col\": \"1\",\n        \"k\": \"k=5\",\n        \"row\": \"1\",\n        \"value\": 0.2064092807463756\n      },\n      {\n        \"col\": \"2\",\n        \"k\": \"k=5\",\n        \"row\": \"1\",\n        \"value\": 0.3715574663394593\n      },\n      {\n        \"col\": \"3\",\n        \"k\": \"k=5\",\n        \"row\": \"1\",\n        \"value\": 0.30227313392808725\n      },\n      {\n        \"col\": \"0\",\n        \"k\": \"k=5\",\n        \"row\": \"2\",\n        \"value\": 0.2912591416144889\n      },\n      {\n        \"col\": \"1\",\n        \"k\": \"k=5\",\n        \"row\": \"2\",\n        \"value\": 0.11378926856385431\n      },\n      {\n        \"col\": \"2\",\n        \"k\": \"k=5\",\n        \"row\": \"2\",\n        \"value\": 0.2771649318595656\n      },\n      {\n        \"col\": \"3\",\n        \"k\": \"k=5\",\n        \"row\": \"2\",\n        \"value\": 0.31757601056931234\n      },\n      {\n        \"col\": \"0\",\n        \"k\": \"k=5\",\n        \"row\": \"3\",\n        \"value\": 0.22839124722108034\n      },\n      {\n        \"col\": \"1\",\n        \"k\": \"k=5\",\n        \"row\": \"3\",\n        \"value\": 0.595051679972337\n      },\n      {\n        \"col\": \"2\",\n        \"k\": \"k=5\",\n        \"row\": \"3\",\n        \"value\": 0.13252072207098475\n      },\n      {\n        \"col\": \"3\",\n        \"k\": \"k=5\",\n        \"row\": \"3\",\n        \"value\": 0.04459615759177231\n      },\n      {\n        \"col\": \"0\",\n        \"k\": \"k=10\",\n        \"row\": \"0\",\n        \"value\": 0.3607928830013936\n      },\n      {\n        \"col\": \"1\",\n        \"k\": \"k=10\",\n        \"row\": \"0\",\n        \"value\": 0.08480685167747237\n      },\n      {\n        \"col\": \"2\",\n        \"k\": \"k=10\",\n        \"row\": \"0\",\n        \"value\": 0.21880559098480878\n      },\n      {\n        \"col\": \"3\",\n        \"k\": \"k=10\",\n        \"row\": \"0\",\n        \"value\": 0.3355944823652952\n      },\n      {\n        \"col\": \"0\",\n        \"k\": \"k=10\",\n        \"row\": \"1\",\n        \"value\": 0.11966756444047162\n      },\n      {\n        \"col\": \"1\",\n        \"k\": \"k=10\",\n        \"row\": \"1\",\n        \"value\": 0.20650956792310673\n      },\n      {\n        \"col\": \"2\",\n        \"k\": \"k=10\",\n        \"row\": \"1\",\n        \"value\": 0.37157050790633595\n      },\n      {\n        \"col\": \"3\",\n        \"k\": \"k=10\",\n        \"row\": \"1\",\n        \"value\": 0.3022522799480317\n      },\n      {\n        \"col\": \"0\",\n        \"k\": \"k=10\",\n        \"row\": \"2\",\n        \"value\": 0.2913264562799918\n      },\n      {\n        \"col\": \"1\",\n        \"k\": \"k=10\",\n        \"row\": \"2\",\n        \"value\": 0.11386063179888144\n      },\n      {\n        \"col\": \"2\",\n        \"k\": \"k=10\",\n        \"row\": \"2\",\n        \"value\": 0.2772138024205301\n      },\n      {\n        \"col\": \"3\",\n        \"k\": \"k=10\",\n        \"row\": \"2\",\n        \"value\": 0.3175989453002052\n      },\n      {\n        \"col\": \"0\",\n        \"k\": \"k=10\",\n        \"row\": \"3\",\n        \"value\": 0.2282130962781429\n      },\n      {\n        \"col\": \"1\",\n        \"k\": \"k=10\",\n        \"row\": \"3\",\n        \"value\": 0.5948229486005395\n      },\n      {\n        \"col\": \"2\",\n        \"k\": \"k=10\",\n        \"row\": \"3\",\n        \"value\": 0.13241009868832512\n      },\n      {\n        \"col\": \"3\",\n        \"k\": \"k=10\",\n        \"row\": \"3\",\n        \"value\": 0.04455429238646782\n      },\n      {\n        \"col\": \"0\",\n        \"k\": \"k=20\",\n        \"row\": \"0\",\n        \"value\": 0.36079296113615306\n      },\n      {\n        \"col\": \"1\",\n        \"k\": \"k=20\",\n        \"row\": \"0\",\n        \"value\": 0.08480689623251658\n      },\n      {\n        \"col\": \"2\",\n        \"k\": \"k=20\",\n        \"row\": \"0\",\n        \"value\": 0.21880562908723383\n      },\n      {\n        \"col\": \"3\",\n        \"k\": \"k=20\",\n        \"row\": \"0\",\n        \"value\": 0.3355945135439799\n      },\n      {\n        \"col\": \"0\",\n        \"k\": \"k=20\",\n        \"row\": \"1\",\n        \"value\": 0.11966757271555452\n      },\n      {\n        \"col\": \"1\",\n        \"k\": \"k=20\",\n        \"row\": \"1\",\n        \"value\": 0.20650964597491137\n      },\n      {\n        \"col\": \"2\",\n        \"k\": \"k=20\",\n        \"row\": \"1\",\n        \"value\": 0.37157051783649553\n      },\n      {\n        \"col\": \"3\",\n        \"k\": \"k=20\",\n        \"row\": \"1\",\n        \"value\": 0.30225226347299017\n      },\n      {\n        \"col\": \"0\",\n        \"k\": \"k=20\",\n        \"row\": \"2\",\n        \"value\": 0.2913265087403427\n      },\n      {\n        \"col\": \"1\",\n        \"k\": \"k=20\",\n        \"row\": \"2\",\n        \"value\": 0.11386068746316685\n      },\n      {\n        \"col\": \"2\",\n        \"k\": \"k=20\",\n        \"row\": \"2\",\n        \"value\": 0.27721384057855025\n      },\n      {\n        \"col\": \"3\",\n        \"k\": \"k=20\",\n        \"row\": \"2\",\n        \"value\": 0.31759896321784054\n      },\n      {\n        \"col\": \"0\",\n        \"k\": \"k=20\",\n        \"row\": \"3\",\n        \"value\": 0.22821295740794964\n      },\n      {\n        \"col\": \"1\",\n        \"k\": \"k=20\",\n        \"row\": \"3\",\n        \"value\": 0.5948227703294052\n      },\n      {\n        \"col\": \"2\",\n        \"k\": \"k=20\",\n        \"row\": \"3\",\n        \"value\": 0.13241001249772036\n      },\n      {\n        \"col\": \"3\",\n        \"k\": \"k=20\",\n        \"row\": \"3\",\n        \"value\": 0.04455425976518931\n      }\n    ]\n  },\n  \"facet\": {\n    \"column\": {\n      \"field\": \"k\",\n      \"sort\": [\n        \"k=0\",\n        \"k=1\",\n        \"k=2\",\n        \"k=5\",\n        \"k=10\",\n        \"k=20\"\n      ],\n      \"title\": \"Sinkhorn Iterations\",\n      \"type\": \"nominal\"\n    }\n  },\n  \"spec\": {\n    \"encoding\": {\n      \"color\": {\n        \"field\": \"value\",\n        \"legend\": null,\n        \"scale\": {\n          \"domain\": [\n            0,\n            0.6\n          ],\n          \"scheme\": \"blues\"\n        },\n        \"type\": \"quantitative\"\n      },\n      \"tooltip\": [\n        {\n          \"field\": \"row\",\n          \"type\": \"nominal\"\n        },\n        {\n          \"field\": \"col\",\n          \"type\": \"nominal\"\n        },\n        {\n          \"field\": \"value\",\n          \"format\": \".3f\",\n          \"type\": \"quantitative\"\n        }\n      ],\n      \"x\": {\n        \"axis\": {\n          \"labels\": false\n        },\n        \"field\": \"col\",\n        \"title\": null,\n        \"type\": \"ordinal\"\n      },\n      \"y\": {\n        \"axis\": {\n          \"labels\": false\n        },\n        \"field\": \"row\",\n        \"title\": null,\n        \"type\": \"ordinal\"\n      }\n    },\n    \"height\": 100,\n    \"mark\": {\n      \"type\": \"rect\"\n    },\n    \"width\": 100\n  },\n  \"title\": \"The Manifold Dial: Sinkhorn Iterations Transform Random to Doubly Stochastic\",\n  \"usermeta\": {\n    \"embedOptions\": {}\n  }\n}"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ecfG",
+      "code_hash": "5d48992c68f48d79437f1d39b47324b9",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Pvdt",
+      "code_hash": "74b278a03ecf0c84de5f831c562c32b4",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZBYS",
+      "code_hash": "c6d0f4d5b1b52b1889b27d71a72757b5",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nHfw",
+      "code_hash": "97f48bfc101721d7261f1905afcc3585",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "xXTn",
+      "code_hash": "ea82021d7c8b8ed70032756c16390da9",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<div style='display: flex;flex: 1;flex-direction: column;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 0.5rem'><marimo-ui-element object-id='nHfw-0' random-id='70728fc7-d28c-7ed1-57de-39291c2482eb'><marimo-slider data-initial-value='1' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Layer for Composite Visualization&lt;/span&gt;&lt;/span&gt;&quot;' data-start='1' data-stop='64' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='true' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element><marimo-ui-element object-id='xXTn-0' random-id='286847d8-689a-ff1b-ffa3-e19b624c182f'><marimo-vega data-initial-value='{}' data-label='null' data-spec='{&quot;config&quot;:{&quot;view&quot;:{&quot;continuousWidth&quot;:300,&quot;continuousHeight&quot;:300}},&quot;data&quot;:{&quot;url&quot;:&quot;./@file/2474-28750051-AA8tBu8r.arrow&quot;,&quot;format&quot;:{&quot;type&quot;:&quot;arrow&quot;}},&quot;mark&quot;:{&quot;type&quot;:&quot;rect&quot;},&quot;encoding&quot;:{&quot;color&quot;:{&quot;field&quot;:&quot;value&quot;,&quot;legend&quot;:{&quot;title&quot;:&quot;Probability&quot;},&quot;scale&quot;:{&quot;domain&quot;:[0,1],&quot;scheme&quot;:&quot;blues&quot;},&quot;type&quot;:&quot;quantitative&quot;},&quot;tooltip&quot;:[{&quot;field&quot;:&quot;row&quot;,&quot;type&quot;:&quot;nominal&quot;},{&quot;field&quot;:&quot;col&quot;,&quot;type&quot;:&quot;nominal&quot;},{&quot;field&quot;:&quot;value&quot;,&quot;format&quot;:&quot;.3f&quot;,&quot;type&quot;:&quot;quantitative&quot;}],&quot;x&quot;:{&quot;axis&quot;:{&quot;labelAngle&quot;:0},&quot;field&quot;:&quot;col&quot;,&quot;title&quot;:&quot;Column&quot;,&quot;type&quot;:&quot;ordinal&quot;},&quot;y&quot;:{&quot;field&quot;:&quot;row&quot;,&quot;title&quot;:&quot;Row&quot;,&quot;type&quot;:&quot;ordinal&quot;}},&quot;height&quot;:300,&quot;title&quot;:&quot;mHC Composite Product at Layer 63 (Target is 1/N = 0.250)&quot;,&quot;width&quot;:300,&quot;&#36;schema&quot;:&quot;https://vega.github.io/schema/vega-lite/v6.1.0.json&quot;}' data-chart-selection='true' data-field-selection='true' data-embed-options='{}'></marimo-vega></marimo-ui-element></div>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "pHFh",
+      "code_hash": "6c8fd4ecad9a0d18d9a9e9a814475d1d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    }
+  ]
+}

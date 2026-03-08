@@ -1,5 +1,6 @@
 ## Done
 - Climate Change Blog
+- Annotated Transformer
 ## TODO
 - Reverse computing an exchange
 - Exchange Dynamics and simulated traders
@@ -8,6 +9,7 @@
 - General Physics Review
 - Some Mech E Stuff (ie FEA & Topology Optimization)
 - Cryptography
+- Muon
 - Interactive Guide to Graphics
 - RL
 - Fluids

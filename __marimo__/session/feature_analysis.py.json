@@ -1,0 +1,190 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.18.4"
+  },
+  "cells": [
+    {
+      "id": "MJUe",
+      "code_hash": "f3a20ad0967ce317c31a0ddd97adef4f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"feature-analysis-techniques-a-visual-exploration\">Feature Analysis Techniques: A Visual Exploration</h1>\n<span class=\"paragraph\"><strong>A Comprehensive Journey Through Data Analysis and Feature Engineering</strong></span>\n<span class=\"paragraph\">This notebook explores the essential techniques for analyzing, understanding, and engineering features in machine learning and data science. We'll cover a progressive set of methods from basic statistical analysis to advanced dimensionality reduction and feature selection techniques.</span>\n<h2 id=\"overview\">Overview</h2>\n<span class=\"paragraph\">Feature analysis is the foundation of successful machine learning. Understanding your data through proper feature analysis helps you:</span>\n<ul>\n<li>Identify patterns and relationships in your data</li>\n<li>Detect data quality issues and outliers</li>\n<li>Select the most relevant features for modeling</li>\n<li>Engineer new features that improve model performance</li>\n<li>Reduce dimensionality while preserving information</li>\n<li>Interpret and explain model predictions</li>\n</ul>\n<span class=\"paragraph\">This notebook presents a comprehensive toolkit organized into sections:</span>\n<ol>\n<li><strong>Univariate Analysis</strong> - Understanding individual features</li>\n<li><strong>Bivariate Analysis</strong> - Exploring feature relationships</li>\n<li><strong>Feature Importance</strong> - Identifying influential features</li>\n<li><strong>Dimensionality Reduction</strong> - Visualizing high-dimensional data</li>\n<li><strong>Feature Engineering</strong> - Creating and transforming features</li>\n<li><strong>Feature Selection</strong> - Choosing the best feature subset</li>\n<li><strong>Advanced Techniques</strong> - Modern approaches and tools</li>\n<li><strong>Practical Applications</strong> - Real-world examples</li>\n</ol>\n<span class=\"paragraph\">Each section includes:</span>\n<ul>\n<li>Theoretical foundations and methodology</li>\n<li>Complete Python implementations</li>\n<li>Comprehensive visualizations</li>\n<li>Interpretation guidelines</li>\n<li>Practical tips and best practices</li>\n</ul>\n<hr /></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "8320ecde5ea2391e8cd777d9b3cb2d3b",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><a id='section1'></a></span>\n<h2 id=\"section-1-univariate-analysis\">Section 1: Univariate Analysis</h2>\n<h3 id=\"understanding-individual-features\">Understanding Individual Features</h3>\n<span class=\"paragraph\">Univariate analysis examines each feature independently to understand its distribution, central tendency, spread, and potential issues. This is the essential first step in any data analysis workflow.</span>\n<h4 id=\"key-techniques\">Key Techniques:</h4>\n<span class=\"paragraph\"><strong>1. Descriptive Statistics</strong></span>\n<ul>\n<li><strong>Central Tendency</strong>: Mean, median, mode</li>\n<li><strong>Dispersion</strong>: Standard deviation, variance, range, IQR</li>\n<li><strong>Shape</strong>: Skewness, kurtosis</li>\n<li><strong>Quantiles</strong>: Percentiles, quartiles</li>\n</ul>\n<span class=\"paragraph\"><strong>2. Distribution Analysis</strong></span>\n<ul>\n<li><strong>Histograms</strong>: Visual representation of data distribution</li>\n<li><strong>Density Plots</strong>: Smooth approximation of probability distribution</li>\n<li><strong>Box Plots</strong>: Quartiles and outliers visualization</li>\n<li><strong>Q-Q Plots</strong>: Test for normality</li>\n</ul>\n<span class=\"paragraph\"><strong>3. Outlier Detection</strong></span>\n<ul>\n<li><strong>IQR Method</strong>: Values beyond 1.5 \u00d7 IQR from quartiles</li>\n<li><strong>Z-Score Method</strong>: Values beyond \u00b13 standard deviations</li>\n<li><strong>Modified Z-Score</strong>: Using median absolute deviation (robust)</li>\n</ul>\n<h4 id=\"mathematical-foundations\">Mathematical Foundations:</h4>\n<span class=\"paragraph\"><strong>Mean</strong>: <marimo-tex class=\"arithmatex\">||(\\mu = \\frac{1}{n}\\sum_{i=1}^{n} x_i||)</marimo-tex></span>\n<span class=\"paragraph\"><strong>Variance</strong>: <marimo-tex class=\"arithmatex\">||(\\sigma^2 = \\frac{1}{n}\\sum_{i=1}^{n} (x_i - \\mu)^2||)</marimo-tex></span>\n<span class=\"paragraph\"><strong>Skewness</strong>: <marimo-tex class=\"arithmatex\">||(\\gamma_1 = \\frac{E[(X-\\mu)^3]}{\\sigma^3}||)</marimo-tex></span>\n<ul>\n<li>Positive: Right-skewed (tail extends right)</li>\n<li>Negative: Left-skewed (tail extends left)</li>\n<li>Zero: Symmetric</li>\n</ul>\n<span class=\"paragraph\"><strong>Kurtosis</strong>: <marimo-tex class=\"arithmatex\">||(\\gamma_2 = \\frac{E[(X-\\mu)^4]}{\\sigma^4}||)</marimo-tex></span>\n<ul>\n<li>High: Heavy tails, more outliers</li>\n<li>Low: Light tails, fewer outliers</li>\n</ul>\n<h4 id=\"why-it-matters\">Why It Matters:</h4>\n<span class=\"paragraph\">\u2713 <strong>Data Quality</strong>: Identify missing values, outliers, and errors\n\u2713 <strong>Feature Understanding</strong>: Know the scale, range, and type of each feature\n\u2713 <strong>Preprocessing Needs</strong>: Determine scaling, transformation requirements\n\u2713 <strong>Modeling Decisions</strong>: Choose appropriate algorithms based on distributions\n\u2713 <strong>Communication</strong>: Summarize data characteristics to stakeholders</span>\n<h4 id=\"common-pitfalls\">Common Pitfalls:</h4>\n<span class=\"paragraph\">\u2717 Ignoring outliers (they might be valuable signals or errors)\n\u2717 Assuming normality without testing\n\u2717 Not checking for missing values\n\u2717 Overlooking feature scale differences</span>\n<hr /></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "8c414ae22a588c8d21448fdd4f527b02",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><a id='section2'></a></span>\n<h2 id=\"section-2-bivariate-analysis\">Section 2: Bivariate Analysis</h2>\n<h3 id=\"exploring-feature-relationships\">Exploring Feature Relationships</h3>\n<span class=\"paragraph\">Bivariate analysis examines relationships between pairs of features, revealing correlations, associations, and dependencies that are crucial for feature selection and engineering.</span>\n<h4 id=\"key-techniques\">Key Techniques:</h4>\n<span class=\"paragraph\"><strong>1. Correlation Analysis</strong></span>\n<ul>\n<li>\n<span class=\"paragraph\"><strong>Pearson Correlation</strong>: Linear relationships (r ranges from -1 to 1)</span>\n<ul>\n<li><marimo-tex class=\"arithmatex\">||(r = \\frac{\\sum(x_i - \\bar{x})(y_i - \\bar{y})}{\\sqrt{\\sum(x_i - \\bar{x})^2 \\sum(y_i - \\bar{y})^2}}||)</marimo-tex></li>\n</ul>\n</li>\n<li><strong>Spearman Correlation</strong>: Monotonic relationships (rank-based)</li>\n<li><strong>Kendall Tau</strong>: Ordinal association</li>\n</ul>\n<span class=\"paragraph\"><strong>2. Visualization Methods</strong></span>\n<ul>\n<li><strong>Scatter Plots</strong>: Visual relationship between continuous features</li>\n<li><strong>Correlation Heatmaps</strong>: Overall correlation structure</li>\n<li><strong>Pair Plots</strong>: Multiple bivariate relationships simultaneously</li>\n<li><strong>Joint Plots</strong>: Combined scatter + distributions</li>\n</ul>\n<span class=\"paragraph\"><strong>3. Statistical Tests</strong></span>\n<ul>\n<li><strong>Chi-Square Test</strong>: Independence between categorical variables</li>\n<li><strong>ANOVA</strong>: Differences in means across groups</li>\n<li><strong>Mutual Information</strong>: Non-linear dependencies</li>\n</ul>\n<h4 id=\"correlation-interpretation\">Correlation Interpretation:</h4>\n<span class=\"paragraph\"><strong>Pearson Correlation (r):</strong></span>\n<ul>\n<li><strong>|r| = 1.0</strong>: Perfect linear relationship</li>\n<li><strong>0.7 &lt; |r| &lt; 1.0</strong>: Strong relationship</li>\n<li><strong>0.4 &lt; |r| &lt; 0.7</strong>: Moderate relationship</li>\n<li><strong>0.2 &lt; |r| &lt; 0.4</strong>: Weak relationship</li>\n<li><strong>|r| &lt; 0.2</strong>: Very weak/no linear relationship</li>\n</ul>\n<span class=\"paragraph\"><strong>Important Notes:</strong></span>\n<ul>\n<li>Correlation \u2260 Causation</li>\n<li>Only captures linear relationships (use Spearman for non-linear)</li>\n<li>Sensitive to outliers</li>\n<li>Can be spurious (both variables dependent on third factor)</li>\n</ul>\n<h4 id=\"mutual-information\">Mutual Information:</h4>\n<marimo-tex class=\"arithmatex\">||[MI(X; Y) = \\sum_{x,y} p(x,y) \\log\\frac{p(x,y)}{p(x)p(y)}||]</marimo-tex><ul>\n<li><strong>MI = 0</strong>: Variables are independent</li>\n<li><strong>MI &gt; 0</strong>: Variables share information</li>\n<li>Captures non-linear relationships</li>\n<li>Not normalized (hard to interpret absolute values)</li>\n</ul>\n<h4 id=\"why-it-matters\">Why It Matters:</h4>\n<span class=\"paragraph\">\u2713 <strong>Multicollinearity Detection</strong>: High correlations indicate redundant features\n\u2713 <strong>Feature Engineering</strong>: Identify combinations that might be useful\n\u2713 <strong>Dimensionality Reduction</strong>: Remove highly correlated features\n\u2713 <strong>Model Interpretation</strong>: Understand feature interactions\n\u2713 <strong>Data Validation</strong>: Verify expected relationships</span>\n<hr /></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "e74d4435539514dd21f529e2c1c9315d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><a id='section3'></a></span>\n<h2 id=\"section-3-feature-importance-analysis\">Section 3: Feature Importance Analysis</h2>\n<h3 id=\"identifying-influential-features\">Identifying Influential Features</h3>\n<span class=\"paragraph\">Feature importance quantifies how much each feature contributes to model predictions. This is crucial for feature selection, model interpretation, and understanding data relationships.</span>\n<h4 id=\"key-methods\">Key Methods:</h4>\n<span class=\"paragraph\"><strong>1. Tree-Based Importance (Impurity-based)</strong></span>\n<span class=\"paragraph\">Random Forests and Gradient Boosting trees compute importance based on how much each feature reduces impurity (Gini or entropy):</span>\n<marimo-tex class=\"arithmatex\">||[Importance_i = \\sum_{t \\in T} \\Delta I(t) \\cdot p(t)||]</marimo-tex><span class=\"paragraph\">where:</span>\n<ul>\n<li><marimo-tex class=\"arithmatex\">||(t||)</marimo-tex> = nodes where feature <marimo-tex class=\"arithmatex\">||(i||)</marimo-tex> is used for splitting</li>\n<li><marimo-tex class=\"arithmatex\">||(\\Delta I(t)||)</marimo-tex> = decrease in impurity at node <marimo-tex class=\"arithmatex\">||(t||)</marimo-tex></li>\n<li><marimo-tex class=\"arithmatex\">||(p(t)||)</marimo-tex> = proportion of samples reaching node <marimo-tex class=\"arithmatex\">||(t||)</marimo-tex></li>\n</ul>\n<span class=\"paragraph\"><strong>Advantages:</strong></span>\n<ul>\n<li>\u2713 Fast to compute (built into training)</li>\n<li>\u2713 Doesn't require retraining</li>\n<li>\u2713 Captures non-linear relationships</li>\n</ul>\n<span class=\"paragraph\"><strong>Limitations:</strong></span>\n<ul>\n<li>\u2717 Biased toward high-cardinality features</li>\n<li>\u2717 Doesn't account for feature interactions well</li>\n<li>\u2717 Can be unstable with correlated features</li>\n</ul>\n<span class=\"paragraph\"><strong>2. Permutation Importance</strong></span>\n<span class=\"paragraph\">Measures the increase in model error when a feature's values are randomly shuffled:</span>\n<marimo-tex class=\"arithmatex\">||[Importance_i = Score_{baseline} - Score_{permuted_i}||]</marimo-tex><span class=\"paragraph\"><strong>Advantages:</strong></span>\n<ul>\n<li>\u2713 Model-agnostic (works with any model)</li>\n<li>\u2713 Reliable with correlated features</li>\n<li>\u2713 Based on actual prediction performance</li>\n</ul>\n<span class=\"paragraph\"><strong>Limitations:</strong></span>\n<ul>\n<li>\u2717 Computationally expensive</li>\n<li>\u2717 Requires validation data</li>\n<li>\u2717 Can be affected by feature correlations</li>\n</ul>\n<span class=\"paragraph\"><strong>3. SHAP Values (SHapley Additive exPlanations)</strong></span>\n<span class=\"paragraph\">Based on game theory, distributes the prediction among features:</span>\n<marimo-tex class=\"arithmatex\">||[\\phi_i = \\sum_{S \\subseteq N \\setminus \\{i\\}} \\frac{|S|!(|N|-|S|-1)!}{|N|!}[f(S \\cup \\{i\\}) - f(S)]||]</marimo-tex><ul>\n<li><strong>Global importance</strong>: Average absolute SHAP values</li>\n<li><strong>Local importance</strong>: SHAP values for individual predictions</li>\n<li><strong>Theoretically sound</strong>: Satisfies important properties (efficiency, symmetry, dummy, additivity)</li>\n</ul>\n<span class=\"paragraph\"><strong>4. Statistical Methods</strong></span>\n<ul>\n<li><strong>Mutual Information</strong>: <marimo-tex class=\"arithmatex\">||(MI(X_i; Y)||)</marimo-tex> - non-linear dependencies</li>\n<li><strong>F-statistics</strong>: ANOVA F-value for categorical targets</li>\n<li><strong>Chi-Square</strong>: <marimo-tex class=\"arithmatex\">||(\\chi^2||)</marimo-tex> test for categorical features</li>\n</ul>\n<h4 id=\"comparison-of-methods\">Comparison of Methods:</h4>\n<table>\n<thead>\n<tr>\n<th>Method</th>\n<th>Speed</th>\n<th>Accuracy</th>\n<th>Interpretability</th>\n<th>Model-Agnostic</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Tree Impurity</td>\n<td>\u26a1\u26a1\u26a1</td>\n<td>\u2b50\u2b50</td>\n<td>\u2b50\u2b50\u2b50</td>\n<td>\u274c</td>\n</tr>\n<tr>\n<td>Permutation</td>\n<td>\u26a1</td>\n<td>\u2b50\u2b50\u2b50</td>\n<td>\u2b50\u2b50\u2b50</td>\n<td>\u2705</td>\n</tr>\n<tr>\n<td>SHAP</td>\n<td>\u26a1</td>\n<td>\u2b50\u2b50\u2b50</td>\n<td>\u2b50\u2b50\u2b50</td>\n<td>\u2705</td>\n</tr>\n<tr>\n<td>Mutual Info</td>\n<td>\u26a1\u26a1</td>\n<td>\u2b50\u2b50</td>\n<td>\u2b50\u2b50</td>\n<td>\u2705</td>\n</tr>\n</tbody>\n</table>\n<hr /></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "4162ca9056fff81a0d423219576b4b42",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><a id='section4'></a></span>\n<h2 id=\"section-4-dimensionality-reduction\">Section 4: Dimensionality Reduction</h2>\n<h3 id=\"visualizing-high-dimensional-data\">Visualizing High-Dimensional Data</h3>\n<span class=\"paragraph\">Dimensionality reduction transforms high-dimensional data into lower dimensions while preserving important structure. This enables visualization, reduces computational complexity, and can improve model performance.</span>\n<h4 id=\"principal-component-analysis-pca\">Principal Component Analysis (PCA)</h4>\n<span class=\"paragraph\"><strong>Linear transformation</strong> that finds orthogonal directions of maximum variance:</span>\n<marimo-tex class=\"arithmatex\">||[\\mathbf{z} = \\mathbf{W}^T(\\mathbf{x} - \\boldsymbol{\\mu})||]</marimo-tex><span class=\"paragraph\">where <marimo-tex class=\"arithmatex\">||(\\mathbf{W}||)</marimo-tex> contains eigenvectors of the covariance matrix <marimo-tex class=\"arithmatex\">||(\\boldsymbol{\\Sigma}||)</marimo-tex>:</span>\n<marimo-tex class=\"arithmatex\">||[\\boldsymbol{\\Sigma} \\mathbf{w}_i = \\lambda_i \\mathbf{w}_i||]</marimo-tex><span class=\"paragraph\"><strong>Key Concepts:</strong></span>\n<ul>\n<li><strong>Principal Components (PCs)</strong>: Orthogonal directions of maximum variance</li>\n<li><strong>Explained Variance</strong>: <marimo-tex class=\"arithmatex\">||(\\frac{\\lambda_i}{\\sum_j \\lambda_j}||)</marimo-tex> - proportion of variance captured by PC <marimo-tex class=\"arithmatex\">||(i||)</marimo-tex></li>\n<li><strong>Loadings</strong>: Contribution of original features to each PC</li>\n<li><strong>Scree Plot</strong>: Eigenvalues vs component number (elbow method)</li>\n</ul>\n<span class=\"paragraph\"><strong>Properties:</strong></span>\n<ul>\n<li>\u2713 Preserves global structure</li>\n<li>\u2713 Fast and deterministic</li>\n<li>\u2713 Interpretable (linear combinations)</li>\n<li>\u2717 Only captures linear relationships</li>\n<li>\u2717 Sensitive to scaling</li>\n<li>\u2717 Assumes Gaussian distribution</li>\n</ul>\n<h4 id=\"t-sne-t-distributed-stochastic-neighbor-embedding\">t-SNE (t-Distributed Stochastic Neighbor Embedding)</h4>\n<span class=\"paragraph\"><strong>Non-linear</strong> technique for visualization, preserves local structure:</span>\n<ol>\n<li>Compute pairwise similarities in high-D space:\n   $<marimo-tex class=\"arithmatex\">||(p_{j|i} = \\frac{\\exp(-||x_i - x_j||^2 / 2\\sigma_i^2)}{\\sum_{k \\neq i} \\exp(-||x_i - x_k||^2 / 2\\sigma_i^2)}||)</marimo-tex>$</li>\n<li>Compute pairwise similarities in low-D space (t-distribution):\n   $<marimo-tex class=\"arithmatex\">||(q_{ij} = \\frac{(1 + ||y_i - y_j||^2)^{-1}}{\\sum_{k \\neq l}(1 + ||y_k - y_l||^2)^{-1}}||)</marimo-tex>$</li>\n<li>Minimize KL divergence: <marimo-tex class=\"arithmatex\">||(KL(P||Q) = \\sum_i \\sum_j p_{ij} \\log \\frac{p_{ij}}{q_{ij}}||)</marimo-tex></li>\n</ol>\n<span class=\"paragraph\"><strong>Key Parameters:</strong></span>\n<ul>\n<li><strong>Perplexity</strong>: Balance between local and global structure (5-50, typical: 30)</li>\n<li><strong>Learning Rate</strong>: Step size for optimization (10-1000)</li>\n<li><strong>Iterations</strong>: Number of optimization steps (\u22651000)</li>\n</ul>\n<span class=\"paragraph\"><strong>Properties:</strong></span>\n<ul>\n<li>\u2713 Excellent for visualization</li>\n<li>\u2713 Captures non-linear structure</li>\n<li>\u2713 Preserves local neighborhoods</li>\n<li>\u2717 Non-deterministic (random initialization)</li>\n<li>\u2717 Computationally expensive (O(n\u00b2))</li>\n<li>\u2717 Sensitive to hyperparameters</li>\n<li>\u2717 Distances between clusters not meaningful</li>\n</ul>\n<h4 id=\"umap-uniform-manifold-approximation-and-projection\">UMAP (Uniform Manifold Approximation and Projection)</h4>\n<span class=\"paragraph\"><strong>Modern alternative</strong> to t-SNE, based on manifold learning and topological data analysis:</span>\n<span class=\"paragraph\"><strong>Advantages over t-SNE:</strong></span>\n<ul>\n<li>\u2713 Faster (especially for large datasets)</li>\n<li>\u2713 Better preserves global structure</li>\n<li>\u2713 More stable across runs</li>\n<li>\u2713 Can embed new data</li>\n<li>\u2713 Works well with various metrics</li>\n</ul>\n<h4 id=\"comparison\">Comparison:</h4>\n<table>\n<thead>\n<tr>\n<th>Method</th>\n<th>Speed</th>\n<th>Global Structure</th>\n<th>Local Structure</th>\n<th>Deterministic</th>\n<th>Interpretable</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><strong>PCA</strong></td>\n<td>\u26a1\u26a1\u26a1</td>\n<td>\u2b50\u2b50\u2b50</td>\n<td>\u2b50</td>\n<td>\u2705</td>\n<td>\u2b50\u2b50\u2b50</td>\n</tr>\n<tr>\n<td><strong>t-SNE</strong></td>\n<td>\u26a1</td>\n<td>\u2b50</td>\n<td>\u2b50\u2b50\u2b50</td>\n<td>\u274c</td>\n<td>\u2b50</td>\n</tr>\n<tr>\n<td><strong>UMAP</strong></td>\n<td>\u26a1\u26a1</td>\n<td>\u2b50\u2b50</td>\n<td>\u2b50\u2b50\u2b50</td>\n<td>~</td>\n<td>\u2b50</td>\n</tr>\n</tbody>\n</table>\n<h4 id=\"when-to-use-each\">When to Use Each:</h4>\n<ul>\n<li><strong>PCA</strong>: Data exploration, preprocessing, feature extraction, when interpretability matters</li>\n<li><strong>t-SNE</strong>: Visualization only, when local structure is important, exploratory analysis</li>\n<li><strong>UMAP</strong>: Modern default choice, large datasets, when you need both local and global structure</li>\n</ul>\n<hr /></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "e6adbffe51ba446f66a0127b3072cc26",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><a id='section5'></a></span>\n<h2 id=\"section-5-feature-engineering-selection\">Section 5: Feature Engineering &amp; Selection</h2>\n<h3 id=\"creating-and-selecting-optimal-features\">Creating and Selecting Optimal Features</h3>\n<span class=\"paragraph\">Feature engineering transforms raw data into features that better represent the problem, while feature selection chooses the most relevant subset.</span>\n<h4 id=\"feature-engineering-techniques\">Feature Engineering Techniques:</h4>\n<span class=\"paragraph\"><strong>1. Scaling and Normalization</strong></span>\n<ul>\n<li><strong>StandardScaler</strong>: <marimo-tex class=\"arithmatex\">||(z = \\frac{x - \\mu}{\\sigma}||)</marimo-tex> (zero mean, unit variance)</li>\n<li><strong>MinMaxScaler</strong>: <marimo-tex class=\"arithmatex\">||(x_{scaled} = \\frac{x - x_{min}}{x_{max} - x_{min}}||)</marimo-tex> (range [0,1])</li>\n<li><strong>RobustScaler</strong>: Uses median and IQR (robust to outliers)</li>\n</ul>\n<span class=\"paragraph\"><strong>2. Encoding Categorical Variables</strong></span>\n<ul>\n<li><strong>One-Hot Encoding</strong>: Binary columns for each category</li>\n<li><strong>Label Encoding</strong>: Integer mapping (ordinal)</li>\n<li><strong>Target Encoding</strong>: Mean of target for each category</li>\n</ul>\n<span class=\"paragraph\"><strong>3. Feature Transformations</strong></span>\n<ul>\n<li><strong>Log Transform</strong>: <marimo-tex class=\"arithmatex\">||(\\log(x + 1)||)</marimo-tex> for skewed distributions</li>\n<li><strong>Power Transform</strong>: Box-Cox, Yeo-Johnson</li>\n<li><strong>Polynomial Features</strong>: <marimo-tex class=\"arithmatex\">||(x, x^2, x^3, ...||)</marimo-tex></li>\n<li><strong>Interaction Terms</strong>: <marimo-tex class=\"arithmatex\">||(x_1 \\times x_2||)</marimo-tex></li>\n</ul>\n<h4 id=\"feature-selection-methods\">Feature Selection Methods:</h4>\n<span class=\"paragraph\"><strong>1. Filter Methods</strong> (Statistical tests, independent of model)</span>\n<ul>\n<li>Variance threshold</li>\n<li>Correlation threshold</li>\n<li>Chi-square test</li>\n<li>Mutual information</li>\n<li>F-statistic</li>\n</ul>\n<span class=\"paragraph\"><strong>2. Wrapper Methods</strong> (Use model performance)</span>\n<ul>\n<li>Forward selection</li>\n<li>Backward elimination</li>\n<li>Recursive feature elimination (RFE)</li>\n</ul>\n<span class=\"paragraph\"><strong>3. Embedded Methods</strong> (Built into model training)</span>\n<ul>\n<li>L1 regularization (Lasso)</li>\n<li>Tree-based importance</li>\n<li>ElasticNet</li>\n</ul>\n<hr /></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hstk",
+      "code_hash": "4317ed58e086633caf671e040f49ae07",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"section-6-practical-applications-best-practices\">Section 6: Practical Applications &amp; Best Practices</h2>\n<h3 id=\"real-world-feature-analysis-workflow\">Real-World Feature Analysis Workflow</h3>\n<h4 id=\"complete-pipeline\">Complete Pipeline:</h4>\n<ol>\n<li>\n<span class=\"paragraph\"><strong>Initial Exploration</strong></span>\n<ul>\n<li>Load data and check dimensions</li>\n<li>Identify data types (numerical, categorical)</li>\n<li>Check for missing values</li>\n<li>Basic statistics and distributions</li>\n</ul>\n</li>\n<li>\n<span class=\"paragraph\"><strong>Univariate Analysis</strong></span>\n<ul>\n<li>Analyze each feature independently</li>\n<li>Detect outliers and anomalies</li>\n<li>Understand distributions</li>\n<li>Plan transformations</li>\n</ul>\n</li>\n<li>\n<span class=\"paragraph\"><strong>Bivariate Analysis</strong></span>\n<ul>\n<li>Correlation analysis</li>\n<li>Feature relationships</li>\n<li>Target correlations</li>\n<li>Multicollinearity detection</li>\n</ul>\n</li>\n<li>\n<span class=\"paragraph\"><strong>Feature Engineering</strong></span>\n<ul>\n<li>Handle missing values</li>\n<li>Scale/normalize features</li>\n<li>Encode categorical variables</li>\n<li>Create interaction terms</li>\n<li>Transform skewed distributions</li>\n</ul>\n</li>\n<li>\n<span class=\"paragraph\"><strong>Feature Selection</strong></span>\n<ul>\n<li>Remove low-variance features</li>\n<li>Remove highly correlated features</li>\n<li>Select important features</li>\n<li>Validate with cross-validation</li>\n</ul>\n</li>\n<li>\n<span class=\"paragraph\"><strong>Dimensionality Reduction</strong></span>\n<ul>\n<li>PCA for linear relationships</li>\n<li>t-SNE/UMAP for visualization</li>\n<li>Validate preserved variance</li>\n</ul>\n</li>\n<li>\n<span class=\"paragraph\"><strong>Model Training &amp; Evaluation</strong></span>\n<ul>\n<li>Train with selected features</li>\n<li>Compare with full feature set</li>\n<li>Analyze feature importance</li>\n<li>Iterate and refine</li>\n</ul>\n</li>\n</ol>\n<h4 id=\"best-practices\">Best Practices:</h4>\n<span class=\"paragraph\">\u2705 <strong>Always visualize your data first</strong>\n\u2705 <strong>Scale features before distance-based methods</strong>\n\u2705 <strong>Handle missing values appropriately</strong>\n\u2705 <strong>Split data before feature selection</strong> (avoid leakage)\n\u2705 <strong>Use cross-validation for robust estimates</strong>\n\u2705 <strong>Document feature engineering steps</strong>\n\u2705 <strong>Compare multiple feature selection methods</strong>\n\u2705 <strong>Monitor for overfitting</strong></span>\n<span class=\"paragraph\">\u274c <strong>Don't ignore outliers without investigation</strong>\n\u274c <strong>Don't apply transformations blindly</strong>\n\u274c <strong>Don't select features on full dataset</strong>\n\u274c <strong>Don't forget domain knowledge</strong>\n\u274c <strong>Don't over-engineer features</strong></span>\n<hr /></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "8e281820021a9fd02f94b9bf6066aac0",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"conclusions-and-key-takeaways\">Conclusions and Key Takeaways</h2>\n<h3 id=\"summary-of-feature-analysis-techniques\">Summary of Feature Analysis Techniques</h3>\n<span class=\"paragraph\">We've explored a comprehensive toolkit for feature analysis:</span>\n<span class=\"paragraph\"><strong>1. Univariate Analysis</strong> - Understanding individual features</span>\n<ul>\n<li>Statistical measures (mean, variance, skewness, kurtosis)</li>\n<li>Distribution visualization (histograms, box plots, Q-Q plots)</li>\n<li>Outlier detection methods</li>\n</ul>\n<span class=\"paragraph\"><strong>2. Bivariate Analysis</strong> - Exploring relationships</span>\n<ul>\n<li>Correlation analysis (Pearson, Spearman)</li>\n<li>Scatter plots and correlation matrices</li>\n<li>Statistical tests for independence</li>\n</ul>\n<span class=\"paragraph\"><strong>3. Feature Importance</strong> - Identifying influential features</span>\n<ul>\n<li>Tree-based importance (fast, built-in)</li>\n<li>Permutation importance (model-agnostic, reliable)</li>\n<li>Mutual information (captures non-linear)</li>\n<li>Comparison and consensus methods</li>\n</ul>\n<span class=\"paragraph\"><strong>4. Dimensionality Reduction</strong> - Visualizing high-dimensional data</span>\n<ul>\n<li>PCA (linear, interpretable, preserves global structure)</li>\n<li>t-SNE (non-linear, great visualization, preserves local structure)</li>\n<li>UMAP (modern, balanced approach)</li>\n</ul>\n<span class=\"paragraph\"><strong>5. Feature Engineering &amp; Selection</strong> - Optimizing feature sets</span>\n<ul>\n<li>Scaling and normalization techniques</li>\n<li>Categorical encoding methods</li>\n<li>Statistical and model-based selection</li>\n</ul>\n<h3 id=\"when-to-use-each-technique\">When to Use Each Technique:</h3>\n<table>\n<thead>\n<tr>\n<th>Goal</th>\n<th>Technique</th>\n<th>When to Use</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><strong>Understand data</strong></td>\n<td>Univariate analysis</td>\n<td>Always - first step</td>\n</tr>\n<tr>\n<td><strong>Find relationships</strong></td>\n<td>Correlation</td>\n<td>Before modeling</td>\n</tr>\n<tr>\n<td><strong>Select features</strong></td>\n<td>Feature importance</td>\n<td>During modeling</td>\n</tr>\n<tr>\n<td><strong>Visualize data</strong></td>\n<td>t-SNE/UMAP</td>\n<td>Exploratory analysis</td>\n</tr>\n<tr>\n<td><strong>Reduce dimensions</strong></td>\n<td>PCA</td>\n<td>High-dimensional data</td>\n</tr>\n<tr>\n<td><strong>Improve model</strong></td>\n<td>Feature engineering</td>\n<td>Iteratively</td>\n</tr>\n</tbody>\n</table>\n<h3 id=\"the-feature-analysis-process\">The Feature Analysis Process:</h3>\n<div class=\"language-gdscript codehilite\"><pre><span></span><code><span class=\"n\">Raw</span><span class=\"w\"> </span><span class=\"n\">Data</span>\n<span class=\"w\">   </span><span class=\"err\">\u2193</span>\n<span class=\"n\">Univariate</span><span class=\"w\"> </span><span class=\"n\">Analysis</span><span class=\"w\"> </span><span class=\"err\">\u2192</span><span class=\"w\"> </span><span class=\"n\">Understand</span><span class=\"w\"> </span><span class=\"n\">distributions</span>\n<span class=\"w\">   </span><span class=\"err\">\u2193</span>\n<span class=\"n\">Bivariate</span><span class=\"w\"> </span><span class=\"n\">Analysis</span><span class=\"w\"> </span><span class=\"err\">\u2192</span><span class=\"w\"> </span><span class=\"n\">Find</span><span class=\"w\"> </span><span class=\"n\">relationships</span>\n<span class=\"w\">   </span><span class=\"err\">\u2193</span>\n<span class=\"n\">Feature</span><span class=\"w\"> </span><span class=\"n\">Engineering</span><span class=\"w\"> </span><span class=\"err\">\u2192</span><span class=\"w\"> </span><span class=\"nb nb-Type\">Transform</span><span class=\"w\"> </span><span class=\"ow\">and</span><span class=\"w\"> </span><span class=\"n\">create</span><span class=\"w\"> </span><span class=\"n\">features</span>\n<span class=\"w\">   </span><span class=\"err\">\u2193</span>\n<span class=\"n\">Feature</span><span class=\"w\"> </span><span class=\"n\">Selection</span><span class=\"w\"> </span><span class=\"err\">\u2192</span><span class=\"w\"> </span><span class=\"n\">Choose</span><span class=\"w\"> </span><span class=\"n\">best</span><span class=\"w\"> </span><span class=\"n\">subset</span>\n<span class=\"w\">   </span><span class=\"err\">\u2193</span>\n<span class=\"n\">Dimensionality</span><span class=\"w\"> </span><span class=\"n\">Reduction</span><span class=\"w\"> </span><span class=\"err\">\u2192</span><span class=\"w\"> </span><span class=\"n\">Visualize</span><span class=\"w\"> </span><span class=\"ow\">and</span><span class=\"w\"> </span><span class=\"n\">compress</span>\n<span class=\"w\">   </span><span class=\"err\">\u2193</span>\n<span class=\"n\">Model</span><span class=\"w\"> </span><span class=\"n\">Training</span><span class=\"w\"> </span><span class=\"err\">\u2192</span><span class=\"w\"> </span><span class=\"n\">Build</span><span class=\"w\"> </span><span class=\"n\">predictive</span><span class=\"w\"> </span><span class=\"n\">models</span>\n<span class=\"w\">   </span><span class=\"err\">\u2193</span>\n<span class=\"n\">Feature</span><span class=\"w\"> </span><span class=\"n\">Importance</span><span class=\"w\"> </span><span class=\"err\">\u2192</span><span class=\"w\"> </span><span class=\"n\">Interpret</span><span class=\"w\"> </span><span class=\"ow\">and</span><span class=\"w\"> </span><span class=\"n\">refine</span>\n</code></pre></div>\n<h3 id=\"key-principles\">Key Principles:</h3>\n<ol>\n<li><strong>Start Simple</strong>: Begin with univariate analysis before complex methods</li>\n<li><strong>Visualize Everything</strong>: Plots reveal insights statistics might miss</li>\n<li><strong>Domain Knowledge</strong>: Combine techniques with expert understanding</li>\n<li><strong>Iterate</strong>: Feature analysis is not one-time - refine iteratively</li>\n<li><strong>Validate</strong>: Always validate feature engineering on held-out data</li>\n<li><strong>Document</strong>: Keep track of transformations for reproducibility</li>\n</ol>\n<h3 id=\"common-pitfalls-to-avoid\">Common Pitfalls to Avoid:</h3>\n<ul>\n<li>\u274c Skipping exploratory analysis</li>\n<li>\u274c Not checking data quality</li>\n<li>\u274c Ignoring feature scaling</li>\n<li>\u274c Overfitting during feature selection</li>\n<li>\u274c Using test data for feature engineering</li>\n<li>\u274c Not understanding the limitations of each method</li>\n</ul>\n<h3 id=\"further-learning\">Further Learning:</h3>\n<span class=\"paragraph\"><strong>Books:</strong></span>\n<ul>\n<li>\"Feature Engineering for Machine Learning\" by Zheng &amp; Casari</li>\n<li>\"Hands-On Machine Learning\" by G\u00e9ron</li>\n<li>\"The Elements of Statistical Learning\" by Hastie et al.</li>\n</ul>\n<span class=\"paragraph\"><strong>Online Resources:</strong></span>\n<ul>\n<li>scikit-learn documentation</li>\n<li>Kaggle feature engineering tutorials</li>\n<li>Papers on SHAP, LIME for interpretability</li>\n</ul>\n<h3 id=\"final-thoughts\">Final Thoughts:</h3>\n<span class=\"paragraph\">Feature analysis is both an art and science. While this notebook provides comprehensive techniques and implementations, the key to mastery is:</span>\n<ul>\n<li><strong>Practice</strong> with diverse datasets</li>\n<li><strong>Experiment</strong> with different approaches</li>\n<li><strong>Learn</strong> from the data science community</li>\n<li><strong>Combine</strong> methods for robust insights</li>\n<li><strong>Apply</strong> domain knowledge thoughtfully</li>\n</ul>\n<span class=\"paragraph\"><strong>Remember</strong>: \"Garbage in, garbage out\" - quality features lead to quality models!</span>\n<hr />\n<span class=\"paragraph\"><em>Happy Feature Engineering!</em> \ud83c\udfaf\ud83d\udcca\ud83d\ude80</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "5f6884041a0e1af166de66ce5725c835",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "7780a139f15ab9067cf1a160c0166974",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "f93cf02bd595b9d0fdbfc0fc948baee5",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "797912e75871a34b4ec5f43d7c0faa56",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "d8293f86e04bc7e8571dc241f86fd56f",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "internal",
+          "evalue": "An internal error occurred: 0e490d84-59c0-499e-ba84-b0119b04e324",
+          "traceback": []
+        }
+      ],
+      "console": []
+    }
+  ]
+}
