@@ -1,0 +1,177 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.19.7"
+  },
+  "cells": [
+    {
+      "id": "MJUe",
+      "code_hash": "69eb7136eae1cf933daf79c49a837dc2",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"2d-ising-mcmc-glauber-dynamics\">2D Ising MCMC (Glauber Dynamics)</h1>\n<span class=\"paragraph\">This notebook provides a ipython notebook template for the computer experiment described in <code>lec5.pdf</code>:</span>\n<ul>\n<li>lattice size <code>L=32</code>, coupling <code>J=1</code></li>\n<li>run <code>5000</code> sweeps at temperatures <code>T in {1.5, 2.3, 3.5}</code></li>\n<li>compare magnetization traces and autocorrelation</li>\n</ul>\n<span class=\"paragraph\">Notation reminder: <code>beta = 1 / T</code>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "f10ea3cf261d2a7931ed1d897fc75d43",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"demo-run-parameters\">Demo run parameters</h2>\n<ul>\n<li>random initialization</li>\n<li><code>L=32</code>, <code>J=1</code>, <code>h=0</code></li>\n<li><code>S=800</code> sweeps at <code>T=2.3</code> (<code>beta=1/2.3</code>)</li>\n<li>animate spin configuration after each sweep</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "d4aefa0c2a3356c8534f74c0cbbe5c1e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"illustrative-experiment\">Illustrative Experiment</h2>\n<span class=\"paragraph\">Run <code>5000</code> sweeps for <code>T in {1.5, 2.3, 3.5}</code> and compare:</span>\n<ul>\n<li>magnetization traces <code>M_t</code></li>\n<li>autocorrelation of magnetization</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "3cdabdb45640a98c3090e7bd7df4df37",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "No module named 'numpy._array_api_info'",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "24a04c70798bbac47a9ff69f9602ab73",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (ModuleNotFoundError): ",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "9dc5e1910fa0d8b32943412468de90ef",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (ModuleNotFoundError): ",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "e394d36b5948bb0aa91821e76627e284",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (ModuleNotFoundError): ",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "d5a46fa6e707e3ac531658fe940431d5",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (ModuleNotFoundError): ",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "f9cdca6064d15cfd44e8f6360782bd3d",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (ModuleNotFoundError): ",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "84e33003a15d9f49e42aaa98ec8f1792",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (ModuleNotFoundError): ",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "9749d4ddd18c922045f6b61c497b116b",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (ModuleNotFoundError): ",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hstk",
+      "code_hash": "b220c9b9d442915c94371a51513dc1ab",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "exception",
+          "evalue": "An ancestor raised an exception (ModuleNotFoundError): ",
+          "traceback": []
+        }
+      ],
+      "console": []
+    }
+  ]
+}

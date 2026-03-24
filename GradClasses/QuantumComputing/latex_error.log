@@ -1,0 +1,73 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex)
+ restricted \write18 enabled.
+entering extended mode
+(/var/folders/p8/zvw_h9yx0rjb1g7xhctdry9m0000gn/T/tmpt1zqkfs3/circuit.tex
+LaTeX2e <2023-11-01> patch level 1
+L3 programming layer <2024-02-20>
+(/usr/local/texlive/2024/texmf-dist/tex/latex/standalone/standalone.cls
+Document Class: standalone 2022/10/10 v1.3b Class to compile TeX sub-files stan
+dalone
+(/usr/local/texlive/2024/texmf-dist/tex/latex/tools/shellesc.sty)
+(/usr/local/texlive/2024/texmf-dist/tex/generic/iftex/ifluatex.sty
+(/usr/local/texlive/2024/texmf-dist/tex/generic/iftex/iftex.sty))
+(/usr/local/texlive/2024/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+(/usr/local/texlive/2024/texmf-dist/tex/generic/xkeyval/xkeyval.tex
+(/usr/local/texlive/2024/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+(/usr/local/texlive/2024/texmf-dist/tex/generic/xkeyval/keyval.tex))))
+(/usr/local/texlive/2024/texmf-dist/tex/latex/standalone/standalone.cfg)
+(/usr/local/texlive/2024/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2023/05/17 v1.4n Standard LaTeX document class
+(/usr/local/texlive/2024/texmf-dist/tex/latex/base/size10.clo)))
+(/usr/local/texlive/2024/texmf-dist/tex/latex/qcircuit/qcircuit.sty
+(/usr/local/texlive/2024/texmf-dist/tex/generic/xypic/xy.sty
+(/usr/local/texlive/2024/texmf-dist/tex/generic/xypic/xy.tex Bootstrap'ing:
+catcodes, docmode,
+(/usr/local/texlive/2024/texmf-dist/tex/generic/xypic/xyrecat.tex)
+(/usr/local/texlive/2024/texmf-dist/tex/generic/xypic/xyidioms.tex)
+
+ Xy-pic version 3.8.9 <2013/10/06>
+ Copyright (c) 1991-2013 by Kristoffer H. Rose <krisrose@tug.org> and others
+ Xy-pic is free software: see the User's Guide for details.
+
+Loading kernel: messages; fonts; allocations: state, direction,
+utility macros; pictures: \xy, positions, objects, decorations;
+kernel objects: directionals, circles, text; options; algorithms: directions,
+edges, connections;  Xy-pic loaded)
+(/usr/local/texlive/2024/texmf-dist/tex/generic/iftex/ifpdf.sty)
+(/usr/local/texlive/2024/texmf-dist/tex/generic/xypic/xypdf.tex
+ Xy-pic option: PDF driver v.1.7 loaded))
+(/usr/local/texlive/2024/texmf-dist/tex/generic/xypic/xymatrix.tex
+ Xy-pic option: Matrix feature v.3.14 loaded)
+(/usr/local/texlive/2024/texmf-dist/tex/generic/xypic/xyframe.tex
+ Xy-pic option: Frame and Bracket extension v.3.14 loaded)
+Xy-pic pdf driver: `frame' extension support
+(/usr/local/texlive/2024/texmf-dist/tex/generic/xypic/xypdf-fr.tex
+(/usr/local/texlive/2024/texmf-dist/tex/generic/xypic/xycurve.tex
+ Xy-pic option: Curve and Spline extension v.3.12 curve, circles, loaded)
+Xy-pic pdf driver: `curve' extension support
+(/usr/local/texlive/2024/texmf-dist/tex/generic/xypic/xypdf-cu.tex loaded)
+loaded) (/usr/local/texlive/2024/texmf-dist/tex/generic/xypic/xyarrow.tex
+ Xy-pic option: Arrow and Path feature v.3.9 path, \ar, loaded)
+(/usr/local/texlive/2024/texmf-dist/tex/generic/xypic/xyarc.tex
+ Xy-pic option: Circle, Ellipse, Arc feature v.3.8 circles, ellipses,
+elliptical arcs, loaded))
+(/usr/local/texlive/2024/texmf-dist/tex/latex/graphics/graphicx.sty
+(/usr/local/texlive/2024/texmf-dist/tex/latex/graphics/graphics.sty
+(/usr/local/texlive/2024/texmf-dist/tex/latex/graphics/trig.sty)
+(/usr/local/texlive/2024/texmf-dist/tex/latex/graphics-cfg/graphics.cfg)
+(/usr/local/texlive/2024/texmf-dist/tex/latex/graphics-def/pdftex.def)))
+(/usr/local/texlive/2024/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def)
+No file circuit.aux.
+(/usr/local/texlive/2024/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+) (/usr/local/texlive/2024/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
+(/usr/local/texlive/2024/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg))
+<xymatrix
+! Missing } inserted.
+<inserted text> 
+                }
+l.12 \\ }}
+          
+!  ==> Fatal error occurred, no output PDF file produced!
+Transcript written on /var/folders/p8/zvw_h9yx0rjb1g7xhctdry9m0000gn/T/tmpt1zqk
+fs3/circuit.log.

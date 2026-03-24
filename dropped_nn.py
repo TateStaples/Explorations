@@ -266,15 +266,19 @@ def _(mo):
     ---
     ## Reconstruction Strategy
 
-    **Three-phase approach:**
-    1. **Hungarian pairing**: Score all 48×48 possible (inp, out) pairs on raw data,
-       then use the Hungarian algorithm for optimal 1-1 matching. This decouples the
-       pairing problem from the ordering problem — reducing search from 2304 to 48 choices/step.
-    2. **Beam search ordering** (K=100): With 48 paired blocks, maintain K candidate orderings.
-       At each step, each beam tries all remaining blocks (only 48 choices vs 2304).
-    3. **SA + exhaustive local search**: Refine ordering with SA (200k iterations allowing
-       both position swaps and out-piece re-pairings to fix any Hungarian errors), then
-       sweep all possible swaps until no improvement remains.
+    **Four-phase approach:**
+    1. **DDR pairing** (Diagonal Dominance Ratio): For each of 2,304 candidate (inp, out) pairs,
+       compute M = W_out @ W_inp (48×48). Training enforces dynamic isometry, so correctly-paired
+       layers show strong diagonal dominance in M. Solve via Hungarian — O(48³), near-instant,
+       no data required.
+    2. **DDR beam ordering** (K=100): Fix DDR pairings, beam-search the ordering of 48 blocks.
+       Each beam state tracks its own transformed X (fully context-aware).
+    3. **Gumbel-Sinkhorn pairing** (differentiable): Fix ordering from step 2, then jointly
+       optimize pairing assignments via gradient descent through a soft doubly-stochastic
+       relaxation, annealing temperature τ: 1.0 → 0.05 over 6 rounds × 600 gradient steps.
+    4. **SA + exhaustive local search**: Start from the best of all three initializations.
+       Explores position swaps, pairing swaps, and combined moves via SA (100k iters),
+       2-swap local search, ILS, and insertion search.
     """)
     return
 
@@ -286,6 +290,179 @@ def _(F, torch):
         return x + F.linear(h, out_sd["weight"], out_sd["bias"])
 
     return (block_forward,)
+
+
+@app.cell
+def _(mo):
+    mo.md(r"""
+    ---
+    ## DDR Pairing via Hungarian Algorithm
+
+    The product **M = W_out @ W_inp** is a 48×48 matrix. Training with residual connections
+    enforces near-identity Jacobians (dynamic isometry), leaving a detectable signature:
+    correctly-paired layers show strong diagonal dominance in M.
+
+    $$\text{DDR}(i,j) = \frac{\sum_k |M_{kk}|}{\|M\|_F}, \quad M = W_{\text{out},j} \cdot W_{\text{inp},i}$$
+
+    Computing all 2,304 scores costs ~10M FLOPs (under 1 second). The 48×48 DDR matrix then
+    feeds into the Hungarian algorithm for globally-optimal 1-to-1 pairing in O(48³) — no
+    data evaluation required.
+    """)
+    return
+
+
+@app.cell
+def _(inp_pieces, out_pieces, torch):
+    from scipy.optimize import linear_sum_assignment as _lsa
+
+    _inp_keys = sorted(inp_pieces.keys())
+    _out_keys = sorted(out_pieces.keys())
+    _n = len(_inp_keys)
+
+    _ddr = torch.zeros(_n, _n)
+    for _i, _ik in enumerate(_inp_keys):
+        _W_inp = inp_pieces[_ik]["weight"]          # (96, 48)
+        for _j, _ok in enumerate(_out_keys):
+            _W_out = out_pieces[_ok]["weight"]      # (48, 96)
+            _M = _W_out @ _W_inp                    # (48, 48)
+            _ddr[_i, _j] = _M.diag().abs().sum() / (_M.norm() + 1e-10)
+
+    _row, _col = _lsa(-_ddr.numpy())
+    ddr_pairing = [(_inp_keys[int(r)], _out_keys[int(c)]) for r, c in zip(_row, _col)]
+    _scores = [_ddr[r, c].item() for r, c in zip(_row, _col)]
+    print(f"DDR pairing: mean={sum(_scores)/len(_scores):.4f}, min={min(_scores):.4f}, max={max(_scores):.4f}")
+    return (ddr_pairing,)
+
+
+@app.cell
+def _(F, X, block_forward, ddr_pairing, inp_pieces, last_sd, out_pieces, pred_true, torch):
+    import time as _ddr_t
+
+    _t0 = _ddr_t.time()
+    _N_b = min(1000, len(X))
+    _Xs = X[:_N_b]
+    _yt = torch.tensor(pred_true[:_N_b], dtype=torch.float32)
+    _ytc = _yt - _yt.mean()
+    _ytn = _ytc.norm()
+    _lw, _lb = last_sd["weight"], last_sd["bias"]
+    _K = 100
+
+    def _dpr(pred: torch.Tensor) -> torch.Tensor:
+        pc = pred - pred.mean(-1, keepdim=True)
+        return (pc * _ytc).sum(-1) / (pc.norm(dim=-1) * _ytn + 1e-10)
+
+    _aiw = torch.stack([inp_pieces[i]["weight"] for i, j in ddr_pairing])
+    _aib = torch.stack([inp_pieces[i]["bias"]   for i, j in ddr_pairing])
+    _aow = torch.stack([out_pieces[j]["weight"] for i, j in ddr_pairing])
+    _aob = torch.stack([out_pieces[j]["bias"]   for i, j in ddr_pairing])
+
+    _beams = [(0.0, _Xs.clone(), frozenset(range(48)), [])]
+    with torch.no_grad():
+        for _step in range(48):
+            _cands = []
+            for _bidx, (_sc, _cx, _rem, _ch) in enumerate(_beams):
+                _rem_l = sorted(_rem)
+                _n = len(_rem_l)
+                _iw = _aiw[_rem_l]; _ib_ = _aib[_rem_l]
+                _ow = _aow[_rem_l]; _ob_ = _aob[_rem_l]
+                _h = F.relu(torch.bmm(_cx.unsqueeze(0).expand(_n, -1, -1), _iw.permute(0, 2, 1)) + _ib_[:, None, :])
+                _d = torch.bmm(_h, _ow.permute(0, 2, 1)) + _ob_[:, None, :]
+                _xn = _cx.unsqueeze(0) + _d
+                _pa = F.linear(_xn.reshape(-1, 48), _lw, _lb).view(_n, _N_b)
+                _rs = _dpr(_pa)
+                for _ki, _k in enumerate(_rem_l):
+                    _cands.append((_rs[_ki].item(), _bidx, _k))
+            _cands.sort(key=lambda c: -c[0])
+            _new = []
+            for _r, _bi, _k in _cands[:_K]:
+                _old = _beams[_bi]
+                _i, _j = ddr_pairing[_k]
+                _cx2 = block_forward(_old[1], inp_pieces[_i], out_pieces[_j])
+                _new.append((_r, _cx2, _old[2] - {_k}, _old[3] + [_k]))
+            _beams = _new
+            if (_step + 1) % 12 == 0 or _step == 47:
+                print(f"DDR-beam step {_step+1:2d}: r={_beams[0][0]:.4f} ({_ddr_t.time()-_t0:.0f}s)")
+
+    ddr_ordered_pairs = [ddr_pairing[_k] for _k in _beams[0][3]]
+    print(f"DDR beam: r={_beams[0][0]:.6f}, time={_ddr_t.time()-_t0:.0f}s")
+    return (ddr_ordered_pairs,)
+
+
+@app.cell
+def _(F, X, ddr_ordered_pairs, inp_pieces, last_sd, out_pieces, pred_true, torch):
+    from scipy.optimize import linear_sum_assignment as _sk_lsa
+    import time as _sk_t
+
+    _t0 = _sk_t.time()
+    _N_b = min(1000, len(X))
+    _Xs = X[:_N_b]
+    _yt = torch.tensor(pred_true[:_N_b], dtype=torch.float32)
+    _ytc = _yt - _yt.mean()
+    _ytn = _ytc.norm()
+
+    _out_keys = sorted(out_pieces.keys())
+    _out_k2i = {k: idx for idx, k in enumerate(_out_keys)}
+    _inp_seq = [i for i, j in ddr_ordered_pairs]
+    _n = 48
+
+    # Stack all out-piece weights for soft mixing
+    _all_ow = torch.stack([out_pieces[k]["weight"] for k in _out_keys])  # (48, 48, 96)
+    _all_ob = torch.stack([out_pieces[k]["bias"]   for k in _out_keys])  # (48, 48)
+
+    def _sinkhorn(log_a: torch.Tensor, n_iters: int = 25) -> torch.Tensor:
+        """Normalize logit matrix into doubly-stochastic via alternating log-softmax."""
+        for _ in range(n_iters):
+            log_a = log_a - log_a.logsumexp(dim=1, keepdim=True)
+            log_a = log_a - log_a.logsumexp(dim=0, keepdim=True)
+        return log_a.exp()
+
+    # Initialize logits from DDR pairing (high logit at matched positions)
+    _logits = torch.zeros(_n, _n)
+    for _pos, (_ik, _ok) in enumerate(ddr_ordered_pairs):
+        _logits[_pos, _out_k2i[_ok]] = 3.0
+    _logits = _logits.clone().detach().requires_grad_(True)
+    _opt = torch.optim.Adam([_logits], lr=5e-3)
+
+    _best_r_sk = -1.0
+    _best_logits = _logits.detach().clone()
+
+    for _round in range(6):
+        _tau = max(1.0 * (0.4 ** _round), 0.05)
+        for _step in range(600):
+            _opt.zero_grad()
+            _Q = _sinkhorn(_logits / _tau)  # (48, 48) doubly-stochastic
+            _cx = _Xs.clone()
+            for _pos, _ik in enumerate(_inp_seq):
+                _h = F.relu(F.linear(_cx, inp_pieces[_ik]["weight"], inp_pieces[_ik]["bias"]))
+                _w_mix = (_Q[_pos, :, None, None] * _all_ow).sum(0)   # (48, 96)
+                _b_mix = (_Q[_pos, :, None]        * _all_ob).sum(0)  # (48,)
+                _cx = _cx + F.linear(_h, _w_mix, _b_mix)
+            _pred = F.linear(_cx, last_sd["weight"], last_sd["bias"]).squeeze(-1)
+            _pc = _pred - _pred.mean()
+            _loss = -(_pc * _ytc).sum() / (_pc.norm() * _ytn + 1e-10)
+            _loss.backward()
+            _opt.step()
+
+        # Evaluate hard assignment after each round
+        with torch.no_grad():
+            _row, _col = _sk_lsa(-_logits.detach().numpy())
+            _hard = [(_inp_seq[r], _out_keys[c]) for r, c in zip(_row, _col)]
+            _cx2 = _Xs.clone()
+            for _ik, _ok in _hard:
+                _h = F.relu(F.linear(_cx2, inp_pieces[_ik]["weight"], inp_pieces[_ik]["bias"]))
+                _cx2 = _cx2 + F.linear(_h, out_pieces[_ok]["weight"], out_pieces[_ok]["bias"])
+            _p = F.linear(_cx2, last_sd["weight"], last_sd["bias"]).squeeze(-1)
+            _pc2 = _p - _p.mean()
+            _r = ((_pc2 * _ytc).sum() / (_pc2.norm() * _ytn)).item()
+            if _r > _best_r_sk:
+                _best_r_sk = _r
+                _best_logits = _logits.detach().clone()
+            print(f"Sinkhorn round {_round}: τ={_tau:.3f}, r={_r:.6f} ({_sk_t.time()-_t0:.0f}s)")
+
+    _row, _col = _sk_lsa(-_best_logits.numpy())
+    sinkhorn_pairs = [(_inp_seq[r], _out_keys[c]) for r, c in zip(_row, _col)]
+    print(f"Sinkhorn done: best_r={_best_r_sk:.6f}, time={_sk_t.time()-_t0:.0f}s")
+    return (sinkhorn_pairs,)
 
 
 @app.cell
@@ -537,6 +714,7 @@ def _(
     X,
     beam_best_order,
     block_forward,
+    ddr_ordered_pairs,
     inp_pieces,
     last_sd,
     math,
@@ -544,6 +722,7 @@ def _(
     pearsonr,
     pred_true,
     random,
+    sinkhorn_pairs,
     torch,
 ):
     _N_sa = min(1000, len(X))
@@ -615,13 +794,19 @@ def _(
                 print(f"    2swap improved: r={_best_r:.6f}")
         return _best, _best_r
 
-    # --- Phase 1: SA from beam search result ---
-    _cur = list(beam_best_order)
+    # --- Phase 1: SA from best initialization ---
+    _best_name = "beam+CD"
+    _best_r = -1.0
+    _best = list(beam_best_order)
+    for _init_name, _init_order in [("beam+CD", beam_best_order), ("DDR+beam", ddr_ordered_pairs), ("Sinkhorn", sinkhorn_pairs)]:
+        _r = _sa_r(_sa_states(_init_order, _X_sub))
+        print(f"{_init_name}: r={_r:.6f}")
+        if _r > _best_r:
+            _best_r, _best, _best_name = _r, list(_init_order), _init_name
+    _cur = list(_best)
     _states = _sa_states(_cur, _X_sub)
-    _cur_r = _sa_r(_states)
-    _best = list(_cur)
-    _best_r = _cur_r
-    print(f"Starting from beam: r={_cur_r:.6f}")
+    _cur_r = _best_r
+    print(f"Starting SA from {_best_name}: r={_cur_r:.6f}")
 
     _T = 0.1
     _n_iter = 100000

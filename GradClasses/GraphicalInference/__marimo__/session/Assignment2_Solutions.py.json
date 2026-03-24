@@ -1,0 +1,617 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.19.9"
+  },
+  "cells": [
+    {
+      "id": "MJUe",
+      "code_hash": "785c4796ea8d456e30caf5e1cfbd8b6e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"assignment-2-solutions\">Assignment 2 Solutions</h1>\n<span class=\"paragraph\">Due Monday 02/09/26</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "03f340d445b09708677e4a8c1259b992",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"problem-1-eit-204-entropy-of-functions-of-a-random-variable\">Problem 1 (EIT 2.04) - Entropy of functions of a random variable</h2>\n<span class=\"paragraph\">Let <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex> be a discrete random variable. Show that the entropy of a function of <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex> is less than or equal to the entropy of <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex> by justifying the following steps:</span>\n<marimo-tex class=\"arithmatex\">||[\n\\begin{align}\nH(X, g(X)) &amp;=^{(a)} H(X) + H(g(X) | X)\\\\\n&amp;=^{(b)} H(X) \\\\\nH(X) + H(g(X) | X) &amp;=^{(c)} H(g(X)) + H(X | g(X)) \\\\\n&amp;\\geq^{(d)} H(g(X))\n\\end{align}\n||]</marimo-tex><span class=\"paragraph\">Thus <marimo-tex class=\"arithmatex\">||(H(g(X)) \\leq H(X)||)</marimo-tex>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "c9931ae1db334f5d9edd0f908f5aa8d8",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"step-a\">(Step a)</h3>\n<span class=\"paragraph\">Any multivariate distribution can be decomposed into a product of a marginal distribution and a conditional distribution. In this case, we can write the joint distribution of <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex> and <marimo-tex class=\"arithmatex\">||(g(X)||)</marimo-tex> as:\n$$\nP(X, g(X)) = P(X) P(g(X) | X)\n$$\nTaking the logarithm and then the expectation, we get:\n$$\n\\begin{align}\nH(X, g(X)) &amp;= -\\sum_{x, g(x)} P(X, g(X)) \\log P(X, g(X))\\\n&amp;= -\\sum_{x, g(x)} P(X) P(g(X) | X) \\log [P(X) P(g(X) | X)]\\\n&amp;= -\\sum_{x, g(x)} P(X) P(g(X) | X) [\\log P(X) + \\log P(g(X) | X)]\\\n&amp;= -\\sum_{x} P(X) \\log P(X) - \\sum_{x, g(x)} P(X) P(g(X) | X) \\log P(g(X) | X)\\\n&amp;= H(X) + H(g(X) | X)\n\\end{align}\n$$</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "fc929dfe92cf36ece010bd21bb7777ef",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"step-b\">(Step b)</h3>\n<span class=\"paragraph\">Since <marimo-tex class=\"arithmatex\">||(g(X)||)</marimo-tex> is a function of <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex>, it is completely determined by <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex>. Therefore, the conditional entropy <marimo-tex class=\"arithmatex\">||(H(g(X) | X)||)</marimo-tex> is zero, because <marimo-tex class=\"arithmatex\">||(g(X)||)</marimo-tex> is a completely known value (and thus has no uncertainty) given <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex>. Therefore <marimo-tex class=\"arithmatex\">||(H(X) + 0 = H(X)||)</marimo-tex>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "eb93aae8020333fb908ba5ecb4c6c3a5",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"step-c\">(Step c)</h3>\n<span class=\"paragraph\"><marimo-tex class=\"arithmatex\">||(H(X) + H(g(X) | X) =^{(a)} H(X, g(X)) = H(g(X)) + H(X | g(X))||)</marimo-tex>. This can be seen by the same logic as in step (a), but now we decompose the joint distribution <marimo-tex class=\"arithmatex\">||(P(X, g(X))||)</marimo-tex> as <marimo-tex class=\"arithmatex\">||(P(g(X)) P(X | g(X))||)</marimo-tex> instead of <marimo-tex class=\"arithmatex\">||(P(X) P(g(X) | X)||)</marimo-tex>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "68b35922fb3f4eeeae425ab4d32b6c65",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"step-d\">(Step d)</h3>\n<span class=\"paragraph\"><marimo-tex class=\"arithmatex\">||(H(X | g(X)) \\geq 0||)</marimo-tex> because functions can have multiple inputs that map to the same output, but they cannot have multiple outputs for the same input. This induces uncertainty in <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex> given <marimo-tex class=\"arithmatex\">||(g(X)||)</marimo-tex>, meaning that <marimo-tex class=\"arithmatex\">||(H(X | g(X))||)</marimo-tex> is <marimo-tex class=\"arithmatex\">||(0||)</marimo-tex> when <marimo-tex class=\"arithmatex\">||(g(X)||)</marimo-tex> is a one-to-one function of <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex> and is positive otherwise. Therefore, <marimo-tex class=\"arithmatex\">||(H(g(X)) + H(X | g(X)) \\geq H(g(X))||)</marimo-tex>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "f19c7a79e9089e8ca1c04632c7a71f69",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"final-conclusion\">Final Conclusion</h3>\n<span class=\"paragraph\">Using the equality <marimo-tex class=\"arithmatex\">||(H(X, g(X)) = H(X) + H(g(X) | X) = H(g(X)) + H(X | g(X))||)</marimo-tex> and our results:\n$$\n\\begin{align}\nH(X, g(X)) &amp;= H(X) \\\nH(X, g(X)) &amp;\\geq H(g(X))\n\\end{align}\n$$\nwe can conclude that <marimo-tex class=\"arithmatex\">||(H(g(X)) \\leq H(X)||)</marimo-tex>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "9388522592dc281c4e0c543b8aabeaae",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"problem-2-eit-212-example-of-joint-entropy\">Problem 2 (EIT 2.12) - Example of joint entropy</h2>\n<span class=\"paragraph\">Let <marimo-tex class=\"arithmatex\">||(p(x, y)||)</marimo-tex> be given by:</span>\n<table>\n<thead>\n<tr>\n<th>X/Y</th>\n<th>0</th>\n<th>1</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>0</td>\n<td>1/3</td>\n<td>1/3</td>\n</tr>\n<tr>\n<td>1</td>\n<td>0</td>\n<td>1/3</td>\n</tr>\n</tbody>\n</table>\n<span class=\"paragraph\">Find:</span>\n<ul>\n<li><strong>(a)</strong> <marimo-tex class=\"arithmatex\">||(H(X)||)</marimo-tex>, <marimo-tex class=\"arithmatex\">||(H(Y)||)</marimo-tex></li>\n<li><strong>(b)</strong> <marimo-tex class=\"arithmatex\">||(H(X|Y)||)</marimo-tex>, <marimo-tex class=\"arithmatex\">||(H(Y|X)||)</marimo-tex></li>\n<li><strong>(c)</strong> <marimo-tex class=\"arithmatex\">||(H(X, Y)||)</marimo-tex></li>\n<li><strong>(d)</strong> <marimo-tex class=\"arithmatex\">||(H(Y) - H(Y|X)||)</marimo-tex></li>\n<li><strong>(e)</strong> <marimo-tex class=\"arithmatex\">||(I(X; Y)||)</marimo-tex></li>\n<li><strong>(f)</strong> Draw a Venn diagram for the quantities in parts (a) through (e)</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "f40dc2a37fa41bb5a7bd514304face47",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"part-a\">(Part a)</h3>\n<span class=\"paragraph\">To find <marimo-tex class=\"arithmatex\">||(H(X)||)</marimo-tex> and <marimo-tex class=\"arithmatex\">||(H(Y)||)</marimo-tex>, we first need to compute the marginal distributions of <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex> and <marimo-tex class=\"arithmatex\">||(Y||)</marimo-tex>.</span>\n<marimo-tex class=\"arithmatex\">||[\n\\begin{align}\nP(X=0) &amp;= P(X=0, Y=0) + P(X=0, Y=1) = \\frac{1}{3} + \\frac{1}{3} = \\frac{2}{3} \\\\\nP(X=1) &amp;= P(X=1, Y=0) + P(X=1, Y=1) = 0 + \\frac{1}{3} = \\frac{1}{3} \\\\\nP(Y=0) &amp;= P(X=0, Y=0) + P(X=1, Y=0) = \\frac{1}{3} + 0 = \\frac{1}{3} \\\\\nP(Y=1) &amp;= P(X=0, Y=1) + P(X=1, Y=1) = \\frac{1}{3} + \\frac{1}{3} = \\frac{2}{3}\n\\end{align}\n||]</marimo-tex><span class=\"paragraph\">Now we can compute the entropies using the formula <marimo-tex class=\"arithmatex\">||(H(X) = -\\sum_x P(X=x) \\log P(X=x)||)</marimo-tex> and similarly for <marimo-tex class=\"arithmatex\">||(H(Y)||)</marimo-tex>.</span>\n<marimo-tex class=\"arithmatex\">||[\n\\begin{align}\nH(X) &amp;= -\\left( \\frac{2}{3} \\log \\frac{2}{3} + \\frac{1}{3} \\log \\frac{1}{3} \\right) \\\\\nH(Y) &amp;= -\\left( \\frac{1}{3} \\log \\frac{1}{3} + \\frac{2}{3} \\log \\frac{2}{3} \\right)\n\\end{align}\n||]</marimo-tex></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "1feace73794ae2bd306fa56358016561",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"part-b\">(Part b)</h3>\n<span class=\"paragraph\">To find <marimo-tex class=\"arithmatex\">||(H(X|Y)||)</marimo-tex> and <marimo-tex class=\"arithmatex\">||(H(Y|X)||)</marimo-tex>, we need to compute the conditional probabilities first.\n$$\n\\begin{align}\nP(X=0|Y=0) &amp;= \\frac{P(X=0, Y=0)}{P(Y=0)} = \\frac{\\frac{1}{3}}{\\frac{1}{3}} = 1 \\\nP(X=1|Y=0) &amp;= \\frac{P(X=1, Y=0)}{P(Y=0)} = \\frac{0}{\\frac{1}{3}} = 0 \\\nP(X=0|Y=1) &amp;= \\frac{P(X=0, Y=1)}{P(Y=1)} = \\frac{\\frac{1}{3}}{\\frac{2}{3}} = \\frac{1}{2} \\\nP(X=1|Y=1) &amp;= \\frac{P(X=1, Y=1)}{P(Y=1)} = \\frac{\\frac{1}{3}}{\\frac{2}{3}} = \\frac{1}{2} \\\nP(Y=0|X=0) &amp;= \\frac{P(X=0, Y=0)}{P(X=0)} = \\frac{\\frac{1}{3}}{\\frac{2}{3}} = \\frac{1}{2} \\\nP(Y=1|X=0) &amp;= \\frac{P(X=0, Y=1)}{P(X=0)} = \\frac{\\frac{1}{3}}{\\frac{2}{3}} = \\frac{1}{2} \\\nP(Y=0|X=1) &amp;= \\frac{P(X=1, Y=0)}{P(X=1)} = \\frac{0}{\\frac{1}{3}} = 0 \\\nP(Y=1|X=1) &amp;= \\frac{P(X=1, Y=1)}{P(X=1)} = \\frac{\\frac{1}{3}}{\\frac{1}{3}} = 1\n\\end{align}\n$$</span>\n<span class=\"paragraph\">Now we can compute the conditional entropies:\n$$\n\\begin{align}\nH(X|Y) &amp;= P(Y=0) H(X|Y=0) + P(Y=1) H(X|Y=1) \\\n&amp;= \\frac{1}{3} \\cdot 0 + \\frac{2}{3} \\cdot \\left( -\\left( \\frac{1}{2} \\log \\frac{1}{2} + \\frac{1}{2} \\log \\frac{1}{2} \\right) \\right) \\\n&amp;= \\frac{2}{3} \\cdot 1 = \\frac{2}{3} \\\nH(Y|X) &amp;= P(X=0) H(Y|X=0) + P(X=1) H(Y|X=1) \\\n&amp;= \\frac{2}{3} \\cdot \\left( -\\left( \\frac{1}{2} \\log \\frac{1}{2} + \\frac{1}{2} \\log \\frac{1}{2} \\right) \\right) + \\frac{1}{3} \\cdot 0 \\\n&amp;= \\frac{2}{3} \\cdot 1 = \\frac{2}{3}\n\\end{align}\n$$</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hstk",
+      "code_hash": "6c1a83854ff46f711647c715c1d82638",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"part-c\">(Part c)</h3>\n<marimo-tex class=\"arithmatex\">||[\n\\begin{align}\nH(X, Y) &amp;= H(X) + H(Y|X) \\\\\n&amp;= -\\left( \\frac{2}{3} \\log \\frac{2}{3} + \\frac{1}{3} \\log \\frac{1}{3} \\right) + \\frac{2}{3} \\\\\n\\end{align}\n||]</marimo-tex></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "iLit",
+      "code_hash": "de220ef7b25a3ceebb42b15ebf3b0f25",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"part-d\">(Part d)</h3>\n<marimo-tex class=\"arithmatex\">||[\nH(Y) - H(Y|X) = -\\left( \\frac{1}{3} \\log \\frac{1}{3} + \\frac{2}{3} \\log \\frac{2}{3} \\right) - \\frac{2}{3} \\\\\n||]</marimo-tex></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ROlb",
+      "code_hash": "c73c5ce29ce7e708c70f891473871150",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"part-e\">(Part e)</h3>\n<span class=\"paragraph\">This is the mutual information, which is the same value as part (d) because <marimo-tex class=\"arithmatex\">||(I(X; Y) = H(Y) - H(Y|X)||)</marimo-tex>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "qnkX",
+      "code_hash": "5964e62213852a16c2b7e8e8cd863585",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"part-f\">(Part f)</h3>\n<blockquote>\n<span class=\"paragraph\">Venn diagram sourced from <a href=\"https://en.wikipedia.org/wiki/Mutual_information#/media/File:Entropy-mutual-information-relative-entropy-relation-diagram.svg\" rel=\"noopener noreferrer\" target=\"_blank\">https://en.wikipedia.org/wiki/Mutual_information#/media/File:Entropy-mutual-information-relative-entropy-relation-diagram.svg</a></span>\n</blockquote></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Vxnm",
+      "code_hash": "a282fd275b513291926fee1ced16ca47",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"problem-3-grit-106-entropy-of-time-to-first-success\">Problem 3 (GRIT 1.06) - Entropy of time to first success</h2>\n<span class=\"paragraph\">A fair coin is flipped repeatedly. Let <marimo-tex class=\"arithmatex\">||(X_i||)</marimo-tex> denote the number of flips required for the <marimo-tex class=\"arithmatex\">||(i||)</marimo-tex>-th occurrence of a head. (i.e., if the coin is a head on the first flip then <marimo-tex class=\"arithmatex\">||(X_1 = 1||)</marimo-tex>). For example, the flip sequence \"TTTHTHTTH...\" generates the outcome <marimo-tex class=\"arithmatex\">||((X_1, X_2, X_3, \\ldots) = (4, 2, 3, \\ldots)||)</marimo-tex>.</span>\n<ul>\n<li><strong>(a)</strong> Find the entropy <marimo-tex class=\"arithmatex\">||(H(X_1)||)</marimo-tex> in bits.</li>\n<li><strong>(b)</strong> Find the conditional entropy <marimo-tex class=\"arithmatex\">||(H(X_2|X_1)||)</marimo-tex> in bits.</li>\n<li><strong>(c)</strong> Show that <marimo-tex class=\"arithmatex\">||(H(X_1) \\leq H(X_2) \\leq 2H(X_1)||)</marimo-tex>. [Hint: try expressing <marimo-tex class=\"arithmatex\">||(H(X_1, X_2)||)</marimo-tex> two different ways.]</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "DnEU",
+      "code_hash": "fb279ad6bdcf6426e5b4d9a0072f7c4f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"part-a\">(Part a)</h3>\n<span class=\"paragraph\">This is a geometric distribution with success probability <marimo-tex class=\"arithmatex\">||(p = \\frac{1}{2}||)</marimo-tex>. The entropy of a geometric distribution is given by:\n$$\nH(X) = -\\sum_{k=1}^{\\infty} p(1-p)^{k-1} \\log_2(p(1-p)^{k-1})\n$$\nFor <marimo-tex class=\"arithmatex\">||(p = \\frac{1}{2}||)</marimo-tex>, this becomes:\n$$\nH(X_1) = -\\sum_{k=1}^{\\infty} \\frac{1}{2} \\left(\\frac{1}{2}\\right)^{k-1} \\log_2\\left(\\frac{1}{2} \\left(\\frac{1}{2}\\right)^{k-1}\\right)\n$$\nCalculating this sum gives:\n$$\nH(X_1) = 2 \\text{ bits}\n$$</span>\n<span class=\"paragraph\">You can understand this as a simple weighted average on number of bits. 50% of the time you get 1 bit (H), 25% of the time you get 2 bits (TH), 12.5% of the time you get 3 bits (TTH), etc. This converges to 2 bits.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ulZA",
+      "code_hash": "5b3c2073c27fecb88ccddc3ff7ce9c87",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"part-b\">(Part b)</h3>\n<blockquote>\n<span class=\"paragraph\">I am assuming <marimo-tex class=\"arithmatex\">||(X_2||)</marimo-tex> is the number of flips total til the second head (description), not the number of flips til the second head after the first head (example).</span>\n</blockquote>\n<span class=\"paragraph\"><marimo-tex class=\"arithmatex\">||(X_2 = X_1 + Z||)</marimo-tex>, where <marimo-tex class=\"arithmatex\">||(Z||)</marimo-tex> is the number of flips after the first head til the second head. Note that <marimo-tex class=\"arithmatex\">||(Z||)</marimo-tex> is independent of <marimo-tex class=\"arithmatex\">||(X_1||)</marimo-tex> and has the same distribution as <marimo-tex class=\"arithmatex\">||(X_1||)</marimo-tex> (both are geometric with <marimo-tex class=\"arithmatex\">||(p = \\frac{1}{2}||)</marimo-tex>).</span>\n<span class=\"paragraph\"><marimo-tex class=\"arithmatex\">||(P(X_2|X_1) = P(Z)||)</marimo-tex> because <marimo-tex class=\"arithmatex\">||(X_2||)</marimo-tex> is completely determined by <marimo-tex class=\"arithmatex\">||(X_1||)</marimo-tex> and <marimo-tex class=\"arithmatex\">||(Z||)</marimo-tex>. Since <marimo-tex class=\"arithmatex\">||(Z||)</marimo-tex> has the same distribution as <marimo-tex class=\"arithmatex\">||(X_1||)</marimo-tex> and <marimo-tex class=\"arithmatex\">||(X_1||)</marimo-tex> is completely given, the entire uncertainty in <marimo-tex class=\"arithmatex\">||(X_2||)</marimo-tex> given <marimo-tex class=\"arithmatex\">||(X_1||)</marimo-tex> is just the uncertainty in <marimo-tex class=\"arithmatex\">||(Z||)</marimo-tex>, which is the same as the uncertainty in <marimo-tex class=\"arithmatex\">||(X_1||)</marimo-tex>. Therefore, <marimo-tex class=\"arithmatex\">||(H(X_2|X_1) = H(Z) = H(X_1) = 2||)</marimo-tex> bits.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ecfG",
+      "code_hash": "5bf6e9c7226104c83f12ea98a122d8a7",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><strong>(c)</strong> Show that <marimo-tex class=\"arithmatex\">||(H(X_1) \\leq H(X_2) \\leq 2H(X_1)||)</marimo-tex>. [Hint: try expressing <marimo-tex class=\"arithmatex\">||(H(X_1, X_2)||)</marimo-tex> two different ways.]</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Pvdt",
+      "code_hash": "6fe8657215aa5c608d6a9e80085071b1",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"part-d\">(Part d)</h3>\n<span class=\"paragraph\">Upper Bound:\n$$\n\\begin{align}\nH(X_1, X_2) &amp;= H(X_1) + H(X_2 | X_1) \\\n&amp;= H(X_1) + H(Z) \\\n&amp;= H(X_1) + H(X_1) \\\n&amp;= 2H(X_1)\n\\end{align}\n$$\nSince entropy is non-negative, we have <marimo-tex class=\"arithmatex\">||(H(X_2) \\leq H(X_1, X_2) \\leq 2H(X_1)||)</marimo-tex>.</span>\n<span class=\"paragraph\">Lower Bound:\n$$\nH(X_2|X_1) = H(X_1)\n$$</span>\n<span class=\"paragraph\">Since providing <marimo-tex class=\"arithmatex\">||(X_1||)</marimo-tex> must give non-negative information about <marimo-tex class=\"arithmatex\">||(X_2||)</marimo-tex>, we have <marimo-tex class=\"arithmatex\">||(H(X_2) \\geq H(X_1)||)</marimo-tex>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZBYS",
+      "code_hash": "b4a1a4fa0d02a120e356ba9a71715a16",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"problem-4-grit-201-cross-entropy-loss\">Problem 4 (GRIT 2.01) - Cross-Entropy Loss</h2>\n<span class=\"paragraph\">Consider a problem where we are given <marimo-tex class=\"arithmatex\">||(n||)</marimo-tex> iid samples <marimo-tex class=\"arithmatex\">||((x_i, y_i) \\in \\mathcal{X} \\times \\mathcal{Y}||)</marimo-tex> drawn from <marimo-tex class=\"arithmatex\">||(p(x, y)||)</marimo-tex> and the goal is to learn a predictor <marimo-tex class=\"arithmatex\">||(f||)</marimo-tex> that maps each <marimo-tex class=\"arithmatex\">||(x \\in \\mathcal{X}||)</marimo-tex> to a prediction of <marimo-tex class=\"arithmatex\">||(y \\in \\mathcal{Y}||)</marimo-tex>. Without loss of generality, we will assume the prediction is an estimate of the posterior distribution of <marimo-tex class=\"arithmatex\">||(y||)</marimo-tex> given <marimo-tex class=\"arithmatex\">||(x||)</marimo-tex>. A common approach in machine learning is to define a loss function and then use the predictor that minimizes the average loss.</span>\n<span class=\"paragraph\">Let <marimo-tex class=\"arithmatex\">||(P(\\mathcal{Y})||)</marimo-tex> denote the set of pmfs over <marimo-tex class=\"arithmatex\">||(\\mathcal{Y}||)</marimo-tex>. Then, the cross-entropy loss <marimo-tex class=\"arithmatex\">||(\\ell : \\mathcal{Y} \\times P(\\mathcal{Y}) \\to \\mathbb{R}_{\\geq 0}||)</marimo-tex> maps the true <marimo-tex class=\"arithmatex\">||(y \\in \\mathcal{Y}||)</marimo-tex> and the predicted posterior <marimo-tex class=\"arithmatex\">||(q(y)||)</marimo-tex> to the non-negative real loss</span>\n<marimo-tex class=\"arithmatex\">||[\\ell(y, q) = \\log \\frac{1}{q(y)}||]</marimo-tex><span class=\"paragraph\">For each <marimo-tex class=\"arithmatex\">||(\\theta \\in \\mathbb{R}^d||)</marimo-tex>, let <marimo-tex class=\"arithmatex\">||(f_\\theta(x) : \\mathcal{X} \\to P(\\mathcal{Y})||)</marimo-tex> be a candidate predictor that maps each <marimo-tex class=\"arithmatex\">||(x \\in \\mathcal{X}||)</marimo-tex> to a pmf over <marimo-tex class=\"arithmatex\">||(\\mathcal{Y}||)</marimo-tex>. Then, the average cross-entropy loss is given by</span>\n<marimo-tex class=\"arithmatex\">||[L_n(\\theta) = \\frac{1}{n} \\sum_{i=1}^n \\ell(y_i, f_\\theta(x_i))||]</marimo-tex><span class=\"paragraph\">The following should help illuminate an important connection between machine learning and information theory. Note: One can denote the pmf <marimo-tex class=\"arithmatex\">||(f_\\theta(x)||)</marimo-tex> evaluated at <marimo-tex class=\"arithmatex\">||(y \\in \\mathcal{Y}||)</marimo-tex> by <marimo-tex class=\"arithmatex\">||(f_\\theta(x)(y)||)</marimo-tex>.</span>\n<ul>\n<li><strong>(a)</strong> To what non-random value will <marimo-tex class=\"arithmatex\">||(L_n(\\theta)||)</marimo-tex> converge to as <marimo-tex class=\"arithmatex\">||(n \\to \\infty||)</marimo-tex>?</li>\n<li><strong>(b)</strong> For fixed <marimo-tex class=\"arithmatex\">||(\\theta||)</marimo-tex>, write the quantity in (a) as <marimo-tex class=\"arithmatex\">||(H(Y|X)||)</marimo-tex> plus the average (over <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex>) divergence between <marimo-tex class=\"arithmatex\">||(p(y|x)||)</marimo-tex> and <marimo-tex class=\"arithmatex\">||(q(y|x) = f_\\theta(x)(y)||)</marimo-tex>.</li>\n<li><strong>(c)</strong> Use the non-negativity of divergence to identify the minimum possible cross-entropy loss and choice of <marimo-tex class=\"arithmatex\">||(f_\\theta||)</marimo-tex> that achieves it.</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "aLJB",
+      "code_hash": "c5ecc61813a03314f0f7df01ef1549c0",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"part-a\">(Part a)</h3>\n<blockquote>\n<span class=\"paragraph\">From the notes\n<strong>KL and model fitting.</strong> If the true distribution is p, then\n$$\n\\mathbb{E}<em>p[\u2212 \\log q</em>\\theta(X)] = H(p, q_\\theta) = H(p) + D(p\u2225q_\\theta).\n$$\nwhere <marimo-tex class=\"arithmatex\">||(p = p(y |x)||)</marimo-tex> and <marimo-tex class=\"arithmatex\">||(q_\\theta = f_\\theta(x)(y)||)</marimo-tex>. Therefore, as <marimo-tex class=\"arithmatex\">||(n \\to \\infty||)</marimo-tex>, the average cross-entropy loss <marimo-tex class=\"arithmatex\">||(L_n(\\theta)||)</marimo-tex> converges to <marimo-tex class=\"arithmatex\">||(\\mathbb{E}_{p(x, y)}[\\ell(y, f_\\theta(x))] = H(Y|X) + D(p(y|x)\u2225f_\\theta(x)(y))||)</marimo-tex>.</span>\n</blockquote></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nHfw",
+      "code_hash": "6424707da0c9f41562b1575e7f1da710",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"part-b\">(Part b)</h3>\n<marimo-tex class=\"arithmatex\">||[\nL(\\theta) = H(Y|X) + \\mathbb{E}_{p(x)}[D(p(y|x)\u2225f_\\theta(x)(y))]\n||]</marimo-tex></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "xXTn",
+      "code_hash": "373f9a4082dbb86589a6d69322343815",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"part-c\">(Part c)</h3>\n<span class=\"paragraph\">The minimum possible cross-entropy loss is <marimo-tex class=\"arithmatex\">||(H(Y|X)||)</marimo-tex>, which is achieved when the average divergence between <marimo-tex class=\"arithmatex\">||(p(y|x)||)</marimo-tex> and <marimo-tex class=\"arithmatex\">||(q(y|x) = f_\\theta(x)(y)||)</marimo-tex> is zero. This occurs when <marimo-tex class=\"arithmatex\">||(f_\\theta(x)(y) = p(y|x)||)</marimo-tex> for all <marimo-tex class=\"arithmatex\">||(x \\in \\mathcal{X}||)</marimo-tex>, meaning that the predictor perfectly matches the true conditional distribution of <marimo-tex class=\"arithmatex\">||(Y||)</marimo-tex> given <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex>.</span>\n<span class=\"paragraph\">This value can still be positive because <marimo-tex class=\"arithmatex\">||(y||)</marimo-tex> can be uncertain given <marimo-tex class=\"arithmatex\">||(x||)</marimo-tex>. For example, if <marimo-tex class=\"arithmatex\">||(Y||)</marimo-tex> is a noisy label of <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex>, then even the best predictor will have some uncertainty in its predictions, leading to a positive cross-entropy loss.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "AjVT",
+      "code_hash": "ce87342f58a4a2688793222860e7d563",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"problem-5-eit-304-aep\">Problem 5 (EIT 3.04) - AEP</h2>\n<span class=\"paragraph\">Let <marimo-tex class=\"arithmatex\">||(X_i||)</marimo-tex> be iid <marimo-tex class=\"arithmatex\">||(\\sim p(x)||)</marimo-tex>, <marimo-tex class=\"arithmatex\">||(x \\in \\{1, 2, \\ldots, m\\}||)</marimo-tex>. Let <marimo-tex class=\"arithmatex\">||(\\mu = E[X]||)</marimo-tex> and <marimo-tex class=\"arithmatex\">||(H = H(X)||)</marimo-tex>. Let</span>\n<marimo-tex class=\"arithmatex\">||[A^n = \\left\\{x^n \\in \\mathcal{X}^n : \\left| -\\frac{1}{n} \\log p(x^n) - H \\right| \\leq \\epsilon \\right\\}||]</marimo-tex><marimo-tex class=\"arithmatex\">||[B^n = \\left\\{x^n \\in \\mathcal{X}^n : \\left| \\frac{1}{n} \\sum_{i=1}^n X_i - \\mu \\right| \\leq \\epsilon \\right\\}||]</marimo-tex><ul>\n<li><strong>(a)</strong> Does <marimo-tex class=\"arithmatex\">||(P[X^n \\in A^n] \\to 1||)</marimo-tex>?</li>\n<li><strong>(b)</strong> Does <marimo-tex class=\"arithmatex\">||(P[X^n \\in A^n \\cap B^n] \\to 1||)</marimo-tex>?</li>\n<li><strong>(c)</strong> Show that <marimo-tex class=\"arithmatex\">||(|A^n \\cap B^n| \\leq 2^{n(H+\\epsilon)}||)</marimo-tex></li>\n<li><strong>(d)</strong> Show that <marimo-tex class=\"arithmatex\">||(|A^n \\cap B^n| \\geq \\left(\\frac{1}{2}\\right) 2^{n(H-\\epsilon)}||)</marimo-tex> for <marimo-tex class=\"arithmatex\">||(n||)</marimo-tex> large enough</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "pHFh",
+      "code_hash": "73b5e2a9447f29e5366f73fccb60a84b",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"part-a\">(Part a)</h3>\n<span class=\"paragraph\">Yes, for any <marimo-tex class=\"arithmatex\">||(\\epsilon &gt; 0||)</marimo-tex>, the AEP states that as <marimo-tex class=\"arithmatex\">||(n \\to \\infty||)</marimo-tex>, the probability that <marimo-tex class=\"arithmatex\">||(X^n||)</marimo-tex> is the typical set <marimo-tex class=\"arithmatex\">||(\\mathcal{T}_\\epsilon^{(n)}||)</marimo-tex> goes to 1. Since <marimo-tex class=\"arithmatex\">||(A^n||)</marimo-tex> is defined as the set of sequences that are within <marimo-tex class=\"arithmatex\">||(\\epsilon||)</marimo-tex> of the entropy <marimo-tex class=\"arithmatex\">||(H||)</marimo-tex>, it is essentially the typical set.</span>\n<span class=\"paragraph\">Given <marimo-tex class=\"arithmatex\">||(x^n||)</marimo-tex> in <marimo-tex class=\"arithmatex\">||(\\mathcal{T}_\\epsilon^{(n)}||)</marimo-tex>, we have:\n$$\n\\begin{align}\n2^{-n(H+\\epsilon)} &amp;\\leq p(x^n) \\leq 2^{-n(H-\\epsilon)} \\\n|-\\frac{1}{n} \\log p(x^n) - H| &amp;\\leq \\epsilon\n\\end{align}\n$$</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "NCOB",
+      "code_hash": "c5438469ab1e5ce48bb4eddba47865f9",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"part-b\">(Part b)</h3>\n<span class=\"paragraph\">We know by Law of Large Numbers that sample means converge to the true mean, so <marimo-tex class=\"arithmatex\">||(P[X^n \\in B^n] \\to 1||)</marimo-tex>. Since <marimo-tex class=\"arithmatex\">||(P[X^n \\in A^n] \\to 1||)</marimo-tex> and <marimo-tex class=\"arithmatex\">||(P[X^n \\in B^n] \\to 1||)</marimo-tex>, we have <marimo-tex class=\"arithmatex\">||(P[X^n \\in A^n \\cap B^n] \\to 1||)</marimo-tex>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "aqbW",
+      "code_hash": "6103a89e1e3d277be34e7c83ade1d653",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"part-c\">(Part c)</h3>\n<span class=\"paragraph\">Since <marimo-tex class=\"arithmatex\">||(A^n \\cap B^n \\subseteq A^n||)</marimo-tex>, all <marimo-tex class=\"arithmatex\">||(x^n||)</marimo-tex> in this set satisfy the upper bound on <marimo-tex class=\"arithmatex\">||(p(x^n)||)</marimo-tex> given by part (a):\n$$\n\\begin{align}\n-\\frac{1}{n} \\log p(x^n) &amp;\\leq H + \\epsilon \\\np(x^n) &amp;\\geq 2^{-n(H+\\epsilon)} \\\n1 &amp;\\geq \\sum_{x^n \\in A^n \\cap B^n} p(x^n) \\geq |A^n| 2^{-n(H+\\epsilon)} \\\n|A^n| &amp;\\leq 2^{n(H+\\epsilon)}\n\\end{align}\n$$\nSince <marimo-tex class=\"arithmatex\">||(|A^n \\cap B^n| \\leq |A^n|||)</marimo-tex>, we have <marimo-tex class=\"arithmatex\">||(|A^n \\cap B^n| \\leq 2^{n(H+\\epsilon)}||)</marimo-tex>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TRpd",
+      "code_hash": "8ebb6f6566da915acdb83d93caa1452f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"part-d\">(Part d)</h3>\n<span class=\"paragraph\">Since <marimo-tex class=\"arithmatex\">||(A^n \\cap B^n \\subseteq A^n||)</marimo-tex>, all <marimo-tex class=\"arithmatex\">||(x^n||)</marimo-tex> in this set satisfy the lower bound on <marimo-tex class=\"arithmatex\">||(p(x^n)||)</marimo-tex> given by part (a):</span>\n<marimo-tex class=\"arithmatex\">||[\n\\begin{align}\n-\\frac{1}{n} \\log p(x^n) &amp;\\geq H - \\epsilon \\\\\np(x^n) &amp;\\leq 2^{-n(H-\\epsilon)} \\\\\n\\mathbb{P}[X^n \\in A^n \\cap B^n] &amp;= \\sum_{x^n \\in A^n \\cap B^n} p(x^n) \\\\\n&amp;\\leq |A^n \\cap B^n| 2^{-n(H-\\epsilon)} \\\\\n\\mathbb{P}[X^n \\in A^n \\cap B^n] &amp;&gt; \\frac{1}{2} \\text{ for $n$ large enough} \\\\\n|A^n \\cap B^n| &amp;&gt; \\left(\\frac{1}{2}\\right) 2^{n(H-\\epsilon)}\n\\end{align}\n||]</marimo-tex></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TXez",
+      "code_hash": "3bf5f72f99ddd7920e86f5d9f03450aa",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"problem-6-eit-229-inequalities\">Problem 6 (EIT 2.29) - Inequalities</h2>\n<span class=\"paragraph\">Let <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex>, <marimo-tex class=\"arithmatex\">||(Y||)</marimo-tex>, and <marimo-tex class=\"arithmatex\">||(Z||)</marimo-tex> be joint random variables. Prove the following inequalities and find conditions for equality.</span>\n<ul>\n<li><strong>(a)</strong> <marimo-tex class=\"arithmatex\">||(H(X, Y | Z) \\geq H(X | Z)||)</marimo-tex></li>\n<li><strong>(b)</strong> <marimo-tex class=\"arithmatex\">||(I(X, Y; Z) \\geq I(X; Z)||)</marimo-tex></li>\n<li><strong>(c)</strong> <marimo-tex class=\"arithmatex\">||(H(X, Y, Z) - H(X, Y) \\leq H(X, Z) - H(X)||)</marimo-tex></li>\n<li><strong>(d)</strong> <marimo-tex class=\"arithmatex\">||(I(X; Z | Y) \\geq I(Z; Y | X) - I(Z; Y) + I(X; Z)||)</marimo-tex></li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "dNNg",
+      "code_hash": "45deca1a74190816c3270f2080154389",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"part-a\">(Part a)</h3>\n<marimo-tex class=\"arithmatex\">||[\n\\begin{align}\nH(X, Y | Z) &amp;= H(X | Z) + H(Y | X, Z) \\\\\n&amp;\\geq H(X | Z)\n\\end{align}\n||]</marimo-tex><span class=\"paragraph\">This is given by the decomposition of the joint entropy <marimo-tex class=\"arithmatex\">||(H(X, Y | Z)||)</marimo-tex> into the sum of the marginal entropy <marimo-tex class=\"arithmatex\">||(H(X | Z)||)</marimo-tex> and the conditional entropy <marimo-tex class=\"arithmatex\">||(H(Y | X, Z)||)</marimo-tex>. Since <marimo-tex class=\"arithmatex\">||(H(Y | X, Z)||)</marimo-tex> is non-negative, we have <marimo-tex class=\"arithmatex\">||(H(X, Y | Z) \\geq H(X | Z)||)</marimo-tex>.</span>\n<span class=\"paragraph\">Conditions for equality: <marimo-tex class=\"arithmatex\">||(H(Y | X, Z) = 0||)</marimo-tex>, which occurs when <marimo-tex class=\"arithmatex\">||(Y||)</marimo-tex> is a deterministic function of <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex> and <marimo-tex class=\"arithmatex\">||(Z||)</marimo-tex>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "yCnT",
+      "code_hash": "8864605bb2b239af062c73ef2e345f2c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"part-b\">(Part b)</h3>\n<marimo-tex class=\"arithmatex\">||[\n\\begin{align}\nI(X, Y; Z) &amp;= H(X, Y) - H(X, Y | Z) \\\\\n&amp;= [H(X) + H(Y | X)] - [H(X | Z) + H(Y | X, Z)] \\\\\nI(X; Z) &amp;= H(X) - H(X | Z) \\\\\nI(X, Y; Z) - I(X; Z) &amp;= H(Y | X) - H(Y | X, Z) \\\\\n&amp;\\geq 0 \\implies I(X, Y; Z) \\geq I(X; Z)\n\\end{align}\n||]</marimo-tex><span class=\"paragraph\">Condition for equality: <marimo-tex class=\"arithmatex\">||(I(X, Y; Z) = I(X; Z)||)</marimo-tex> if and only if <marimo-tex class=\"arithmatex\">||(H(Y | X) = H(Y | X, Z)||)</marimo-tex>, which means that <marimo-tex class=\"arithmatex\">||(Y||)</marimo-tex> is conditionally independent of <marimo-tex class=\"arithmatex\">||(Z||)</marimo-tex> given <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "wlCL",
+      "code_hash": "82d5c207e1732779c7ab4882e237d34d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"part-c\">(Part c)</h3>\n<marimo-tex class=\"arithmatex\">||[\n\\begin{align}\nH(X, Y, Z) - H(X, Y) &amp;= [H(X, Z) + H(Y | X, Z)] - [H(X) + H(Y | X)] \\\\\n&amp;= [H(X, Z) - H(X)] + [H(Y | X, Z) - H(Y | X)] \\\\\n&amp;= [H(X, Z) - H(X)] - I(Y; Z | X) \\\\\n&amp;\\implies H(X, Y, Z) - H(X, Y) \\leq H(X, Z) - H(X) \\\\\n&amp;\\to \\text{non-negativity of mutual information}\n\\end{align}\n||]</marimo-tex><span class=\"paragraph\">Condtions for equality: <marimo-tex class=\"arithmatex\">||(I(Y; Z | X) = 0||)</marimo-tex>, meaning that <marimo-tex class=\"arithmatex\">||(Y||)</marimo-tex> and <marimo-tex class=\"arithmatex\">||(Z||)</marimo-tex> are conditionally independent given <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex>.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "kqZH",
+      "code_hash": "1107d4b9663964c5696edeb453d11015",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"part-d\">(Part d)</h3>\n<marimo-tex class=\"arithmatex\">||[\n\\begin{align}\nI(X; Z | Y) &amp;= H(X | Y) - H(X | Y, Z) \\\\\nI(Z; Y | X) &amp;= H(Z | X) - H(Z | X, Y) \\\\\nI(Z; Y) &amp;= H(Z) - H(Z | Y) \\\\\nI(X; Z) &amp;= H(Z) - H(Z | X) \\\\\nI(X; Z | Y) - I(Z; Y | X) + I(Z; Y) - I(X; Z) &amp;= H(Z | Y) - H(Z | X, Y) \\\\\n&amp;= I(Z; X | Y) \\\\\n&amp;= I(X; Z | Y) \\\\\n&amp;\\implies I(X; Z | Y) \\geq I(Z; Y | X) - I(Z; Y) + I(X; Z)\n\\end{align}\n||]</marimo-tex><span class=\"paragraph\">Conditions for equality: always</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "wAgl",
+      "code_hash": "5239fbaf82d2617f1cb5a1abf46d6533",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><hr />\n<h2 id=\"practice-problems-do-not-hand-in\">Practice Problems (do not hand in)</h2></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "rEll",
+      "code_hash": "7221aaa08c3574bd1fc29c7cf468d2bf",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"practice-problem-1-grit-101-union-bounds\">Practice Problem 1 (GRIT 1.01) - Union Bounds</h3>\n<span class=\"paragraph\">Let <marimo-tex class=\"arithmatex\">||(A_1, A_2, \\ldots||)</marimo-tex> be events defined on a sample space <marimo-tex class=\"arithmatex\">||(\\Omega||)</marimo-tex>. Prove the following two inequalities.</span>\n<ul>\n<li><strong>(a)</strong> <marimo-tex class=\"arithmatex\">||(P\\left[\\bigcup_{i=1}^\\infty A_i\\right] \\leq \\sum_{i=1}^\\infty P[A_i]||)</marimo-tex></li>\n<li><strong>(b)</strong> <marimo-tex class=\"arithmatex\">||(P\\left[\\bigcap_{i=1}^\\infty A_i\\right] \\geq 1 - \\sum_{i=1}^\\infty P[A_i^C]||)</marimo-tex></li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "dGlV",
+      "code_hash": "8c46900222f70898fb4796f62ce4f631",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"practice-problem-2-grit-102-independence\">Practice Problem 2 (GRIT 1.02) - Independence</h3>\n<span class=\"paragraph\">Construct examples that meet the following conditions.</span>\n<ul>\n<li><strong>(a)</strong> Three discrete random variables <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex>, <marimo-tex class=\"arithmatex\">||(Y||)</marimo-tex>, <marimo-tex class=\"arithmatex\">||(Z||)</marimo-tex> that are not independent but are pairwise independent.</li>\n<li><strong>(b)</strong> Three discrete random variables <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex>, <marimo-tex class=\"arithmatex\">||(Y||)</marimo-tex>, and <marimo-tex class=\"arithmatex\">||(Z||)</marimo-tex> such that <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex> and <marimo-tex class=\"arithmatex\">||(Y||)</marimo-tex> are dependent but <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex> and <marimo-tex class=\"arithmatex\">||(Y||)</marimo-tex> are conditionally independent given <marimo-tex class=\"arithmatex\">||(Z||)</marimo-tex>.</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SdmI",
+      "code_hash": "531199a01cf5e09518ac37113f9395d5",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"practice-problem-3-eit-201-coin-flips\">Practice Problem 3 (EIT 2.01) - Coin flips</h3>\n<span class=\"paragraph\">A fair coin is flipped until the first head occurs. Let <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex> denote the number of flips required.</span>\n<ul>\n<li><strong>(a)</strong> Find the entropy <marimo-tex class=\"arithmatex\">||(H(X)||)</marimo-tex> in bits. The following formulas may be useful:</li>\n</ul>\n<marimo-tex class=\"arithmatex\">||[\\sum_{n=0}^\\infty r^n = \\frac{1}{1-r}, \\quad \\sum_{n=0}^\\infty n r^n = \\frac{r}{(1-r)^2}||]</marimo-tex><ul>\n<li><strong>(b)</strong> A random variable <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex> is drawn according to this distribution. Find an \"efficient\" sequence of yes-no questions of the form: \"Is <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex> contained in the set <marimo-tex class=\"arithmatex\">||(S||)</marimo-tex>\". Compare <marimo-tex class=\"arithmatex\">||(H(X)||)</marimo-tex> to the expected number of questions required to determine <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex>.</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lgWD",
+      "code_hash": "1badb0dc31f3778e9b9e33ec34ef8e0f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"practice-problem-4-eit-301-markovs-inequality-and-chebyshevs-inequality\">Practice Problem 4 (EIT 3.01) - Markov's inequality and Chebyshev's inequality</h3>\n<ul>\n<li><strong>(a)</strong> (Markov's inequality) For any nonnegative random variable <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex> and any <marimo-tex class=\"arithmatex\">||(t &gt; 0||)</marimo-tex>, show that</li>\n</ul>\n<marimo-tex class=\"arithmatex\">||[\\Pr\\{X \\geq t\\} \\leq \\frac{EX}{t}||]</marimo-tex><span class=\"paragraph\">Exhibit a random variable that achieves this inequality with equality.</span>\n<ul>\n<li><strong>(b)</strong> (Chebyshev's inequality) Let <marimo-tex class=\"arithmatex\">||(Y||)</marimo-tex> be a random variable with mean <marimo-tex class=\"arithmatex\">||(\\mu||)</marimo-tex> and variance <marimo-tex class=\"arithmatex\">||(\\sigma^2||)</marimo-tex>. By letting <marimo-tex class=\"arithmatex\">||(X = (Y - \\mu)^2||)</marimo-tex>, show that for any <marimo-tex class=\"arithmatex\">||(\\epsilon &gt; 0||)</marimo-tex></li>\n</ul>\n<marimo-tex class=\"arithmatex\">||[\\Pr\\{|Y - \\mu| &gt; \\epsilon\\} \\leq \\frac{\\sigma^2}{\\epsilon^2}||]</marimo-tex><ul>\n<li><strong>(c)</strong> (Weak law of large numbers) Let <marimo-tex class=\"arithmatex\">||(Z_1, Z_2, \\ldots, Z_n||)</marimo-tex> be a sequence of i.i.d. random variables with mean <marimo-tex class=\"arithmatex\">||(\\mu||)</marimo-tex> and variance <marimo-tex class=\"arithmatex\">||(\\sigma^2||)</marimo-tex>. Let <marimo-tex class=\"arithmatex\">||(\\bar{Z}_n = \\frac{1}{n} \\sum_{i=1}^n Z_i||)</marimo-tex> be the sample mean. Show that</li>\n</ul>\n<marimo-tex class=\"arithmatex\">||[\\Pr\\left\\{|\\bar{Z}_n - \\mu| &gt; \\epsilon\\right\\} \\leq \\frac{\\sigma^2}{n\\epsilon^2}||]</marimo-tex><span class=\"paragraph\">Thus, <marimo-tex class=\"arithmatex\">||(\\Pr\\{|\\bar{Z}_n - \\mu| &gt; \\epsilon\\} \\to 0||)</marimo-tex> as <marimo-tex class=\"arithmatex\">||(n \\to \\infty||)</marimo-tex>. This is known as the weak law of large numbers.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "yOPj",
+      "code_hash": "7a890a63cc471fe4764a1b01d1f5b254",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"practice-problem-5-eit-232-fano\">Practice Problem 5 (EIT 2.32) - Fano</h3>\n<span class=\"paragraph\">We are given the following joint distribution on <marimo-tex class=\"arithmatex\">||((X, Y)||)</marimo-tex>:</span>\n<table>\n<thead>\n<tr>\n<th>X/Y</th>\n<th>a</th>\n<th>b</th>\n<th>c</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>1</td>\n<td>1/6</td>\n<td>1/12</td>\n<td>1/12</td>\n</tr>\n<tr>\n<td>2</td>\n<td>1/12</td>\n<td>1/6</td>\n<td>1/12</td>\n</tr>\n<tr>\n<td>3</td>\n<td>1/12</td>\n<td>1/12</td>\n<td>1/6</td>\n</tr>\n</tbody>\n</table>\n<span class=\"paragraph\">Let <marimo-tex class=\"arithmatex\">||(\\hat{X}(Y)||)</marimo-tex> be an estimator for <marimo-tex class=\"arithmatex\">||(X||)</marimo-tex> (based on <marimo-tex class=\"arithmatex\">||(Y||)</marimo-tex>) and let <marimo-tex class=\"arithmatex\">||(P_e = \\Pr\\{\\hat{X}(Y) \\neq X\\}||)</marimo-tex>.</span>\n<ul>\n<li><strong>(a)</strong> Find the minimum probability of error estimator <marimo-tex class=\"arithmatex\">||(\\hat{X}(Y)||)</marimo-tex> and the associated <marimo-tex class=\"arithmatex\">||(P_e||)</marimo-tex>.</li>\n<li><strong>(b)</strong> Evaluate Fano's inequality for this problem and compare.</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "fwwy",
+      "code_hash": "ece8720393c2e71900095a2ad9d6decd",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"practice-problem-6-eit-228-mixing-increases-entropy\">Practice Problem 6 (EIT 2.28) - Mixing increases entropy</h3>\n<span class=\"paragraph\">Show that the entropy of the probability distribution <marimo-tex class=\"arithmatex\">||((p_1, \\ldots, p_i, \\ldots, p_j, \\ldots, p_m)||)</marimo-tex> is less than the entropy of the distribution <marimo-tex class=\"arithmatex\">||((p_1, \\ldots, \\frac{p_i + p_j}{2}, \\ldots, \\frac{p_i + p_j}{2}, \\ldots, p_m)||)</marimo-tex>. Show that in general any transfer of probability that makes the distribution more uniform increases the entropy.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hbol",
+      "code_hash": "a9d43d6ece555a5d4445d2011ca34e26",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "133096eaf7f7b26b45595c80b6482f2b",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "H(X) = 0.9183 bits\nH(Y) = 0.9183 bits\n",
+          "mimetype": "text/plain"
+        }
+      ]
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "846ef3337e8d06ab7b8596e621258f92",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "H(X, Y) = 1.5850 bits\n",
+          "mimetype": "text/plain"
+        }
+      ]
+    },
+    {
+      "id": "ZHCJ",
+      "code_hash": "4730da185df57e8d1b9a2129d340cf08",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "I(X; Y) = H(Y) - H(Y|X) = 0.2516 bits\n",
+          "mimetype": "text/plain"
+        }
+      ]
+    },
+    {
+      "id": "TqIu",
+      "code_hash": "e0d3ae48d3630f296da7814ff48f888c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "application/vnd.marimo+mimebundle": {
+              "text/html": "<img src='./@file/18497-23658202-eSckNtj8.svg' style='width: 180px;height: 180px;border-radius: 4px' />",
+              "image/png": "data:image/png;base64,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BAgQIECAAIFbBVQgQIAAAQIECBAgQIAAAQIE5iFwSEA7jxkaJYF+BbKjNeFpv61ebS19pFy94woBAgQIECBAgAABAgSGFdAbAQIECBAgQIAAAQIECPQoIKDtEVNTfQpoiwABAgQIECBAgAABAgQIEGhfwAwJECBAgAABAgQInJ6AgPb01tyMCRAgQIAAAQIECBAgQIAAAQIECLQvYIYECBAgQIAAgYkKCGgnujCGRYAAAQLzFDBqAgQIECBAgAABAgQIECBAoH0BMyRAgAABAocICGgP0fMsAQIECBAgQGA4AT0RIECAAAECBAgQIECAAAEC7QuYIQECJyAgoD2BRTZFAgQIECBAgAABAjcLuEuAAAECBAgQIECAAAECBAi0L2CGUxEQ0E5lJYyDAAECBAgQIECAAAECLQqYEwECBAgQIECAAAECBAgQIHBJoMmA9tIMfSBAgAABAgQIECBAgAABAgSaFDApAgQIECBAgAABAgQIzFFAQDvHVTPmMQX0TYAAAQIECBAgQIAAAQIECLQvYIYECBAgQIAAAQIEjiYgoD0arYYJECCwq4D6BAgQIECAAAECBAgQIECAQPsCZkiAAAECBAicuoCA9tT/DzB/AgQIEDgNAbMkQIAAAQIECBAgQIAAAQIE2hcwQwIECBCYhYCAdhbLZJAECBAgQIAAgekKGBkBAgQIECBAgAABAgQIECDQvoAZEiDQn4CAtj9LLREgQIAAAQIECBAg0K+A1ggQIECAAAECBAgQIECAAIH2BU5uhgLak1tyEyZAgAABAgQIECBAgACBUhgQIECAAAECBAgQIECAAIFxBAS0Q7rriwABAgQIECBAgAABAgQIEGhfwAwJECBAgAABAgQIECBwg4CA9gYctwjMScBYCRAgQIAAAQIECBAgQIAAgfYFzJAAAQIECBAgQGD+AgLa+a+hGRAgQODYAtonQIAAAQIECBAgQIAAAQIE2hcwQwIECBAgQGAgAQHtQNC6IUCAAAECBDYJuEaAAAECBAgQIECAAAECBAi0L2CGBAgQINAVENB2NZwTIECAAAECBAi0I2AmBAgQIECAAAECBAgQIECAQPsCZkhghgIC2hkumiETIECAAAECBAgQIDCugN4JECBAgAABAgQIECBAgACB9gWONUMB7bFktUuAAAECBAgQIECAAAECBHYX8AQBAgQIECBAgAABAgQINC4goG18gbebnloECBAgQIAAAQIECBAgQIBA+wJmSIAAAQIECBAgQIDAFAQEtFNYBWMg0LKAuREgQIAAAQIECBAgQIAAAQLtC5ghAQIECBAgQIDA1gIC2q2pVCRAgACBqQkYDwECBAgQIECAAAECBAgQINC+gBkSIECAAIHWBAS0ra2o+RAgQIAAAQJ9CGiDAAECBAgQIECAAAECBAgQaF/ADAkQIDCKgIB2FHadEiBAgAABAgQInK6AmRMgQIAAAQIECBAgQIAAAQLtC5ghgesFBLTX27hDgAABAgQIECBAgACBeQkYLQECBAgQIECAAAECBAgQIDB5gYMD2snP0AAJECBAgAABAgQIECBAgACBgwU0QIAAAQIECBAgQIAAAQL9CAho+3HUynEEtEqAAAECBAgQIECAAAECBAi0L2CGBAgQIECAAAECBE5KQEB7UsttsgQIXAg4I0CAAAECBAgQIECAAAECBNoXMEMCBAgQIECAwPQEBLTTWxMjIkCAAIG5Cxg/AQIECBAgQIAAAQIECBAg0L6AGRIgQIAAgT0FBLR7wnmMAAECBAgQIDCGgD4JECBAgAABAgQIECBAgACB9gXMkACBtgUEtG2vr9kRIECAAAECBAgQ2FZAPQIECBAgQIAAAQIECBAgQKB9ATOcgICAdgKLYAgECBAgQIAAAQIECBBoW8DsCBAgQIAAAQIECBAgQIAAgSrQbkBbZ+hIgAABAgQIECBAgAABAgQItCtgZgQIECBAgAABAgQIEJiZgIB2ZgtmuNMQMAoCBAgQIECAAAECBAgQIECgfQEzJECAAAECBAgQIHAMAQHtMVS1SYAAgf0FPEmAAAECBAgQIECAAAECBAi0L2CGBAgQIECAwAkLCGhPePFNnQABAgROTcB8CRAgQIAAAQIECBAgQIAAgfYFzJAAAQIEpi4goJ36ChkfAQIECBAgQGAOAsZIgAABAgQIECBAgAABAgQItC9ghgQI9CIgoO2FUSMECBAgQIAAAQIECBxLQLsECBAgQIAAAQIECBAgQIBA+wKnNEMB7SmttrkSIECAAAECBAgQIECAQFfAOQECBAgQIECAAAECBAgQGFxAQDs4uQ4JECBAgAABAgQIECBAgACB9gXMkAABAgQIECBAgAABApsFBLSbXVwlME8BoyZAgAABAgQIECBAgAABAgTaFzBDAgQIECBAgACBWQsIaGe9fAZPgACB4QT0RIAAAQIECBAgQIAAAQIECLQvYIYECBAgQIDA8QUEtMc31gMBAgQIECBws4C7BAgQIECAAAECBAgQIECAQPsCZkiAAAEC5wIC2nMIBwIECBAgQIAAgRYFzIkAAQIECBAgQIAAAQIECBBoX8AMCcxLQEA7r/UyWgIECBAgQIAAAQIEpiJgHAQIECBAgAABAgQIECBAgED7AkeYoYD2CKiaJECAAAECBAgQIECAAAEChwh4lgABAgQIECBAgAABAgTaFRDQtru2u85MfQIECBAgQIAAAQIECBAgQKB9ATMkQIAAAQIECBAgQGBkAQHtyAugewKnIWCWBAgQIECAAAECBAgQIECAQPsCZkiAAAECBAgQILCNgIB2GyV1CBAgQGC6AkZGgAABAgQIECBAgAABAgQItC9ghgQIECBAoCEBAW1Di2kqBAgQIECAQL8CWiNAgAABAgQIECBAgAABAgTaFzBDAgQIDC0goB1aXH8ECBAgQIAAAQIESmFAgAABAgQIECBAgAABAgQItC9ghgQ2CghoN7K4SIAAAQIECBAgQIAAgbkKGDcBAgQIECBAgAABAgQIECAwZYF+Atopz9DYCBAgQIAAAQIECBAgQIAAgX4EtEKAAAECBAgQIECAAAECBwsIaA8m1MCxBbRPgAABAgQIECBAgAABAgQItC9ghgQIECBAgAABAgRORUBAeyorbZ4ECGwScI0AAQIECBAgQIAAAQIECBBoX8AMCRAgQIAAAQKTEhDQTmo5DIYAAQIE2hEwEwIECBAgQIAAAQIECBAgQKB9ATMkQIAAAQK7CwhodzfzBAECBAgQIEBgXAG9EyBAgAABAgQIECBAgAABAu0LmCEBAs0KCGibXVoTI0CAAAECBAgQILC7gCcIECBAgAABAgQIECBAgACB9gXMcFwBAe24/nonQIAAAQIECBAgQIDAqQiYJwECBAgQIECAAAECBAgQILAQaDygXczQHwIECBAgQIAAAQIECBAgQKBxAdMjQIAAAQIECBAgQIDAfAQEtPNZKyOdmoDxECBAgAABAgQIECBAgAABAu0LmCEBAgQIECBAgACBngUEtD2Dao4AAQJ9CGiDAAECBAgQIECAAAECBAgQaF/ADAkQIECAAIHTFBDQnua6UgL6mQAABNZJREFUmzUBAgQInK6AmRMgQIAAAQIECBAgQIAAAQLtC5ghAQIECExYQEA74cUxNAIECBAgQIDAvASMlgABAgQIECBAgAABAgQIEGhfwAwJEDhUQEB7qKDnCRAgQIAAAQIECBA4voAeCBAgQIAAAQIECBAgQIAAgfYFTmSGAtoTWWjTJECAAAECBAgQIECAAIHNAq4SIECAAAECBAgQIECAAIEhBQS0Q2pf9OWMAAECBAgQIECAAAECBAgQaF/ADAkQIECAAAECBAgQIHBFQEB7hcQFAnMXMH4CBAgQIECAAAECBAgQIECgfQEzJECAAAECBAgQmKuAgHauK2fcBAgQGENAnwQIECBAgAABAgQIECBAgED7AmZIgAABAgQIHFVAQHtUXo0TIECAAAEC2wqoR4AAAQIECBAgQIAAAQIECLQvYIYECBAgUIqA1v8FBAgQIECAAAECrQuYHwECBAgQIECAAAECBAgQINC+gBkSmI2AgHY2S2WgBAgQIECAAAECBAhMT8CICBAgQIAAAQIECBAgQIAAgfYF+p2hgLZfT60RIECAAAECBAgQIECAAIF+BLRCgAABAgQIECBAgAABAk0KCGibXNb9J+VJAgQIECBAgAABAgQIECBAoH0BMyRAgAABAgQIECBAYDwBAe149nomcGoC5kuAAAECBAgQIECAAAECBAi0L2CGBAgQIECAAAECtwgIaG8BcpsAAQIE5iBgjAQIECBAgAABAgQIECBAgED7AmZIgAABAgTaEBDQtrGOZkGAAAECBAgcS0C7BAgQIECAAAECBAgQIECAQPsCZkiAAIEBBQS0A2LrigABAgQIECBAgEBXwDkBAgQIECBAgAABAgQIECDQvoAZElgXENCui/hMgAABAgQIECBAgACB+QuYAQECBAgQIECAAAECBAgQIDBRgR4D2onO0LAIECBAgAABAgQIECBAgACBHgU0RYAAAQIECBAgQIAAAQKHCAhoD9Hz7HACeiJAgAABAgQIECBAgAABAgTaFzBDAgQIECBAgAABAicgIKA9gUU2RQIEbhZwlwABAgQIECBAgAABAgQIEGhfwAwJECBAgAABAlMRENBOZSWMgwABAgRaFDAnAgQIECBAgAABAgQIECBAoH0BMyRAgAABAjsJCGh34lKZAAECBAgQIDAVAeMgQIAAAQIECBAgQIAAAQIE2hcwQwIEWhQQ0La4quZEgAABAgQIECBA4BABzxIgQIAAAQIECBAgQIAAAQLtC5jhaAIC2tHodUyAAAECBAgQIECAAIHTEzBjAgQIECBAgAABAgQIECBw6gKnENCe+hqbPwECBAgQIECAAAECBAgQOAUBcyRAgAABAgQIECBAgMAsBAS0s1gmg5yugJERIECAAAECBAgQIECAAAEC7QuYIQECBAgQIECAAIH+BAS0/VlqiQABAv0KaI0AAQIECBAgQIAAAQIECBBoX8AMCRAgQIAAgZMTENCe3JKbMAECBAgQKIUBAQIECBAgQIAAAQIECBAg0L6AGRIgQIDANAUEtNNcF6MiQIAAAQIECMxVwLgJECBAgAABAgQIECBAgACB9gXMkACBAwQEtAfgeZQAAQIECBAgQIAAgSEF9EWAAAECBAgQIECAAAECBAi0L9D+DP9/AAAA//841QyjAAAABklEQVQDAHjQTwjsWg3VAAAAAElFTkSuQmCC"
+            }
+          }
+        }
+      ],
+      "console": []
+    }
+  ]
+}

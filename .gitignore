@@ -63,3 +63,10 @@ temp/
 *_test.png
 *_test.pdf
 *_test.html
+
+# AI Agent Symlinked Skills (Source of truth is tracked in skills/)
+.claude/skills
+.agent/skills
+.agents/skills
+.cursor/skills
+.github/skills

@@ -1,0 +1,1028 @@
+                       Duke University Phys 627/ECE 523 (Klco)
+                                  Exercise Set 2026
+
+
+
+                                            CONTENTS
+
+ I. Warm-Up and Preliminaries                                                                        1
+    A. tensor products                                                                               1
+    B. Gram-Schmidt orthogonalization                                                                3
+    C. Hermitian and unitary matrices                                                                3
+    D. Pauli matrices                                                                                4
+    E. Connecting finite and infinite dimensions                                                     5
+
+II. Algorithmic Components                                                                           6
+    A. Hadamard operator as transform                                                                6
+    B. GHZ state preparation                                                                         6
+    C. Deutsch-Jozsa algorithm                                                                       7
+    D. quantum Fourier transform identity                                                            8
+
+III. Quantum Information Phenomena                                                                   8
+     A. uncertainty principle and enhanced sensing                                                   8
+     B. no-cloning theorem                                                                           9
+     C. distinguishability of quantum states                                                         9
+     D. quantum gate teleportation and compilation                                                  10
+
+IV. Toward Quantum Simulation                                                                       11
+    A. measuring purity                                                                             11
+    B. projecting spatial parity                                                                    11
+    C. time evolution and error mitigation                                                          12
+
+V. Nature of Mixed States                                                                           13
+   A. quantum sabotage                                                                              13
+   B. non-uniqueness of convex decompositions                                                       14
+   C. subsystem entanglement quantification                                                         15
+   D. mixed-state entanglement distribution                                                         16
+
+VI. Glossary                                                                                        17
+
+
+                            I.   WARM-UP AND PRELIMINARIES
+
+                                       A.    tensor products
+
+   Nature appears to be constructed such that every quantum particle resides in its own linear
+vector space. Combining these linear vector spaces in order to describe many-particle quantum
+systems is achieved mathematically through the tensor product operation.
+
+   1. If a state is separable or unentangled, its state may be succinctly written in tensor product
+      form, |ψ1 ⟩ ⊗ |ψ2 ⟩ ⊗ · · · ⊗ |ψn ⟩. For a set of n two-dimensional Hilbert spaces, how many real
+      numbers are needed to specify such an unentangled wavefunction? For an entangled state
+                                                                                                  2
+
+
+   that cannot be broken into such pieces, how many real numbers are needed to specify its
+   wavefunction? How does this scaling change for d-level quantum degrees of freedom?
+
+2. Declaring the basis √in Dirac notation (|000⟩, · · · , |111⟩), write the vector representation of
+   |ψ⟩⊗3 for |ψ⟩ = |0⟩+√32|1⟩ .
+
+3. Algorithmically describe how to implement the tensor product operation.
+
+       Discuss the relationship between binary ordering of a Hilbert space basis and the tensor
+        product operation. If two binary-ordered Hilbert spaces are expressed jointly, H =
+        H1 ⊗ H2 , what is the natural ordering of the resulting (d1 × d2 )-dimensional Hilbert
+        space?
+       Use this understanding to write (or generate) the matrix form of the unitary operators
+        (extending the SWAP operator) that reorder the Hilbert spaces in the following ways:
+           – H1 ⊗ H2 ⊗ H3 → H3 ⊗ H2 ⊗ H1 with d1,2,3 = 2
+           – H1 ⊗ H2 ⊗ H3 ⊗ H4 → H2 ⊗ H3 ⊗ H1 ⊗ H4 with d1,2,3,4 = 2
+           – H1 ⊗ H2 → H2 ⊗ H1 with d1,2 = 3
+                                                                            Q
+         Express these unitary operators in matrix form and as a list of        i di non-zero matrix
+         elements (coefficients of outer product representation).
+
+4. By hand, write the matrix representations of X ⊗ Y , I2 ⊗ Y , Y ⊗ I2 , and Y ⊗ I4 , where the
+   Pauli matrices are
+                                                                    
+                                      0 1            0 −i           1 0
+                          X=                    Y =             Z=         ,                     (1)
+                                      1 0             i 0           0 −1
+
+   and Ik is the k-dimensional Identity matrix. Implement the tensor product operator in code
+   to produce a picture of the matrix Z ⊗ X ⊗ Y ⊗ Z ⊗ Y + X ⊗ I2 ⊗ Y ⊗ Z ⊗ Y .
+
+5. Due to the rapid growth in dimensionality of Hilbert spaces connected through the tensor
+   product operation, structural computational design can have significant impact on compu-
+   tational resources. In some cases, the generation or manipulation of entanglement provides
+   opportunities and guidance to improve such designs.
+
+       Show that, for the application of a tensor product operator (e.g., non-entangling time
+        evolution), A ⊗ B on a state vector, v, one may employ the following identity
+
+                                             [A ⊗ B] v = vec BVAT
+                                                                 
+                                                                      ,                          (2)
+
+         where V is a matrix form of the vector v that is reversed by the operation vec[·]. (May
+         be helpful to begin with a separable v then employ the linearity of quantum mechanics)
+       For the case of dim [A] = dim [B] = 103 (i.e., A and B are 103 × 103 dimensional ma-
+        trices), estimate the percent reduction in the number of floating point operations used
+        to act the tensor-product operator on the state vector when employing this identity.
+                                                                                                                   3
+
+
+                                    B.    Gram-Schmidt orthogonalization
+
+   The Gram-Schmidt procedure produces an orthonormal basis, {|vk ⟩}, in a d-dimensional vector
+space from an arbitrary spanning basis, {|wk ⟩}. Upon choosing a vector in the basis as the initial
+seed, |v1 ⟩ = √ |w1 ⟩ , remaining vectors are sequentially orthogonalized from the collection as
+                 ⟨w1 |w1 ⟩
+
+                                                k−1
+                                                X                               |v ′ ⟩
+                             |vk′ ⟩ ≡ |wk ⟩ −       ⟨vj |wk ⟩|vj ⟩     |vk ⟩ = p ′k ′       ,                    (3)
+                                                j=1
+                                                                                ⟨vk |vk ⟩
+
+for 2 ≤ k ≤ d.
+
+   1. Show that the Gram-Schmidt process produces an orthonormal basis for the vector space.
+
+   2. Determine (recommend teaching a computer how to calculate) the orthonormal basis iden-
+      tified through GS orthogonalization of the following {|wk ⟩} sets
+
+          {|ψ1 ⟩, |ψ2 ⟩, |ψ3 ⟩, |ψ4 ⟩}
+          {|ψ4 ⟩, |ψ1 ⟩, |ψ2 ⟩, |ψ3 ⟩}
+          {|ψ3 ⟩, |ψ4 ⟩, |ψ1 ⟩, |ψ2 ⟩}
+          {|ψ2 ⟩, |ψ3 ⟩, |ψ4 ⟩, |ψ1 ⟩}
+
+      with states
+                                                                                                   
+                    1                            1                                0                      1
+                 1 0                        1 0                          1 1                     11
+        |ψ1 ⟩ = √                   |ψ2 ⟩ = √                    |ψ3 ⟩ = √                |ψ4 ⟩ =      . (4)
+                  20                         2 0
+                                                                             2 −1                   2 1
+                                                                                                        
+                    −i                           1                                0                      1
+
+
+                                    C.    Hermitian and unitary matrices
+
+   1. Define the properties of Hermitian and unitary matrices. Discuss which properties make
+      Hermitian and unitary matrices logical candidates for representing physical properties of
+      energy spectra (as Hamiltonian) and propagation (as time evolution operators), respectively.
+
+   2. Solve the Schrödinger equation for a time-independent Hamiltonian to determine the relation
+      between the Hamiltonian and the time evolution operator.
+
+   3. Show that: for every Hermitian matrix, A, the exponential eiA is unitary. (The series
+      expansion may be useful )
+
+   4. Show that: every unitary matrix can be written as the imaginary exponential of a Hermi-
+      tian matrix, eiH , and can thus be considered as the time evolution of some Hamiltonian.
+      (Consider their spectral decompositions)
+
+   5. Ehrenfest’s theorem Show that the commutation of a time-independent operator with
+      the Hamiltonian provides a necessary and sufficient condition for its expectation value to be
+      constant in time.
+
+   6. Discuss when a unitary transformation of time evolution can be encoded as a unitary trans-
+                                                                 †
+      formation of the associated Hamiltonian, U eiH U † = eiU HU .
+                                                                                                    4
+
+
+   7. Given the Schrödinger equation (ℏ = 1) with time-independent Hamiltonian,
+
+                                                         ∂
+                                                     i      |ψ⟩ = Ĥ|ψ⟩      ,                     (5)
+                                                         ∂t
+      find the equation of motion (time derivative) for the time-evolution of the density matrix,
+                                                          n
+                                                          X
+                                                ρ(t) =          pj |ψj (t)⟩⟨ψj (t)|                (6)
+                                                          j=1
+
+      Does the density matrix evolve like a Heisenberg picture operator?
+
+
+                                                D.   Pauli matrices
+
+Operators for spin- 21 quantum degrees of freedom can be represented as 2 × 2 matrices.
+
+   1. Pauli matrices are matrix representations of Pauli operators with respect to the “Z”-basis,
+      |0⟩ and |1⟩,
+                                                                         
+                                                         1 0   0 1   0 −i    1 0
+                   (σ0 , ⃗σ ) = (σ0 , σ1 , σ2 , σ3 ) =       ,     ,       ,         ,       (7)
+                                                         0 1   1 0    i 0    0 −1
+
+      Express each of these Pauli matrices in outer product notation. How does each Pauli matrix
+      transform the two orthonormal basis states, |0⟩ and |1⟩.
+
+   2. Using the Kronecker delta and Levi-Civita epsilon in index notation, determine succinct
+      expressions for the commutators, [σi , σj ], the anticommutators, {σi , σj }, and the operator
+      products, σi σj , for i, j ∈ {1, 2, 3}. Use this to determine the maximum number of Pauli
+      operators that can be simultaneously represented as diagonal matrices.
+
+   3. Let ⃗v be any real three-dimensional unit vector and θ a real number. Show that
+
+                                         eiθ⃗v·⃗σ = cos(θ)I2 + i sin(θ)⃗v · ⃗σ        ,            (8)
+
+      where ⃗v · ⃗σ ≡ 3j=1 vj σj . Generalize this to show that for any function, f (·), that maps
+                     P
+      complex numbers to complex numbers,
+
+                                                f (θ) + f (−θ)    f (θ) − f (−θ)
+                              f (θ⃗v · ⃗σ ) =                  I+                ⃗v · ⃗σ   .       (9)
+                                                       2                 2
+
+   4. Pauli decompositions are often utilized in quantum computing to break computations into
+      pieces that are manageable to implement on quantum devices. Convince yourself that a
+      complete basis for representing generic spin- 12 Hermitian operators is spanned by the Pauli
+      matrices, i.e., all single-qubit operators can be expressed as a vector of Pauli coefficients.
+      Utilizing the trace properties of the Pauli operators, devise a systematic way of determining
+      the Pauli decomposition of an arbitrary single-qubit operator, H2 . Extend the technique
+      to arbitrary n-qubit operators, H2n . Implement your scheme to determine the multi-qubit
+      Pauli decomposition of the four-qubit operators
+
+                          1
+            ϕ̂(JLP ) =      diag (−15, −13, −11, −9, −7, −5, −3, −1, 1, 3, 5, 7, 9, 11, 13, 15)   (10)
+                         15
+                                                                                                  5
+
+
+      and
+                                                        a + a†
+                                             ϕ̂(HO) =     √             ,                      (11)
+                                                            2
+                                                                    √
+      where ϕ̂(HO) is defined by matrix elements ϕ̂j,j+1 = ϕ̂j+1,j = j + 1 ∀j ∈ {0, 14}. How does
+      the number of terms in these two decompositions scale with the number of qubits spanned
+      by the operator? For an arbitrary operator, what is the worst-case scaling of the number of
+      terms in its Pauli decomposition?
+
+
+                         E.   Connecting finite and infinite dimensions
+
+                                                        p̂      2           2
+   The quantum harmonic oscillator Hamiltonian, Ĥ = 2m    + mω   2
+                                                              2 x̂ may be expressed in terms of
+                                p̂          p mω
+dimensionless variables, p̄ = √ℏmω and x̄ =    ℏ x̂, as
+
+                                              ℏω 2
+                                                 p̄ + x̄2
+                                                          
+                                      Ĥ =                          .                          (12)
+                                               2
+In this exercise, you will calculate (confirm) the harmonic oscillator ground state energy in four
+complementary ways. The first three are expected to be simple review.
+
+   1. Ladder operators:
+      Considering the operators
+                                            x̄ + ip̄            x̄ − ip̄
+                                     â =     √         â† =     √             ,              (13)
+                                                2                   2
+
+      propagate the position-momentum canonical commutation relation to determine â, â† and
+                                                                                              
+
+      [x̄, p̄]. By writing the Hamiltonian in terms of these ladder operators, calculate the ground
+      state energy expectation value as ⟨0|Ĥ|0⟩ where |0⟩ is the ground state.
+
+   2. Finite truncation in number basis (qudit):
+      In the basis formed by eigenstates of the number operator, N̂ = â† â, write the matrix
+      representation (or a pattern-extendable low-energy subspace) for the operators N̂ , â, and
+      â† . In the ordering of your basis, what is the vector form of |0⟩? Truncating these matrices
+      at increasing dimensionalities Λ to systematically include higher energy states, show the
+      convergence of ⟨0|Ĥ|0⟩ as a function of Λ. Discuss the form of the commutator in these finite
+      truncations, and connect your observation to the Stone-von Neumann theorem through the
+      trace of the canonical commutation relation.
+
+   3. Continuous wavefunction:
+      You saw above that the ground state of the harmonic oscillator is a computational basis
+      state when expressed in the number operator basis. Fill in the steps to Sakurai textbook
+      Eq. (2.3.30) to show that the ground state expressed in the continuous position basis has
+                                                        x̄2
+      a Gaussian wavefunction, ψ(x) = ⟨x|0⟩ ∝ e− 2 . Again, calculate the ground state energy
+      expectation value, this time expressed as an integral in position space.
+
+   4. Basis of position eigenstates:
+      Consider a basis of position eigenstates organized into a grid characterized by symmetric
+      upper/lower bounds xmax and lattice spacing δx . First, show that an approximate represen-
+                                                                            2
+      tation of the squared momentum operator in this basis is p̄2 = −i ∂∂x̄ = δA2 , where A is a
+                                                                                    x
+                                                                                                          6
+
+
+      Toeplitz matrix with a0 = 2 and a1 = a−1 = −1, e.g., via matrix multiplication of the for-
+      ward and backward leading-order finite difference approximations of the first derivative. The
+      matrix representation of x̄ in this basis is diagonal with matrix elements spanning ±xmax
+                                                          2xmax
+      with a spacing of δx . With a relationship of δx = nstates −1 , show that the ground state energy
+      of this Hamiltonian approaches its continuum value as the number of states increases. Plot
+      the associated ground state wavefunctions, are they as expected? have you chosen an xmax
+      that captures its spatial extent?
+
+   5. Consider implications of these results for qubit implementations with respect to the Pauli
+      decompositions performed at the end of Exercise I D. If the quantum simulation cost scales
+      with the number and size of terms in the Pauli decomposition of the Hamiltonian, which
+      basis might you choose for digital representation of a harmonic oscillator-type Hilbert space
+      on a quantum computer?
+
+
+                              II.   ALGORITHMIC COMPONENTS
+
+                               A.    Hadamard operator as transform
+                                                                
+                                                             1 1                                         
+The Hadamard gate has a matrix form of Ĥ = √12                    = √12 |0⟩⟨0| + |0⟩⟨1| + |1⟩⟨0| − |1⟩⟨1| .
+                                                             1 −1
+
+   1. Verify that the Hadamard is Unitary and is its own Hermitian conjugate.
+
+   2. Calculate the Hadamard transformed Pauli operators: HXH, HY H, and HZH. Do your
+      results make sense in light of the Hadamard’s role as the x ↔ z basis transformation,
+      H = |0⟩⟨+| + |1⟩⟨−|?
+
+   3. Show that the single-qubit Hadamard operator over n-qubits, H ⊗n , can be written as
+                                                  1 X
+                                          H ⊗n = √        (−1)x·y |x⟩⟨y|       ,                       (14)
+                                                   2n x,y
+
+      where |x⟩ = |x1 ⟩ ⊗ |x2 ⟩ ⊗ · · · ⊗ |xn ⟩ and x = x1 x2 · · · xn is a binary representation of x, and
+      likewise for y, leading x.y to be the bit-wise inner product.
+
+   4. Write and describe the state H ⊗n |0⟩, where |0⟩ = |0⟩1 |0⟩2 · · · |0⟩n .
+
+
+                                     B.      GHZ state preparation
+
+   1. With one Hadamard operator and n − 1 CNOTs, write a Unitary circuit that is capable of
+      preparing the n-qubit GHZ state. What is the depth of your circuit? On average, what
+      fraction of time is each qubit idle?
+
+   2. Analyze step-by-step the functionality of the following circuit.
+
+                                    |0⟩     H        •                     •
+                                    |0⟩                            • |0⟩
+                                    |0⟩     H    •                X
+
+      Is the final state dependent on the outcome of the measurement?
+                                                                                                     7
+
+
+   3. Analyze step-by-step the functionality of the following extension of the circuit above.
+                                    |0⟩   H     •                         •
+                                    |0⟩                           • |0⟩
+                                    |0⟩   H     •     •           X       •
+                                    |0⟩                           • |0⟩
+                                    |0⟩   H           •           X
+      If this circuit is extended to generate an n-qubit GHZ state, how many CNOTs are used? De-
+      scribe the strategy of this circuit in the language of measuring and manipulating (CS)parity.
+
+   4. Refer to PRX Quantum 5, 030339 to contextualize the significance of this observation. Dis-
+      cuss the value of mid-circuit measurement and feedforward beyond quantum error correction.
+
+
+                                    C.    Deutsch-Jozsa algorithm
+
+As discussed interferometrically in the first lecture, the Deutsch Jozsa algorithm may be represented
+with the following quantum circuit
+                            |0⟩⊗n     H ⊗n                H ⊗n            ,
+                                                 Uf                                               (15)
+                             |−⟩
+where Uf |x⟩|y⟩ = |x⟩|y ⊕ f (x)⟩.
+   1. Show that |y⟩ = |−⟩ is an eigenstate of the controlled operator, Uf , with eigenvalue (−1)f (x) .
+
+   2. Utilizing the multi-qubit local Hadamard transform, analyze the above circuit to find the
+      final state prior to measurement. Describe the logic applied to the measurement results that
+      allows a single implementation of this circuit (i.e., not ensemble measurement) to determine
+      whether the function is constant, f (x) = c ∀ x ∈ {0, 1}⊗n and c ∈ {0, 1}, or the function is
+      balanced with an equal number of 0 and 1 evaluations across the 2n inputs. Remark upon
+      the state remaining on the last qubit after measurement.
+
+   3. For each of the four possible single-qubit constant/balanced binary functions,
+                                              f (0) = f (1) = 0                                   (16)
+                                              f (0) = f (1) = 1                                   (17)
+                                              f (0) = f (1) ⊕ 1 = 0                               (18)
+                                              f (0) = f (1) ⊕ 1 = 1   ,                           (19)
+      write a circuit representation of the two-qubit gate Uf .
+
+   4. For each of the eight possible two-qubit constant/balanced binary functions,
+                                                            
+                                                            
+                                                             0 0 0 0
+                                                            
+                                                            
+                                                            
+                                                             1 1 1 1
+                                                            
+                                                            
+                                                            
+                                                             0 0 1 1
+                                                              0 1 0 1
+                                                            
+                                (f (0) f (1) f (2) f (3)) =           ,                           (20)
+                                                            
+                                                             0 1 1 0
+                                                              1 0 0 1
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                             1 0 1 0
+                                                            
+                                                              1 1 0 0
+                                                                                                                 8
+
+
+      write a circuit representation of the three-qubit gate Uf .
+
+   5. For an n-bit application, f : {0, 1}n → {0, 1}, calculate the total number of possible con-
+      stant/balanced binary functions. How does this number scale asymptotically with n. De-
+      scribe one circuit compilation strategy implementing Uf for arbitrary n. (Consider which
+      functions are simple to compile vs those that require additional circuit logic.) In the worst
+      case, how does the depth of your circuit scale with n?
+
+
+                                 D.   quantum Fourier transform identity
+
+   In the interferometry perspective of quantum computation, we interpreted the role of the
+Hadamard transform as delocalizing the wavefunction in Hilbert space. Generalizing this per-
+spective to an operation that transfers delta-functions to constant-functions between conjugate
+Hilbert spaces (e.g., position-momentum) leads to the Quantum Fourier Transform. The follow-
+ing product-structured identity is crucial for creating and understanding the Quantum Fourier
+Transform circuit,
+                    2 −1n
+                1 X 2πixk
+    QF T |x⟩ = √         e 2n |k⟩                                                                              (21)
+                 2n k=0
+                 |0⟩ + e2πi(0.xn ) |1⟩ |0⟩ + e2πi(0.xn−1 xn ) |1⟩         |0⟩ + e2πi(0.x1 x2 ···xn ) |1⟩
+             =          √             ⊗          √                ⊗ ··· ⊗           √                      .   (22)
+                          2                        2                                   2
+In the binary notation used here, integers are notated as x = x1 x2 · · · xn = x1 2n−1 + · · · + xn 20
+and fractions are notated as (0.xn+1 xn+2 · · · xn+m ) = xn+1 xn+2          xn+m
+                                                           2 + 22 + · · · + 2m .
+   1. Show that this identity is true.
+
+   2. Use this form to motivate explicit QFT circuit implementations for 1, 2 and 3 qubits.
+
+Extra Using the QFT in its role of transforming operators between momentum and position space,
+      show how the local finite-difference momentum operator of I E.4 can be replaced by a proper
+      nonlocal lattice momentum operator to achieve more rapid convergence of the ground state
+      energy.
+
+
+                        III.     QUANTUM INFORMATION PHENOMENA
+
+                            A.   uncertainty principle and enhanced sensing
+                                      T
+   Consider two Hermitian (Â = Â† = Â∗ ) operators, Â and B̂, whose commutator is non-
+vanishing.
+   1. Show that there is an inherent uncertainty in the associated expectation values
+                                                    Dh        iE
+                                                       Â, B̂
+                                     ∆(Â)∆(B̂) ≥                 ,                         (23)
+                                                         2
+                     r 
+                                 ¯ 2                                               ¯
+                                   
+      where ∆(Â) =        Â − Â   is the standard deviation from the average, Â = ⟨Â⟩. For
+      position and momentum, [x̂, p̂] = iℏ, this reproduces the familiar ∆(x̂)∆(p̂) ≥ ℏ/2. Hint
+      you may find useful the Cauchy-Schwartz inequality for states in an inner product vector
+      space: ⟨u|u⟩⟨v|v⟩ ≥ |⟨u|v⟩|2 .
+                                                                                                                 9
+
+
+               2. Discuss how this relationship limits the minimum uncertainty achievable when measuring
+                  two conjugate variables. Further, describe the process through which fluctuations can be re-
+                  distributed to reduce uncertainty in one variable for improved sensitivity in quantum sensing
+                  (see Phys. Rev. A 46, R6797(R) Spin squeezing and reduced quantum noise in spectroscopy).
+
+
+                                                  B.   no-cloning theorem
+
+               The no-cloning theorem states that it is impossible to design a quantum circuit that perfectly
+            copies an unknown quantum state, i.e., there exists no Uxerox such that Uxerox |ψ⟩|0⟩ = |ψ⟩|ψ⟩ for
+            arbitrary |ψ⟩. More broadly, there exists no superoperator, E, such that E (|ψ⟩⟨ψ| ⊗ |x⟩⟨x|) =
+            |ψ⟩⟨ψ| ⊗ |ψ⟩⟨ψ| that produces additional copies of an arbitrary state |ψ⟩.
+
+               1. Find a specific Uxerox that copies Z-axis basis states, Uxerox |x⟩|0⟩ = |x⟩|x⟩ for x ∈ {0, 1}.
+                  What does this operator create when applied to more general superposition initial states?
+
+               2. By exploring the repercussions of the existence of such a Uxerox , devise a proof-by-contradiction
+                  for the no-cloning theorem.
+
+               3. Discuss physical implications of the no-cloning theorem, e.g., on state tomography, the un-
+                  certainty principle, quantum error correction, security in quantum cryptography, etc.
+
+               4. If a Uxerox did exist, utilize it to devise a super-luminal communications scheme.
+
+N&C Exercise 1.2 Explain how a device that could perfectly distinguish between two non-orthogonal states
+                 could be used to create Uxerox to clone them. Or alternatively, show how Uxerox could be
+                 used to distinguish non-orthogonal states.
+
+               5. Choose an approximate quantum cloning machine (either one available “on the market” or
+                  create your own) and demonstrate its fidelity for the six eigenvectors of X, Y , and Z Pauli
+                  operators.
+
+
+                                        C.   distinguishability of quantum states
+
+               1. When provided an ensemble of identical quantum states, numerous measurements in multiple
+                  bases may perform quantum state tomography to determine the wavefunction characterizing
+                  the ensemble. With access to only a single quantum measurement in any basis, show that
+                  two non-orthogonal pure states cannot be perfectly distinguished.
+
+               2. Your experimentalist friend devises a game in which one instance of a quantum state is
+                  randomly generated that is promised to be prepared in either |ψ1 ⟩ or |ψ2 ⟩. The two possible
+                  wavefunctions are provided and generated with an even 50/50 probability. You are allowed
+                  to projectively measure this instance in a basis of your choice prior to guessing the state
+                  prepared.
+
+
+                      Consider the two possible states of
+
+                                                                             |0⟩ + |1⟩
+                                                    |ψ1 ⟩ = |0⟩    |ψ2 ⟩ =      √        .                    (24)
+                                                                                  2
+                                                                                                10
+
+
+        If you chose to measure in the basis {|ψ1 ⟩, |ψ1⊥ ⟩}, what would be your maximum prob-
+        ability of success? By rotating the measurement basis in the plane established by
+        {|ψ1 ⟩, |ψ2 ⟩}, determine the maximum probability of success that can be achieved.
+       Provide a geometric interpretation for the orientation of this optimal basis. Use this
+        geometric reasoning to show that the maximum probability of success to distinguish
+                                                                        |⟨ψ1 |ψ2 ⟩|)
+        an arbitrary pair of states will be pmax success = 1+sin(arccos
+                                                                     2               .
+       How is this optimal basis related to the difference of the density operators D = ρ (|ψ1 ⟩)−
+        ρ (|ψ2 ⟩)? (Hint: see Holevo-Helstrom theorem)
+       Discuss how the odds of successful identification improve if the game provides an en-
+        semble of two instances of the state. Should the same measurement basis be used for
+        both measurements? If not, how would you choose the second measurement basis?
+
+3. If possible, discuss experimentally how to distinguish between the following two mixed state
+   ensembles
+                                        1              1
+                                   ρ1 = |Φ+ ⟩⟨Φ+ | + |Φ− ⟩⟨Φ− |                            (25)
+                                        2              2
+                                        1            1
+                                   ρ2 = |00⟩⟨00| + |11⟩⟨11| ,                              (26)
+                                        2            2
+   where |Φ± ⟩ = |00⟩±|11⟩
+                    √
+                      2
+                           are two entangled Bell states. If not possible, explain why.
+
+
+                    D.   quantum gate teleportation and compilation
+
+1. Analyze the function of the following circuit
+                                                            •
+                                                                        ,                     (27)
+                                 |χ⟩   •       X      Rz (2θ)
+   where |χ⟩ = Rz (θ)|+⟩. Taking θ = π/4, discuss the importance of this circuit in the context
+   of {H, T } being universal for single-qubit unitaries and the fault tolerance available to the
+   Clifford subgroup.
+
+2. When quantum gate applications are probabilistic or imperfect, it can be advisable to “store”
+   a successful application of a gate on an external qubit resource for future seeding of a gate
+   teleportation circuit. For CNOT gates, this strategy can trade the task of implementing the
+   two-qubit gate for the task of creating and verifying an entangled state. Fill in the details
+   of the discussion in Section 5.3 of KLM, and complete associated exercise 5.3.1 establishing
+   the necessary classical logic for implementing a CNOT via a four-qubit entangled state and
+   single-qubit operators classically controlled by measurements in the Bell basis.
+                                                                    ⊗n
+3. Describe the relationship between the Pauli rotation e−iZ t and the parity (number of ones
+   mod 2) of the quantum state in the computational basis, i.e., basis in which Z is diagonal.
+   From this perspective, analyze the following circuit
+                                       •                            •                         (28)
+                                           •                    •
+                                                   Rz (θ)
+   Describe the modifications, e.g., external basis changes, that produce circuits capable of
+   implementing any Pauli rotation e−iP̂v t .
+                                                                                                           11
+
+
+                             IV.   TOWARD QUANTUM SIMULATION
+
+                                              A.   measuring purity
+
+   Measuring the purity of a quantum state Tr ρ2 may be a valuable indicator of experimental
+                                                 
+
+quality or the presence of subsystem entanglement. Because the quantity is quadratic in the density
+matrix, it cannot be connected to any single expectation value.
+
+     Tensor product Pauli operators, P̂v = σv1 ⊗ σv2 ⊗ · · · ⊗ σvn with v = {I2 , σx , σy , σz }n , provide
+      a complete basis for decomposing density matrices. By writing the structure of an arbitrary
+      density matrix with respect to expectation values of operators in this basis, report how many
+      distinct measurement ensembles would be needed to learn the density matrix (tomography)
+      as a function of n, the number of qubits in the state.
+
+     There are many strategies for calculating the purity without performing full state tomogra-
+      phy. For two copies of a single-qubit state, determine and physically describe the relationship
+      between the expectation value ⟨Ψ− |ρ ⊗ ρ|Ψ− ⟩ and the purity of the state.
+
+     For an arbitrary number of qubits, motivate the relationship Tr ρ2 = Tr [(ρ ⊗ ρ)SW AP ].
+                                                                        
+
+      Using a basic interferometric quantum circuit structure (e.g., Hadamard test) for the non-
+      destructive measurement of expectation values, show how the purity information may be
+      calculated through the statistics of a single auxiliary qubit.
+
+
+                                         B.   projecting spatial parity
+
+   Under the interchange of spatial coordinates, or equivalently the swapping of quantum states
+between Hilbert spaces, even-parity states are unchanged while odd-parity states accrue an overall
+minus sign. In the case of two spin-1/2 particles, these categories are also called “triplet” and
+“singlet” states, referring to the dimensionality of each within the four-dimensional Hilbert space.
+For such a two-qubit system, the positive parity (triplet) states are
+
+                           |00⟩ + |11⟩                    |01⟩ + |10⟩                   |00⟩ − |11⟩
+               |ψt,1 ⟩ =       √              |ψt,2 ⟩ =       √             |ψt,3 ⟩ =       √         ,   (29)
+                                 2                              2                             2
+
+while the negative parity (singlet) state is
+
+                                                          |01⟩ − |10⟩
+                                              |ψs ⟩ =         √         .                                 (30)
+                                                                2
+
+You will recognize these as components of the Bell basis.
+
+     Show that under interchange of the two Hilbert spaces, the states have the symmetry prop-
+      erties as advertised.
+
+In class, we discuss the non-destructive partial projective measurement of bit-wise parity by in-
+troducing an auxiliary qubit. The bit-wise parity was “computed” onto the auxiliary qubit via
+Up , entangling the system and auxiliary Hilbert spaces. Subsequent measurement of the auxiliary
+qubit in state |0⟩/|1⟩ was shown to project the system into the 0/1 bit-wise parity subspace.
+
+     What are the projectors of spatial parity, P± ?
+                                                                                                       12
+
+
+ Devise a new quantum circuit, Up , that computes the value of spatial parity onto an auxiliary
+  qubit. Show that the effective system-space operators are equal to the parity projectors,
+  Ê0 = ⟨0|Up |0⟩ = P+ and Ê1 = ⟨1|Up |0⟩ = P− , where the kets, as usual, reside in the
+  auxiliary Hilbert space yielding an operator in the system Hilbert space.
+   Hint: Inspired by the interferometric circuit structure discussed on Day 1, consider the phase
+   kickback available when conditionally applying the SWAP operator to the system, where
+                                                                           
+                                                                     1 0 0 0
+                                                                   0 0 1 0
+                SWAP = |00⟩⟨00| + |01⟩⟨10| + |10⟩⟨01| + |11⟩⟨11| = 
+                                                                   0 1 0 0
+                                                                                   .               (31)
+                                                                     0 0 0 1
+
+   Can you coax this phase into producing a bit flip in the same way we were able to conclu-
+   sively determine the difference between ϕ = 0, π with a single measurement at the two final
+   detectors (e.g., Deutsch’s algoritm)?
+
+
+                          C.   time evolution and error mitigation
+
+1. Quantum Zeno effect Consider a two-dimensional quantum degree of freedom in the state
+   |Sz+ ⟩ = |0⟩ that is subject to external fields whose effects can be modeled at leading order
+                                                                                            −i X+Y
+                                                                                                √  t
+   as a Z-basis-flip Hamiltonian, Ĥ = X+Y
+                                        √ , with unit coupling constant Uext = e
+                                          2
+                                                                                       2 . If
+
+   you aimed to retain the |0⟩ quantum state through repeated measurement in the Z-basis,
+   how many (non-destructive) measurements would you have to perform in order to produce
+   a probability of at least 99% that the state has remained in the vicinity of the |0⟩ state
+   throughout one unit of time evolution?
+
+2. Symmetry Identification Consider the slightly more interesting scenario of two such quan-
+   tum degrees of freedom beginning in the Bell state |00⟩+|11⟩
+                                                         √
+                                                           2
+                                                                and subject to a unitary time
+   evolution of the form Unoiseless = e−i(X⊗Y )t .
+
+    (a) Projected into the Bell basis, plot the evolution of probabilities for times up to t = 2.
+    (b) Identify an operator (e.g., parity and/or built from Bell basis projectors) whose expec-
+        tation values distinguish the populated states from those that remain unpopulated.
+    (c) Show that this operator commutes with the Hamiltonian, and thus presents a static
+        symmetry under time evolution.
+
+3. Coherent Errors: Zeno and Basis Randomization Consider
+                                                         the presence of single-
+                                                                  −i X⊗Y +I⊗ X+Y
+                                                                              √  + X+Y
+                                                                                    √  ⊗I t
+   qubit errors such that the time evolution becomes Unoisy = e                2        2       .
+
+    (a) Plot the new evolution of probabilities projected into the Bell basis. For how long do
+        the probabilities remain within ±1% of their noiseless values?
+    (b) Consider the procedure of periodically projectively measuring (non-destructively) the
+        operator whose expectation values identify the positive-parity subspace, and post-
+        selecting upon the results.
+            Describe experimentally how such measurements could be performed, either ab-
+             stractly or in quantum system of your choice.
+                                                                                                 13
+
+
+              Show that, at the cost of measurement statistics, this procedure can improve the
+               fidelity of the noisy simulation. How many such measurements would be required
+               to maintain probabilities within ±1% of their noiseless values to a simulation time
+               of t = 1.5 with a loss of no more than 20% measurement statistics?
+       (c) Consider an alternate error mitigation technique, twirling, that introduces a dynamic
+           randomization of Pauli bases throughout the time evolution to turn coherent noise into
+           incoherent channels, in some cases destructively interfering coherent noise entirely.
+              Viable basis transformations of the noiseless operators leave invariant the logical
+               circuits of time evolution. Find all Pauli operators, within the set of 16 Pj =
+               {I2 , X, Y, Z} ⊗ {I2 , X, Y, Z}, that satisfy the criteria
+
+                                            Unoiseless = P † Unoiseless P   .                  (32)
+
+              Devise a stochastic strategy of these invariant basis changes that maintains, up to
+               t = 1.5, the Bell basis measurement probabilities within ±10%. How many layers of
+               basis changes were used? Is the utilization of all basis transformations necessary
+               to achieve this goal? (Hint: while probabilistic numerical simulation could be
+               used, try utilizing density matrix methods to capture the stochastic features of
+               the procedure)
+
+
+                              V.   NATURE OF MIXED STATES
+
+                                     A.   quantum sabotage
+
+   In class, we discuss the close relationship between unitarily establishing entanglement with
+systems that become experimentally inaccessible and errors/noise in quantum computational en-
+deavors. In this exercise, you will have a chance to explore this relationship in further detail.
+
+   1. We show that an amplitude damping channel, EAD (ρ), models spontaneous decay from the
+      |1⟩ state to the |0⟩ state. When measuring the environment in the Z-basis, this channel can
+      be decomposed into a set of operators,
+                                                                          √ 
+             ′                    †      †            1    0                0 p
+            ρ = EAD (ρ) = E0 ρE0 + E1 ρE1      E0 =     √             E1 =              .    (33)
+                                                      0 1−p                 0 0
+
+      This channel represents the non-unitary interaction seen from the perspective of the qubit
+      system alone. Choose a few pure states on the surface of the Bloch sphere and plot their tra-
+      jectories as a function of time (or decay time steps) when subject to this type of environment
+      interaction.
+
+   2. The phase damping channel may arise from fluctuations in unitary controls or scattering
+      events that do not shift the state of the computational Hilbert space. Show that in the
+      latter scenario, the qubit observes a channel of the form
+                                                                             
+             ′                   †         †            1    0             0 0
+            ρ = EP D (ρ) = E0 ρE0 + E1 ρE1      E0 =      √         E1 =     √     .     (34)
+                                                        0 1−p              0 p
+
+      Again, choose a few pure states on the surface of the Bloch sphere and plot their trajecto-
+      ries as a function of time (or decay time steps) when subject to this type of environment
+      interaction.
+                                                                                                     14
+
+
+3. When analyzing the teleportation process from the perspective of the receiver, we recognized
+   the depolarizing channel,
+                                                 I
+                                       ED (ρ) = p + (1 − p)ρ         .                             (35)
+                                                 2
+   One last time, choose a few pure states on the surface of the Bloch sphere and plot their
+   trajectories as a function of time (or decay time steps) when subject to this type of environ-
+   ment interaction. In terms of the vector of Pauli matrices,P ⃗σ , find the local operators, Ek
+   that express the depolarizing channel in the form E(ρ) = k Ek ρEk† .
+
+4. In a desire to erase your quantum hard drives, but not destroy the drives themselves, you
+   decide to bring in destructable auxiliary qubits to implement the completely depolarizing
+   channel (p = 1). For a single-qubit drive, construct a circuit describing a unitary interaction,
+   U, between your drive and the auxiliary qubits that will produce this depolarizing channel.
+   Hint: what effect would a CNOT have?
+   Hint: you may consider using more than one qubit in the auxiliary qubit “environment”?
+
+5. Generalize your unitary circuit to implement the the completely depolarizing channel to a two
+   qubit system, E(ρ) = 4I . How would your circuit generalize to an n-qubit system, E(ρ) = 2In ?
+   How many additional qubits do you anticipate using as a function of this memory capacity
+   of your drive?
+
+
+                       B.   non-uniqueness of convex decompositions
+
+1. Consider the following pure state
+                                                        r
+                                             1              2
+                                      |ψ⟩ = √ |00⟩ +          |11⟩       .                         (36)
+                                              3             3
+
+   All pure-state density matrices have single-term convex decompositions such that ρ = |ψ⟩⟨ψ|.
+   The associated measurement probability vector in the density matrix eigenbasis is thus
+   {1, 0, 0, · · · , 0}.
+   Find an alternate decomposition of the density matrix that is composed of an orthonormal
+   basis yielding a uniform measurement probability vector.
+
+2. Through generalization of your methods, argue that quantum states, pure or mixed, of any
+   qubit number have an associated orthonormal basis in which measurement outcomes are
+   uniform, and thus minimally informative.
+
+3. This property of measurement bases for pure states is the trivial limiting case of a more
+   general relation. Consider density matrix ρ with vector of eigenvalues          ⃗λρ : there exists an
+                                                                            P
+   orthonormal basis {|v⟩} decomposing the density matrix as ρ = k pk |vk ⟩⟨vk |, if and only
+   if p⃗ is majorized by ⃗λρ , p⃗ ≺ ⃗λρ . Physically, vector ℓ is majorized by vector τ when ℓ can be
+   created by τ by averaging over random permutations of τ ’s components. Majorization thus
+   provides a hierarchy of disorder or mixedness. The uniform distribution is at the base of this
+   hierarchy, consistent with the observation that the uniform distribution can be majorized by
+   any other probability distribution.
+   After elaborating upon the definition, derivation, and physical meaning of this mathematical
+   statement, use this information to
+                                                                                                    15
+
+
+          state the minimum number of pure state ensembles that could be used to prepare a
+           mixed state.
+          determine whether an orthonormal basis exists associated with the following probability
+           measurement vectors for the mixed state ρ = 14 I4 + 18 (X ⊗ X − Y ⊗ Y ):
+              – { 12 , 0, 0, 12 }
+              – { 31 , 13 , 0, 31 }
+              – {0, 61 , 32 , 61 }
+                   1 3 1 1
+              – { 16   , 8 , 2 , 16 }
+                   2 3 2 1
+              – {8, 8, 8, 8}
+            In other words: physically, if you aimed to prepare ρ in the lab and, upon scrutiny of
+            your success, found an ensemble measurement basis yielding each of the above proba-
+            bility distributions, would this raise concern for your state preparation fidelity?
+
+      For further discussion on the role and importance of majorization in quantum information,
+      see Phys. Rev. Lett., Vol 83 (2), pp 436–439 (1999) by Nielsen and Phys. Rev. Lett., Vol.
+      86, 5184-7 (2001) by Nielsen and Kempe.
+
+
+                                C.      subsystem entanglement quantification
+
+   You wish to distribute highly entangled states between two parties, A and B. However, your
+entanglement resource generators will only create three-qubit entangled states, |GHZ⟩ = |000⟩+|111⟩
+                                                                                            √
+                                                                                              2
+or |W ⟩ = |001⟩+|010⟩+|100⟩
+                 √
+                   2
+                            .
+    As we discuss, the GHZ-type of entanglement is “fragile” in the sense that tracing/ignoring
+one of its qubits leaves the remaining two in a mixed state with density matrix identical to that
+of a completely classical mixture, |00⟩⟨00|+|11⟩⟨11|
+                                           2         . However, the |W ⟩ state, upon tracing of a qubit
+retains entanglement. Thus, if the third qubit is ignored, utilization of the |W ⟩ state generator
+would be advised.
+    In the following, we will explore whether this choice changes if we have a collaborative third
+party, C, who reliably reports a measurement outcome on the third qubit.
+
+   1. Quantify the entanglement yield as the probability-weighted average of that present in each
+      post-measurement pure state (pick your favorite E(|ψ⟩⟨ψ|) pure-state entanglement mea-
+      sure),
+                                                         X
+                            Eyield ({pi , |ψi ⟩⟨ψi |}) =   pi E (|ψi ⟩⟨ψi |) .               (37)
+                                                             i
+
+      What is the A-B entanglement yield for the GHZ and W states upon measurement of C in
+      the Z-basis?
+
+   2. Tracing of a qubit may be implemented as the result-agnostic accumulation of states after
+      measurement in any basis, i.e., the reduced density matrix is invariant with respect to the
+      tracing basis. However, the measurement basis can affect the particular pure state decom-
+      position remaining (providing physical intuition for the many-to-one relationship between
+      pure state decompositions and pure states).
+      For both the |GHZ⟩ and |W ⟩ state, find and describe a measurement basis for C that
+      maximizes the entanglement yield established between A and B (note: your particular values
+                                                                                                      16
+
+
+      may depend on your chosen pure state entanglement measure). How do the maxima compare
+      between the GHZ and W resource?
+      Hint: Intuitively, the property of being in the |000⟩ or |111⟩ state has been distributed
+      throughout the three Hilbert spaces in the GHZ state. In efforts to not learn this infor-
+      mation from the measurement of qubit C, recall from the previous exercise that minimally
+      informative/uniform probability vectors are available upon a change of measurement basis.
+
+   3. Based on your experience, describe a C-collaborative protocol that begins in the |W ⟩ or
+      |GHZ⟩ state and deterministically produces the state |ψ⟩AB = |00⟩+|11⟩
+                                                                      √
+                                                                        2
+                                                                             .
+      Hint: You may wish to consider a two-step procedure of the form (1) C-space measurement
+      and (2) measurement-dependent A, B-space local unitaries.
+
+   4. Entangling from a Distance You have two immobile qubits, labeled Ai and Bi , that you
+      would like to entangle. Direct interactions between Ai and Bi are experimentally inaccessible.
+      However, each immobile qubit can be entangled with a mobile qubit. These mobile qubits,
+      Am and Bm , may be brought together for direct interaction.
+      Devise a protocol within these constraints for the production of the state |ψ⟩Ai Bi = |00⟩+|11⟩
+                                                                                               √
+                                                                                                 2
+                                                                                                      .
+
+
+                            D.   mixed-state entanglement distribution
+
+   The text remarks “[T]wo mixtures with the same density matrices are indistinguishable or
+equivalent (analogous to the way two pure states that differ only by a global phase are equivalent)”.
+In this problem, we will scrutinize to what extent this analogy holds in the context of mixed state
+entanglement structure.
+   1. Discuss the physical meaning captured by the irrelevance of global phases.
+
+   2. Consider this separable mixture of unentangled states (Phys. Rev. Lett. 91, 037902 ),
+                       3                                              1
+                     1X                                      1X
+            ρabc =      |Ψk ⟩⟨Ψk | ⊗ |Ψ−k ⟩⟨Ψ−k | ⊗ |0⟩⟨0| +    |j⟩⟨j| ⊗ |j⟩⟨j| ⊗ |1⟩⟨1| ,          (38)
+                     6                                       6
+                      k=0                                         j=0
+
+      where the eigenvectors of the X, Y Pauli operators are parameterized as
+                                                   |0⟩ + eikπ/2 |1⟩
+                                         |Ψk ⟩ =         √                .                         (39)
+                                                           2
+      List the six pure states present in the noted pure state decomposition.
+
+   3. Label Hilbert spaces from left-to-right as A, B, and C. Consider a procedure for distributing
+      entanglement between parties A and B through direct interactions only with system C by se-
+      quential application of the entangling operation CN OTcontrol,target : first CN OTA,C followed
+      by CN OTB,C . You may imagine a scenario of entangling two stationary Hilbert spaces, A
+      and B, through local interactions with a mobile Hilbert space, C, providing the interconnect.
+
+          Through application of CN OTA,C on each pure state in the initial decomposition, show
+           that the state after the first entangling operation is
+                       3
+                                                    !
+            ′       1X           |00⟩ + eikπ/2 |11⟩               1                  1
+           ρABC =         ρAC           √            ⊗ρB (|Ψ−k )+ |0, 0, 1⟩⟨0, 0, 1|+ |1, 1, 0⟩⟨1, 1, 0| ,
+                    6                     2                       6                  6
+                      k=0
+                                                                                                    (40)
+                                                                                              17
+
+
+        where ρ(|ψ⟩) = |ψ⟩⟨ψ|. Are there entangled pure states present in the resulting pure
+        state convex decomposition?
+        The terminology of mixed statePentanglement is the following: If a convex decom-
+        position (positive real weights     i pi = 1) of the density matrix composed of only
+        tensor-product pure states exists,
+                                                  X
+                                     ρseparable =    pi ρA    B
+                                                         i ⊗ ρi   ,                     (41)
+                                                   i
+
+        then the mixed state is considered separable i.e., its density matrix could be indepen-
+        dently created without distributing entanglement. A mixed state is said to be entangled
+        iff it is not separable.
+        Is the resulting state, ρ′ABC , entangled along the AC|B Hilbert space partition? By
+        analyzing the symmetry of the density matrix under the interchange of Hilbert spaces
+        B and C, is the state considered entangled along the AB|C Hilbert space partition?
+       After application of the second entangling operation CN OTB,C , show that the final
+        mixed state is
+                      3
+                                                                                      !      !
+                                                           e−ikπ/2 |01⟩ + eikπ/2 |10⟩
+                                             
+           ′′     1X         1    |00⟩ + |11⟩           1
+          ρABC =        ρ √           √         |0⟩C + √              √                 |1⟩C
+                  6           2         2                2              2
+                    k=0
+                                                          1              1
+                                                         + ρ(|0, 0, 1⟩) + ρ (|1, 1, 1⟩)   . (42)
+                                                          6              6
+        Using computational basis state projectors in the C Hilbert space, show that this
+        density matrix is equivalent to one decomposed in the form
+                                             (0)             (1)
+                              ρ′′ABC = p0 ρAB ⊗ |0⟩⟨0| + p1 ρAB ⊗ |1⟩⟨1|   ,                (43)
+
+        and is thus considered separable along the AB|C Hilbert space partition. Write the
+                          (0)      (1)
+        expressions for ρAB and ρAB , are either of these entangled mixed states? Write the
+        final pure state decompositions upon projective measurement of |0⟩C or |1⟩C , with what
+        probabilities would these two measurements be made? are entangled states present
+        across the A|B partition in either measurement outcome?
+
+4. With the understanding developed above, contextualize the conclusion of Phys. Rev. Lett.
+   91, 037902 that “no entanglement is necessary to distribute entanglement”. To what extent
+   does the analogy hold between 1.) the non-uniqueness of pure-state decompositions for mixed
+   states and 2.) the equivalence of pure states differing by a global phase. Would insertions of
+   a global phase or exchanges of convex decompositions at intermediate points in a QI protocol
+   be observable?
+
+
+                                     VI.     GLOSSARY
+
+In significant detail, physically and mathematically describe:
+
+1. the role, importance, and properties of
+
+       wavefunctions (continuous and discrete)
+       superpositions
+                                                                                             18
+
+
+       entanglement
+       density matrices
+
+   Explain why the colloquial definition of superposition as “a phenomenon in which a particle
+   can be in two states at the same time” lacks mathematical clarity.
+
+2. the distinction between pure and mixed quantum states
+
+       Describe the role of mixed states in incorporating noise or environmental interactions
+        into simulations of quantum systems.
+       If quantum systems could be perfectly isolated from their environments and manipu-
+        lated with exactly unitary operators, describe any residual value provided by the mixed
+        state formalism. What kind of states do local operators in entangled states see?
+
+3. the process of quantum measurement (projective, complete/partial, destructive/non-destructive)
+
+       Describe an application in which a partial projective measurement may be computa-
+        tionally valuable for quantum information.
+       [KLM Exercise 3.4.4] Explain why performing a complete Von Neumann measurement
+        with respect to the computational basis and subsequently computing the parity of the
+        resulting string is not equivalent to performing a projective measurement of the parity.
+

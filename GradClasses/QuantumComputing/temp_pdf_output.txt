@@ -1,0 +1,473 @@
+                       Duke University Phys 627/ECE 523 (Klco)
+                                  Exercise Set 2026
+
+
+
+                                            CONTENTS
+
+ I. Warm-Up and Preliminaries                                                                        1
+    A. tensor products                                                                               1
+    B. Gram-Schmidt orthogonalization                                                                3
+    C. Hermitian and unitary matrices                                                                3
+    D. Pauli matrices                                                                                4
+    E. Connecting finite and infinite dimensions                                                     5
+
+II. Algorithmic Components                                                                           6
+    A. Hadamard operator as transform                                                                6
+    B. GHZ state preparation                                                                         6
+    C. Deutsch-Jozsa algorithm                                                                       7
+    D. quantum Fourier transform identity                                                            8
+
+III. Quantum Information Phenomena                                                                   8
+     A. uncertainty principle and enhanced sensing                                                   8
+     B. no-cloning theorem                                                                           9
+     C. distinguishability of quantum states                                                         9
+     D. quantum gate teleportation and compilation                                                  10
+
+IV. Toward Quantum Simulation                                                                       11
+    A. measuring purity                                                                             11
+    B. projecting spatial parity                                                                    11
+    C. time evolution and error mitigation                                                          12
+
+V. Nature of Mixed States                                                                           13
+   A. quantum sabotage                                                                              13
+   B. non-uniqueness of convex decompositions                                                       14
+   C. subsystem entanglement quantification                                                         15
+   D. mixed-state entanglement distribution                                                         16
+
+VI. Glossary                                                                                        17
+
+
+                            I.   WARM-UP AND PRELIMINARIES
+
+                                       A.    tensor products
+
+   Nature appears to be constructed such that every quantum particle resides in its own linear
+vector space. Combining these linear vector spaces in order to describe many-particle quantum
+systems is achieved mathematically through the tensor product operation.
+
+   1. If a state is separable or unentangled, its state may be succinctly written in tensor product
+      form, |ψ1 ⟩ ⊗ |ψ2 ⟩ ⊗ · · · ⊗ |ψn ⟩. For a set of n two-dimensional Hilbert spaces, how many real
+      numbers are needed to specify such an unentangled wavefunction? For an entangled state
+                                                                                                  2
+
+
+   that cannot be broken into such pieces, how many real numbers are needed to specify its
+   wavefunction? How does this scaling change for d-level quantum degrees of freedom?
+
+2. Declaring the basis √in Dirac notation (|000⟩, · · · , |111⟩), write the vector representation of
+   |ψ⟩⊗3 for |ψ⟩ = |0⟩+√32|1⟩ .
+
+3. Algorithmically describe how to implement the tensor product operation.
+
+       Discuss the relationship between binary ordering of a Hilbert space basis and the tensor
+        product operation. If two binary-ordered Hilbert spaces are expressed jointly, H =
+        H1 ⊗ H2 , what is the natural ordering of the resulting (d1 × d2 )-dimensional Hilbert
+        space?
+       Use this understanding to write (or generate) the matrix form of the unitary operators
+        (extending the SWAP operator) that reorder the Hilbert spaces in the following ways:
+           – H1 ⊗ H2 ⊗ H3 → H3 ⊗ H2 ⊗ H1 with d1,2,3 = 2
+           – H1 ⊗ H2 ⊗ H3 ⊗ H4 → H2 ⊗ H3 ⊗ H1 ⊗ H4 with d1,2,3,4 = 2
+           – H1 ⊗ H2 → H2 ⊗ H1 with d1,2 = 3
+                                                                            Q
+         Express these unitary operators in matrix form and as a list of        i di non-zero matrix
+         elements (coefficients of outer product representation).
+
+4. By hand, write the matrix representations of X ⊗ Y , I2 ⊗ Y , Y ⊗ I2 , and Y ⊗ I4 , where the
+   Pauli matrices are
+                                                                    
+                                      0 1            0 −i           1 0
+                          X=                    Y =             Z=         ,                     (1)
+                                      1 0             i 0           0 −1
+
+   and Ik is the k-dimensional Identity matrix. Implement the tensor product operator in code
+   to produce a picture of the matrix Z ⊗ X ⊗ Y ⊗ Z ⊗ Y + X ⊗ I2 ⊗ Y ⊗ Z ⊗ Y .
+
+5. Due to the rapid growth in dimensionality of Hilbert spaces connected through the tensor
+   product operation, structural computational design can have significant impact on compu-
+   tational resources. In some cases, the generation or manipulation of entanglement provides
+   opportunities and guidance to improve such designs.
+
+       Show that, for the application of a tensor product operator (e.g., non-entangling time
+        evolution), A ⊗ B on a state vector, v, one may employ the following identity
+
+                                             [A ⊗ B] v = vec BVAT
+                                                                 
+                                                                      ,                          (2)
+
+         where V is a matrix form of the vector v that is reversed by the operation vec[·]. (May
+         be helpful to begin with a separable v then employ the linearity of quantum mechanics)
+       For the case of dim [A] = dim [B] = 103 (i.e., A and B are 103 × 103 dimensional ma-
+        trices), estimate the percent reduction in the number of floating point operations used
+        to act the tensor-product operator on the state vector when employing this identity.
+                                                                                                                   3
+
+
+                                    B.    Gram-Schmidt orthogonalization
+
+   The Gram-Schmidt procedure produces an orthonormal basis, {|vk ⟩}, in a d-dimensional vector
+space from an arbitrary spanning basis, {|wk ⟩}. Upon choosing a vector in the basis as the initial
+seed, |v1 ⟩ = √ |w1 ⟩ , remaining vectors are sequentially orthogonalized from the collection as
+                 ⟨w1 |w1 ⟩
+
+                                                k−1
+                                                X                               |v ′ ⟩
+                             |vk′ ⟩ ≡ |wk ⟩ −       ⟨vj |wk ⟩|vj ⟩     |vk ⟩ = p ′k ′       ,                    (3)
+                                                j=1
+                                                                                ⟨vk |vk ⟩
+
+for 2 ≤ k ≤ d.
+
+   1. Show that the Gram-Schmidt process produces an orthonormal basis for the vector space.
+
+   2. Determine (recommend teaching a computer how to calculate) the orthonormal basis iden-
+      tified through GS orthogonalization of the following {|wk ⟩} sets
+
+          {|ψ1 ⟩, |ψ2 ⟩, |ψ3 ⟩, |ψ4 ⟩}
+          {|ψ4 ⟩, |ψ1 ⟩, |ψ2 ⟩, |ψ3 ⟩}
+          {|ψ3 ⟩, |ψ4 ⟩, |ψ1 ⟩, |ψ2 ⟩}
+          {|ψ2 ⟩, |ψ3 ⟩, |ψ4 ⟩, |ψ1 ⟩}
+
+      with states
+                                                                                                   
+                    1                            1                                0                      1
+                 1 0                        1 0                          1 1                     11
+        |ψ1 ⟩ = √                   |ψ2 ⟩ = √                    |ψ3 ⟩ = √                |ψ4 ⟩ =      . (4)
+                  20                         2 0
+                                                                             2 −1                   2 1
+                                                                                                        
+                    −i                           1                                0                      1
+
+
+                                    C.    Hermitian and unitary matrices
+
+   1. Define the properties of Hermitian and unitary matrices. Discuss which properties make
+      Hermitian and unitary matrices logical candidates for representing physical properties of
+      energy spectra (as Hamiltonian) and propagation (as time evolution operators), respectively.
+
+   2. Solve the Schrödinger equation for a time-independent Hamiltonian to determine the relation
+      between the Hamiltonian and the time evolution operator.
+
+   3. Show that: for every Hermitian matrix, A, the exponential eiA is unitary. (The series
+      expansion may be useful )
+
+   4. Show that: every unitary matrix can be written as the imaginary exponential of a Hermi-
+      tian matrix, eiH , and can thus be considered as the time evolution of some Hamiltonian.
+      (Consider their spectral decompositions)
+
+   5. Ehrenfest’s theorem Show that the commutation of a time-independent operator with
+      the Hamiltonian provides a necessary and sufficient condition for its expectation value to be
+      constant in time.
+
+   6. Discuss when a unitary transformation of time evolution can be encoded as a unitary trans-
+                                                                 †
+      formation of the associated Hamiltonian, U eiH U † = eiU HU .
+                                                                                                    4
+
+
+   7. Given the Schrödinger equation (ℏ = 1) with time-independent Hamiltonian,
+
+                                                         ∂
+                                                     i      |ψ⟩ = Ĥ|ψ⟩      ,                     (5)
+                                                         ∂t
+      find the equation of motion (time derivative) for the time-evolution of the density matrix,
+                                                          n
+                                                          X
+                                                ρ(t) =          pj |ψj (t)⟩⟨ψj (t)|                (6)
+                                                          j=1
+
+      Does the density matrix evolve like a Heisenberg picture operator?
+
+
+                                                D.   Pauli matrices
+
+Operators for spin- 21 quantum degrees of freedom can be represented as 2 × 2 matrices.
+
+   1. Pauli matrices are matrix representations of Pauli operators with respect to the “Z”-basis,
+      |0⟩ and |1⟩,
+                                                                         
+                                                         1 0   0 1   0 −i    1 0
+                   (σ0 , ⃗σ ) = (σ0 , σ1 , σ2 , σ3 ) =       ,     ,       ,         ,       (7)
+                                                         0 1   1 0    i 0    0 −1
+
+      Express each of these Pauli matrices in outer product notation. How does each Pauli matrix
+      transform the two orthonormal basis states, |0⟩ and |1⟩.
+
+   2. Using the Kronecker delta and Levi-Civita epsilon in index notation, determine succinct
+      expressions for the commutators, [σi , σj ], the anticommutators, {σi , σj }, and the operator
+      products, σi σj , for i, j ∈ {1, 2, 3}. Use this to determine the maximum number of Pauli
+      operators that can be simultaneously represented as diagonal matrices.
+
+   3. Let ⃗v be any real three-dimensional unit vector and θ a real number. Show that
+
+                                         eiθ⃗v·⃗σ = cos(θ)I2 + i sin(θ)⃗v · ⃗σ        ,            (8)
+
+      where ⃗v · ⃗σ ≡ 3j=1 vj σj . Generalize this to show that for any function, f (·), that maps
+                     P
+      complex numbers to complex numbers,
+
+                                                f (θ) + f (−θ)    f (θ) − f (−θ)
+                              f (θ⃗v · ⃗σ ) =                  I+                ⃗v · ⃗σ   .       (9)
+                                                       2                 2
+
+   4. Pauli decompositions are often utilized in quantum computing to break computations into
+      pieces that are manageable to implement on quantum devices. Convince yourself that a
+      complete basis for representing generic spin- 12 Hermitian operators is spanned by the Pauli
+      matrices, i.e., all single-qubit operators can be expressed as a vector of Pauli coefficients.
+      Utilizing the trace properties of the Pauli operators, devise a systematic way of determining
+      the Pauli decomposition of an arbitrary single-qubit operator, H2 . Extend the technique
+      to arbitrary n-qubit operators, H2n . Implement your scheme to determine the multi-qubit
+      Pauli decomposition of the four-qubit operators
+
+                          1
+            ϕ̂(JLP ) =      diag (−15, −13, −11, −9, −7, −5, −3, −1, 1, 3, 5, 7, 9, 11, 13, 15)   (10)
+                         15
+                                                                                                  5
+
+
+      and
+                                                        a + a†
+                                             ϕ̂(HO) =     √             ,                      (11)
+                                                            2
+                                                                    √
+      where ϕ̂(HO) is defined by matrix elements ϕ̂j,j+1 = ϕ̂j+1,j = j + 1 ∀j ∈ {0, 14}. How does
+      the number of terms in these two decompositions scale with the number of qubits spanned
+      by the operator? For an arbitrary operator, what is the worst-case scaling of the number of
+      terms in its Pauli decomposition?
+
+
+                         E.   Connecting finite and infinite dimensions
+
+                                                        p̂      2           2
+   The quantum harmonic oscillator Hamiltonian, Ĥ = 2m    + mω   2
+                                                              2 x̂ may be expressed in terms of
+                                p̂          p mω
+dimensionless variables, p̄ = √ℏmω and x̄ =    ℏ x̂, as
+
+                                              ℏω 2
+                                                 p̄ + x̄2
+                                                          
+                                      Ĥ =                          .                          (12)
+                                               2
+In this exercise, you will calculate (confirm) the harmonic oscillator ground state energy in four
+complementary ways. The first three are expected to be simple review.
+
+   1. Ladder operators:
+      Considering the operators
+                                            x̄ + ip̄            x̄ − ip̄
+                                     â =     √         â† =     √             ,              (13)
+                                                2                   2
+
+      propagate the position-momentum canonical commutation relation to determine â, â† and
+                                                                                              
+
+      [x̄, p̄]. By writing the Hamiltonian in terms of these ladder operators, calculate the ground
+      state energy expectation value as ⟨0|Ĥ|0⟩ where |0⟩ is the ground state.
+
+   2. Finite truncation in number basis (qudit):
+      In the basis formed by eigenstates of the number operator, N̂ = â† â, write the matrix
+      representation (or a pattern-extendable low-energy subspace) for the operators N̂ , â, and
+      â† . In the ordering of your basis, what is the vector form of |0⟩? Truncating these matrices
+      at increasing dimensionalities Λ to systematically include higher energy states, show the
+      convergence of ⟨0|Ĥ|0⟩ as a function of Λ. Discuss the form of the commutator in these finite
+      truncations, and connect your observation to the Stone-von Neumann theorem through the
+      trace of the canonical commutation relation.
+
+   3. Continuous wavefunction:
+      You saw above that the ground state of the harmonic oscillator is a computational basis
+      state when expressed in the number operator basis. Fill in the steps to Sakurai textbook
+      Eq. (2.3.30) to show that the ground state expressed in the continuous position basis has
+                                                        x̄2
+      a Gaussian wavefunction, ψ(x) = ⟨x|0⟩ ∝ e− 2 . Again, calculate the ground state energy
+      expectation value, this time expressed as an integral in position space.
+
+   4. Basis of position eigenstates:
+      Consider a basis of position eigenstates organized into a grid characterized by symmetric
+      upper/lower bounds xmax and lattice spacing δx . First, show that an approximate represen-
+                                                                            2
+      tation of the squared momentum operator in this basis is p̄2 = −i ∂∂x̄ = δA2 , where A is a
+                                                                                    x
+                                                                                                          6
+
+
+      Toeplitz matrix with a0 = 2 and a1 = a−1 = −1, e.g., via matrix multiplication of the for-
+      ward and backward leading-order finite difference approximations of the first derivative. The
+      matrix representation of x̄ in this basis is diagonal with matrix elements spanning ±xmax
+                                                          2xmax
+      with a spacing of δx . With a relationship of δx = nstates −1 , show that the ground state energy
+      of this Hamiltonian approaches its continuum value as the number of states increases. Plot
+      the associated ground state wavefunctions, are they as expected? have you chosen an xmax
+      that captures its spatial extent?
+
+   5. Consider implications of these results for qubit implementations with respect to the Pauli
+      decompositions performed at the end of Exercise I D. If the quantum simulation cost scales
+      with the number and size of terms in the Pauli decomposition of the Hamiltonian, which
+      basis might you choose for digital representation of a harmonic oscillator-type Hilbert space
+      on a quantum computer?
+
+
+                              II.   ALGORITHMIC COMPONENTS
+
+                               A.    Hadamard operator as transform
+                                                                
+                                                             1 1                                         
+The Hadamard gate has a matrix form of Ĥ = √12                    = √12 |0⟩⟨0| + |0⟩⟨1| + |1⟩⟨0| − |1⟩⟨1| .
+                                                             1 −1
+
+   1. Verify that the Hadamard is Unitary and is its own Hermitian conjugate.
+
+   2. Calculate the Hadamard transformed Pauli operators: HXH, HY H, and HZH. Do your
+      results make sense in light of the Hadamard’s role as the x ↔ z basis transformation,
+      H = |0⟩⟨+| + |1⟩⟨−|?
+
+   3. Show that the single-qubit Hadamard operator over n-qubits, H ⊗n , can be written as
+                                                  1 X
+                                          H ⊗n = √        (−1)x·y |x⟩⟨y|       ,                       (14)
+                                                   2n x,y
+
+      where |x⟩ = |x1 ⟩ ⊗ |x2 ⟩ ⊗ · · · ⊗ |xn ⟩ and x = x1 x2 · · · xn is a binary representation of x, and
+      likewise for y, leading x.y to be the bit-wise inner product.
+
+   4. Write and describe the state H ⊗n |0⟩, where |0⟩ = |0⟩1 |0⟩2 · · · |0⟩n .
+
+
+                                     B.      GHZ state preparation
+
+   1. With one Hadamard operator and n − 1 CNOTs, write a Unitary circuit that is capable of
+      preparing the n-qubit GHZ state. What is the depth of your circuit? On average, what
+      fraction of time is each qubit idle?
+
+   2. Analyze step-by-step the functionality of the following circuit.
+
+                                    |0⟩     H        •                     •
+                                    |0⟩                            • |0⟩
+                                    |0⟩     H    •                X
+
+      Is the final state dependent on the outcome of the measurement?
+                                                                                                     7
+
+
+   3. Analyze step-by-step the functionality of the following extension of the circuit above.
+                                    |0⟩   H     •                         •
+                                    |0⟩                           • |0⟩
+                                    |0⟩   H     •     •           X       •
+                                    |0⟩                           • |0⟩
+                                    |0⟩   H           •           X
+      If this circuit is extended to generate an n-qubit GHZ state, how many CNOTs are used? De-
+      scribe the strategy of this circuit in the language of measuring and manipulating (CS)parity.
+
+   4. Refer to PRX Quantum 5, 030339 to contextualize the significance of this observation. Dis-
+      cuss the value of mid-circuit measurement and feedforward beyond quantum error correction.
+
+
+                                    C.    Deutsch-Jozsa algorithm
+
+As discussed interferometrically in the first lecture, the Deutsch Jozsa algorithm may be represented
+with the following quantum circuit
+                            |0⟩⊗n     H ⊗n                H ⊗n            ,
+                                                 Uf                                               (15)
+                             |−⟩
+where Uf |x⟩|y⟩ = |x⟩|y ⊕ f (x)⟩.
+   1. Show that |y⟩ = |−⟩ is an eigenstate of the controlled operator, Uf , with eigenvalue (−1)f (x) .
+
+   2. Utilizing the multi-qubit local Hadamard transform, analyze the above circuit to find the
+      final state prior to measurement. Describe the logic applied to the measurement results that
+      allows a single implementation of this circuit (i.e., not ensemble measurement) to determine
+      whether the function is constant, f (x) = c ∀ x ∈ {0, 1}⊗n and c ∈ {0, 1}, or the function is
+      balanced with an equal number of 0 and 1 evaluations across the 2n inputs. Remark upon
+      the state remaining on the last qubit after measurement.
+
+   3. For each of the four possible single-qubit constant/balanced binary functions,
+                                              f (0) = f (1) = 0                                   (16)
+                                              f (0) = f (1) = 1                                   (17)
+                                              f (0) = f (1) ⊕ 1 = 0                               (18)
+                                              f (0) = f (1) ⊕ 1 = 1   ,                           (19)
+      write a circuit representation of the two-qubit gate Uf .
+
+   4. For each of the eight possible two-qubit constant/balanced binary functions,
+                                                            
+                                                            
+                                                             0 0 0 0
+                                                            
+                                                            
+                                                            
+                                                             1 1 1 1
+                                                            
+                                                            
+                                                            
+                                                             0 0 1 1
+                                                              0 1 0 1
+                                                            
+                                (f (0) f (1) f (2) f (3)) =           ,                           (20)
+                                                            
+                                                             0 1 1 0
+                                                              1 0 0 1
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            
+                                                             1 0 1 0
+                                                            
+                                                              1 1 0 0
+                                                                                                                 8
+
+
+      write a circuit representation of the three-qubit gate Uf .
+
+   5. For an n-bit application, f : {0, 1}n → {0, 1}, calculate the total number of possible con-
+      stant/balanced binary functions. How does this number scale asymptotically with n. De-
+      scribe one circuit compilation strategy implementing Uf for arbitrary n. (Consider which
+      functions are simple to compile vs those that require additional circuit logic.) In the worst
+      case, how does the depth of your circuit scale with n?
+
+
+                                 D.   quantum Fourier transform identity
+
+   In the interferometry perspective of quantum computation, we interpreted the role of the
+Hadamard transform as delocalizing the wavefunction in Hilbert space. Generalizing this per-
+spective to an operation that transfers delta-functions to constant-functions between conjugate
+Hilbert spaces (e.g., position-momentum) leads to the Quantum Fourier Transform. The follow-
+ing product-structured identity is crucial for creating and understanding the Quantum Fourier
+Transform circuit,
+                    2 −1n
+                1 X 2πixk
+    QF T |x⟩ = √         e 2n |k⟩                                                                              (21)
+                 2n k=0
+                 |0⟩ + e2πi(0.xn ) |1⟩ |0⟩ + e2πi(0.xn−1 xn ) |1⟩         |0⟩ + e2πi(0.x1 x2 ···xn ) |1⟩
+             =          √             ⊗          √                ⊗ ··· ⊗           √                      .   (22)
+                          2                        2                                   2
+In the binary notation used here, integers are notated as x = x1 x2 · · · xn = x1 2n−1 + · · · + xn 20
+and fractions are notated as (0.xn+1 xn+2 · · · xn+m ) = xn+1 xn+2          xn+m
+                                                           2 + 22 + · · · + 2m .
+   1. Show that this identity is true.
+
+   2. Use this form to motivate explicit QFT circuit implementations for 1, 2 and 3 qubits.
+
+Extra Using the QFT in its role of transforming operators between momentum and position space,
+      show how the local finite-difference momentum operator of I E.4 can be replaced by a proper
+      nonlocal lattice momentum operator to achieve more rapid convergence of the ground state
+      energy.
+
+
+                        III.     QUANTUM INFORMATION PHENOMENA
+
+                            A.   uncertainty principle and enhanced sensing
+                                      T
+   Consider two Hermitian (Â = Â† = Â∗ ) operators, Â and B̂, whose commutator is non-
+vanishing.
+   1. Show that there is an inherent uncertainty in the associated expectation values
+                                                    Dh        iE
+                                                       Â, B̂
+                                     ∆(Â)∆(B̂) ≥                 ,                         (23)
+                                                         2
+                     r 
+                                 ¯ 2                                               ¯
+                                   
+      where ∆(Â) =        Â − Â   is the standard deviation from the average, Â = ⟨Â⟩. For
+      position and momentum, [x̂, p̂] = iℏ, this reproduces the familiar ∆(x̂)∆(p̂) ≥ ℏ/2. Hint
+      you may find useful the Cauchy-Schwartz inequality for states in an inner product vector
+      space: ⟨u|u⟩⟨v|v⟩ ≥ |⟨u|v⟩|2 .
+

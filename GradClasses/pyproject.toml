@@ -1,0 +1,14 @@
+[project]
+name = "gradclasses"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "ipython>=9.9.0",
+    "marimo[recommended]>=0.20.2",
+    "matplotlib>=3.10.8",
+    "numpy>=2.4.1",
+    "pyzmq>=27.1.0",
+    "qiskit>=2.3.0",
+]

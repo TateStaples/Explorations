@@ -16,11 +16,21 @@ dependencies = [
     "xarray>=2023.0.0",
     "netCDF4>=1.6.0",
     "cftime>=1.6.0",
-    "torch>=2.0.0",
-    "torchtext>=0.15.0",
     "spacy>=3.0.0",
     "altair>=5.0.0",
     "pyzmq>=27.1.0",
+    "anywidget>=0.9.0",
+    "traitlets>=5.0.0",
+    "networkx>=3.0.0",
+    "polars>=1.0.0",
+    "pydantic>=2.0.0",
+    "qiskit>=2.3.1",
+    "qiskit-aer>=0.17.2",
+    "pylatexenc>=2.10",
+    "torch>=2.11.0",
 ]
+
+[tool.uv.workspace]
+members = ["tiny_eda_project"]
 
 
