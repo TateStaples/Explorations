@@ -526,41 +526,13 @@ def _(design_selector, nx):
         return _G
 
     def _layout_fibonacci(G):
-        _bits = 8
-        _dx, _dy = 1.8, 1.4
-        _pos = {}
-        _pos["RST"] = (0, 4 * _dy)
-        _pos["START"] = (_dx, 4 * _dy)
-        for _i in range(_bits):
-            _pos[f"REG_A_{_i}"] = (_i * _dx, 3 * _dy)
-        for _i in range(_bits):
-            _pos[f"REG_B_{_i}"] = (_i * _dx, 2 * _dy)
-        for _i in range(_bits):
-            _pos[f"ADD_{_i}"] = (_i * _dx, 1 * _dy)
-        _pos["FIB_MEM"] = ((_bits - 1) * _dx / 2, 0)
-        return _pos
+        return nx.nx_agraph.graphviz_layout(G, prog="dot")
 
     def _layout_pipelined_adder(G):
-        _bits = 8
-        _dx, _dy = 1.8, 1.2
-        _pos = {}
-        _pos["RST"] = (0, 6 * _dy)
-        _pos["START"] = (_dx, 6 * _dy)
-        _pos["ONE"] = (2 * _dx, 6 * _dy)
-        for _i in range(_bits):
-            _pos[f"REG_A_{_i}"] = (_i * _dx, 5 * _dy)
-        for _i in range(_bits):
-            _pos[f"ADD1_{_i}"] = (_i * _dx, 4 * _dy)
-        for _i in range(_bits):
-            _pos[f"REG_B_{_i}"] = (_i * _dx, 3 * _dy)
-        for _i in range(_bits):
-            _pos[f"ADD2_{_i}"] = (_i * _dx, 2 * _dy)
-        for _i in range(_bits):
-            _pos[f"REG_C_{_i}"] = (_i * _dx, 1 * _dy)
-        return _pos
+        return nx.nx_agraph.graphviz_layout(G, prog="dot")
 
     def _layout_fallback(G):
-        return nx.kamada_kawai_layout(G)
+        return nx.nx_agraph.graphviz_layout(G, prog="dot")
 
     design_key = _DESIGN_KEY_MAP.get(design_selector.value, "fibonacci")
     _generators = {"fibonacci": _generate_fibonacci_netlist, "pipelined_adder": _generate_pipelined_adder_netlist}

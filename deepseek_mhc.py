@@ -12,7 +12,7 @@
 
 import marimo
 
-__generated_with = "0.19.4"
+__generated_with = "0.21.1"
 app = marimo.App(width="medium", app_title="deepseek_mhc")
 
 
@@ -31,6 +31,7 @@ def _():
     import marimo as mo
 
     from mhc import run_comparison, sinkhorn_knopp, compute_all_metrics
+
     return alt, mo, np, pd, run_comparison, sinkhorn_knopp
 
 
@@ -119,6 +120,7 @@ def _(np):
             P = P / (P.sum(axis=1, keepdims=True) + eps)  # Row normalize
             P = P / (P.sum(axis=0, keepdims=True) + eps)  # Column normalize
         return P
+
     return
 
 
@@ -722,6 +724,11 @@ def _(mo):
     He, K., Zhang, X., Ren, S., & Sun, J. (2016). Deep Residual Learning for Image Recognition. CVPR.
     Sinkhorn, R., & Knopp, P. (1967). Concerning nonnegative matrices and doubly stochastic matrices. Pacific Journal of Mathematics, 21(2), 343-348.
     """)
+    return
+
+
+@app.cell
+def _():
     return
 
 

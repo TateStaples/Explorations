@@ -1640,7 +1640,7 @@ def _(HAMMING_H, code_preset, nx, plt, rep_n, repetition_parity_matrix):
             if H_tan[_j, _i] == 1:
                 G_tan.add_edge(f"C{_j}", f"Q{_i}")
     _fig_tan, _ax_tan = plt.subplots(figsize=(6, 4))
-    _pos_tan = nx.bipartite_layout(G_tan, [f"Q{_i}" for _i in range(n_tan)])
+    _pos_tan = nx.nx_agraph.graphviz_layout(G_tan, prog="dot")
     nx.draw(G_tan, _pos_tan, with_labels=True, node_color="lightblue", ax=_ax_tan, font_size=8)
     _ax_tan.set_title("Tanner graph (Q = qubits, C = checks)")
     tanner_fig = _fig_tan

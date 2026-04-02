@@ -171,10 +171,7 @@ def _(nx, plt):
         ("x2", "f2"), ("x3", "f2"),
         ("x3", "f3"), ("x4", "f3"),
     ])
-    _pos = {
-        "x1": (0, 1), "x2": (1, 1), "x3": (2, 1), "x4": (3, 1),
-        "f1": (0.5, 0), "f2": (1.5, 0), "f3": (2.5, 0),
-    }
+    _pos = nx.nx_agraph.graphviz_layout(_G, prog="dot")
     _fig, _ax = plt.subplots(figsize=(7, 3))
     nx.draw_networkx_edges(_G, _pos, ax=_ax, edge_color="gray", width=1.5)
     nx.draw_networkx_nodes(_G, _pos, nodelist=_var_nodes, node_color="steelblue",
@@ -207,11 +204,7 @@ def _(nx, plt):
         ("Slippery Road", "Traffic"), ("Traffic", "Late"),
         ("Slippery Road", "Accident"),
     ])
-    _pos = {
-        "Rain": (1, 3), "Sprinkler": (3, 3),
-        "Wet Grass": (2, 2), "Slippery Road": (1, 1),
-        "Traffic": (0, 0), "Late": (0, -1), "Accident": (2, 0),
-    }
+    _pos = nx.nx_agraph.graphviz_layout(_G, prog="dot")
     _fig, _ax = plt.subplots(figsize=(6, 5))
     nx.draw(_G, _pos, with_labels=True, node_color="steelblue", node_size=1800,
             font_size=8, font_color="white", edge_color="gray",
@@ -339,12 +332,18 @@ def _(MarkovBlanketWidget, mo, np, nx):
         _b = _rng.choice(list(_components[1]))
         _G.add_edge(int(_a), int(_b))
 
-    _layout = nx.spring_layout(_G, seed=42, k=3.0)
+    _layout = nx.nx_agraph.graphviz_layout(_G, prog="neato")
+    _xs = np.array([_layout[n][0] for n in _G.nodes()], dtype=float)
+    _ys = np.array([_layout[n][1] for n in _G.nodes()], dtype=float)
+    _x_min, _x_max = float(_xs.min()), float(_xs.max())
+    _y_min, _y_max = float(_ys.min()), float(_ys.max())
+    _x_span = max(_x_max - _x_min, 1e-9)
+    _y_span = max(_y_max - _y_min, 1e-9)
     _W, _H, _PAD = 640, 480, 45
     _nodes_data = [
         {"id": int(n),
-         "x": float((_layout[n][0] + 1) / 2 * (_W - 2 * _PAD) + _PAD),
-         "y": float((_layout[n][1] + 1) / 2 * (_H - 2 * _PAD) + _PAD)}
+         "x": float(((_layout[n][0] - _x_min) / _x_span) * (_W - 2 * _PAD) + _PAD),
+         "y": float(((_layout[n][1] - _y_min) / _y_span) * (_H - 2 * _PAD) + _PAD)}
         for n in _G.nodes()
     ]
     _edges_data = [[int(u), int(v)] for u, v in _G.edges()]
