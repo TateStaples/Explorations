@@ -1,0 +1,58 @@
+## In Progress
+
+- Climate Change Blog
+- Annotated Transformer
+
+## TODO
+
+- Build a interaction + visualization Claude skill
+    - [Welch Labs](https://github.com/WelchLabs/videos/tree/master/_2025)
+    - BrainTruffle
+    - Sam Rose
+    - https://distill.pub/2020/communicating-with-interactive-articles
+    - Blender
+- Quantum Computing
+    - Single Qubit (focus on polarized light as our illustration example)
+        - Pure States 
+            - Superposities
+            - Pauli Gates + Bloch Sphere (mention the double cover)
+            - Global phase invariance
+        - Properties of the density matrix & mixed states
+    - Multi-qubit Interactions 
+        - Bell States + Entanglement
+        - Phase Kickback
+        - Gate Teleportation
+        - Partioal 
+    - Algorithms
+        - Quantum Fourier Transform
+        - Shor's Algorithm
+    - Hardware
+        - Superconducting
+        - Neurel
+        - Atom
+    - Architecture
+        - Magic
+        - Error Correction
+            - QLDPC: decoding, 
+            - Post Selection
+        - Routing in superconductors and optical tweazers
+- Reverse computing an exchange
+    - Feel like should start with designing exchange, idk what the interesting problems really are here
+- Exchange Dynamics and simulated traders
+    - Info, util, risk holders
+- Recreate Primer & BrainTruffle Videos
+- General Physics Review
+- Some Mech E Stuff (ie FEA & Topology Optimization)
+- Cryptography
+- Muon
+- Interactive Guide to Graphics
+- RL: recreate the youtube series
+- Fluids
+- Networking
+- Route & Place
+- Pathfinding
+- Visualizing some stats / probability in a numerical way
+- Interactive Flight Booking System
+- Celluar Automata in a visual way (Conways Game of Life, Langtons Ant, etc)
+- Sebastian Lague style coding videos (maybe the ant conolony one?)
+    - Make this playful

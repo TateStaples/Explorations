@@ -713,7 +713,7 @@ def __(iris_df, iris, np, plt, PCA, TSNE, StandardScaler):
         X_pca = pca.fit_transform(X_scaled)
         
         # 2. t-SNE
-        tsne = TSNE(n_components=2, random_state=42, perplexity=30, n_iter=1000)
+        tsne = TSNE(n_components=2, random_state=42, perplexity=30, max_iter=1000)
         X_tsne = tsne.fit_transform(X_scaled)
         
         # Create comprehensive visualization

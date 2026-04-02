@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dropped_nn",
+      "runtimeExecutable": "uv",
+      "runtimeArgs": ["run", "marimo", "run", "dropped_nn.py", "--no-token"],
+      "port": 2718
+    },
+    {
+      "name": "portfolio_optimization",
+      "runtimeExecutable": "uv",
+      "runtimeArgs": ["run", "marimo", "run", "portfolio_optimization.py", "--no-token", "--port", "2719"],
+      "port": 2719
+    }
+  ]
+}

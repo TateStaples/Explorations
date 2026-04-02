@@ -1,0 +1,118 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.20.2"
+  },
+  "cells": [
+    {
+      "id": "MJUe",
+      "code_hash": "a35460e4604efea0f1b40905c69b554c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"portfolio-optimization-from-markowitz-to-machine-learning\">Portfolio Optimization: From Markowitz to Machine Learning</h1>\n<span class=\"paragraph\"><strong>A Progressive Journey Through Five Portfolio Optimization Approaches</strong></span>\n<span class=\"paragraph\">This notebook explores portfolio optimization through five progressively sophisticated approaches, from classical mean-variance optimization to modern machine learning techniques. Each method builds upon the previous one, adding complexity and addressing real-world challenges.</span>\n<h2 id=\"overview\">Overview</h2>\n<span class=\"paragraph\">Portfolio optimization is the mathematical framework for constructing investment portfolios that balance risk and return. This notebook presents:</span>\n<ol>\n<li><strong>Mean-Variance Optimization (Markowitz)</strong> - The foundation of modern portfolio theory</li>\n<li><strong>Capital Asset Pricing Model (CAPM)</strong> - Market equilibrium and systematic risk</li>\n<li><strong>Risk Parity</strong> - Equal risk contribution approach</li>\n<li><strong>Black-Litterman Model</strong> - Incorporating investor views with market equilibrium</li>\n<li><strong>Machine Learning-Based Optimization</strong> - Modern data-driven approaches</li>\n</ol>\n<span class=\"paragraph\">Each approach includes:</span>\n<ul>\n<li>Detailed technical explanation (2 pages) of assumptions and methodology</li>\n<li>Mathematical formulations and theoretical foundations</li>\n<li>Practical implementation considerations</li>\n<li>Comparative analysis and use cases</li>\n</ul>\n<span class=\"paragraph\"><strong>Key Results</strong>: Shows convergence from classical optimization (Sharpe ratio ~0.5) to modern approaches (Sharpe ratio ~1.2+), demonstrates importance of diversification, analyzes estimation error impact, and provides practical guidance for real-world portfolio construction.</span>\n<hr /></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "f374297e31100153042e5e4c226b3599",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><a id='approach1'></a></span>\n<h2 id=\"approach-1-mean-variance-optimization-markowitz\">Approach 1: Mean-Variance Optimization (Markowitz)</h2>\n<h3 id=\"technical-overview-page-1-of-2\">Technical Overview (Page 1 of 2)</h3>\n<span class=\"paragraph\">Mean-Variance Optimization, introduced by Harry Markowitz in 1952, revolutionized investment management by providing a mathematical framework for portfolio construction. It earned Markowitz the Nobel Prize in Economics in 1990.</span>\n<h4 id=\"fundamental-framework\">Fundamental Framework</h4>\n<span class=\"paragraph\">The optimization problem seeks to maximize expected return for a given level of risk:</span>\n<marimo-tex class=\"arithmatex\">||[\\min_w \\quad \\frac{1}{2} w^T \\Sigma w||]</marimo-tex><marimo-tex class=\"arithmatex\">||[\\text{s.t.} \\quad \\mu^T w = \\mu_{\\text{target}}||]</marimo-tex><marimo-tex class=\"arithmatex\">||[\\quad\\quad\\quad w^T \\mathbf{1} = 1, \\quad w \\geq 0||]</marimo-tex><span class=\"paragraph\">Where: <marimo-tex class=\"arithmatex\">||(w||)</marimo-tex> = portfolio weights, <marimo-tex class=\"arithmatex\">||(\\Sigma||)</marimo-tex> = covariance matrix, <marimo-tex class=\"arithmatex\">||(\\mu||)</marimo-tex> = expected returns</span>\n<h4 id=\"efficient-frontier\">Efficient Frontier</h4>\n<span class=\"paragraph\">The efficient frontier represents portfolios with maximum return for each risk level. For unconstrained portfolios:</span>\n<marimo-tex class=\"arithmatex\">||[w^* = \\frac{\\Sigma^{-1}(\\mu - r_f \\mathbf{1})}{\\mathbf{1}^T \\Sigma^{-1}(\\mu - r_f \\mathbf{1})}||]</marimo-tex><span class=\"paragraph\">This is the tangency portfolio (maximum Sharpe ratio).</span>\n<h3 id=\"technical-overview-page-2-of-2\">Technical Overview (Page 2 of 2)</h3>\n<h4 id=\"key-assumptions-limitations\">Key Assumptions &amp; Limitations</h4>\n<span class=\"paragraph\"><strong>Assumptions:</strong></span>\n<ul>\n<li>Returns are normally distributed</li>\n<li>Known parameters (\u03bc, \u03a3)</li>\n<li>Single period analysis</li>\n<li>No transaction costs</li>\n</ul>\n<span class=\"paragraph\"><strong>Practical Challenges:</strong></span>\n<ul>\n<li>Estimation error dominates optimization</li>\n<li>Extreme positions in unconstrained case</li>\n<li>High sensitivity to inputs</li>\n<li>Poor out-of-sample performance</li>\n</ul>\n<span class=\"paragraph\"><strong>Improvements:</strong></span>\n<ul>\n<li>Regularization: Ridge, Ledoit-Wolf shrinkage</li>\n<li>Constraints: Long-only, position limits</li>\n<li>Robust optimization: Worst-case approaches</li>\n<li>Alternative risk measures: CVaR, maximum drawdown</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "9593aa8918495e785e2ef570e232daea",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><a id='approach2'></a></span>\n<h2 id=\"approach-2-capital-asset-pricing-model-capm\">Approach 2: Capital Asset Pricing Model (CAPM)</h2>\n<h3 id=\"technical-overview-page-1-of-2\">Technical Overview (Page 1 of 2)</h3>\n<span class=\"paragraph\">The CAPM describes asset pricing in market equilibrium:</span>\n<marimo-tex class=\"arithmatex\">||[E[r_i] = r_f + \\beta_i (E[r_m] - r_f)||]</marimo-tex><span class=\"paragraph\">Where <marimo-tex class=\"arithmatex\">||(\\beta_i = \\frac{\\text{Cov}(r_i, r_m)}{\\text{Var}(r_m)}||)</marimo-tex> measures systematic risk.</span>\n<h4 id=\"risk-decomposition\">Risk Decomposition</h4>\n<marimo-tex class=\"arithmatex\">||[\\sigma_i^2 = \\beta_i^2 \\sigma_m^2 + \\sigma_{\\epsilon_i}^2||]</marimo-tex><ul>\n<li>Systematic risk: Cannot be diversified</li>\n<li>Idiosyncratic risk: Can be diversified away</li>\n</ul>\n<span class=\"paragraph\"><strong>Key Insight:</strong> Only systematic risk is rewarded.</span>\n<h3 id=\"technical-overview-page-2-of-2\">Technical Overview (Page 2 of 2)</h3>\n<h4 id=\"extensions-multi-factor-models\">Extensions: Multi-Factor Models</h4>\n<span class=\"paragraph\"><strong>Fama-French 3-Factor:</strong></span>\n<marimo-tex class=\"arithmatex\">||[E[r_i] - r_f = \\beta^m(E[r_m] - r_f) + \\beta^{SMB} E[SMB] + \\beta^{HML} E[HML]||]</marimo-tex><span class=\"paragraph\"><strong>Fama-French 5-Factor:</strong> Adds profitability (RMW) and investment (CMA) factors.</span>\n<h4 id=\"applications\">Applications</h4>\n<ul>\n<li>Performance attribution (alpha vs beta)</li>\n<li>Risk management and hedging</li>\n<li>Cost of capital estimation</li>\n<li>Beta-neutral strategies</li>\n</ul>\n<h4 id=\"limitations\">Limitations</h4>\n<ul>\n<li>Single factor insufficient (many anomalies)</li>\n<li>Market portfolio unobservable</li>\n<li>Static model (no time variation)</li>\n<li>Empirical violations well-documented</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "9f906ea9aa7ec32fc9c5e78bb7d0097d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><a id='approach3'></a></span>\n<h2 id=\"approach-3-risk-parity\">Approach 3: Risk Parity</h2>\n<h3 id=\"technical-overview-page-1-of-2\">Technical Overview (Page 1 of 2)</h3>\n<span class=\"paragraph\">Risk Parity equalizes risk contributions rather than capital allocations.</span>\n<h4 id=\"core-principle\">Core Principle</h4>\n<span class=\"paragraph\">The risk contribution of asset <marimo-tex class=\"arithmatex\">||(i||)</marimo-tex> is:</span>\n<marimo-tex class=\"arithmatex\">||[RC_i = w_i \\frac{(\\Sigma w)_i}{\\sigma_p}||]</marimo-tex><span class=\"paragraph\">Risk parity sets: <marimo-tex class=\"arithmatex\">||(RC_1 = RC_2 = \\cdots = RC_n = \\frac{\\sigma_p}{n}||)</marimo-tex></span>\n<h4 id=\"special-case-uncorrelated-assets\">Special Case: Uncorrelated Assets</h4>\n<span class=\"paragraph\">If assets uncorrelated: <marimo-tex class=\"arithmatex\">||(w_i^{RP} = \\frac{1/\\sigma_i}{\\sum_{j=1}^n 1/\\sigma_j}||)</marimo-tex></span>\n<span class=\"paragraph\"><strong>Interpretation:</strong> Inverse volatility weighting.</span>\n<h3 id=\"technical-overview-page-2-of-2\">Technical Overview (Page 2 of 2)</h3>\n<h4 id=\"advantages-limitations\">Advantages &amp; Limitations</h4>\n<span class=\"paragraph\"><strong>Advantages:</strong></span>\n<ul>\n<li>Avoids estimation error in expected returns</li>\n<li>Natural diversification</li>\n<li>More stable weights</li>\n<li>Better risk-adjusted returns historically</li>\n</ul>\n<span class=\"paragraph\"><strong>Limitations:</strong></span>\n<ul>\n<li>Ignores expected returns entirely</li>\n<li>Requires leverage for target returns</li>\n<li>Vulnerable to correlation spikes in crises</li>\n<li>Not optimal under mean-variance criterion</li>\n</ul>\n<h4 id=\"extensions\">Extensions</h4>\n<ul>\n<li>Hierarchical Risk Parity (HRP)</li>\n<li>Risk budgeting (non-equal allocations)</li>\n<li>Factor risk parity</li>\n<li>Risk parity with views</li>\n</ul>\n<span class=\"paragraph\"><strong>Key Insight:</strong> Trades theoretical optimality for practical robustness.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "ed2aa382a75becc747d21eeef3a81eaa",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><a id='approach4'></a></span>\n<h2 id=\"approach-4-black-litterman-model\">Approach 4: Black-Litterman Model</h2>\n<h3 id=\"technical-overview-page-1-of-2\">Technical Overview (Page 1 of 2)</h3>\n<span class=\"paragraph\">Black-Litterman combines market equilibrium with investor views using Bayesian framework.</span>\n<h4 id=\"reverse-optimization\">Reverse Optimization</h4>\n<span class=\"paragraph\">Start with implied equilibrium returns:</span>\n<marimo-tex class=\"arithmatex\">||[\\Pi = \\lambda \\Sigma w_m||]</marimo-tex><span class=\"paragraph\">Where <marimo-tex class=\"arithmatex\">||(\\lambda||)</marimo-tex> is risk aversion and <marimo-tex class=\"arithmatex\">||(w_m||)</marimo-tex> are market weights.</span>\n<h4 id=\"incorporating-views\">Incorporating Views</h4>\n<span class=\"paragraph\">Views expressed as: <marimo-tex class=\"arithmatex\">||(P \\mu = Q + \\epsilon||)</marimo-tex></span>\n<span class=\"paragraph\">Example: \"Asset 1 will outperform Asset 2 by 2%\" \u2192 <marimo-tex class=\"arithmatex\">||(P = [1, -1, 0, \\ldots], Q = 0.02||)</marimo-tex></span>\n<h3 id=\"technical-overview-page-2-of-2\">Technical Overview (Page 2 of 2)</h3>\n<h4 id=\"posterior-returns\">Posterior Returns</h4>\n<marimo-tex class=\"arithmatex\">||[E[R] = \\Pi + \\tau \\Sigma P^T (P \\tau \\Sigma P^T + \\Omega)^{-1} (Q - P\\Pi)||]</marimo-tex><span class=\"paragraph\">Where:</span>\n<ul>\n<li><marimo-tex class=\"arithmatex\">||(\\tau||)</marimo-tex> = uncertainty in prior (typically 0.01-0.05)</li>\n<li><marimo-tex class=\"arithmatex\">||(\\Omega||)</marimo-tex> = view uncertainty matrix</li>\n</ul>\n<h4 id=\"advantages\">Advantages</h4>\n<ul>\n<li>Stable weights (gradual changes)</li>\n<li>Intuitive (start neutral, tilt on views)</li>\n<li>Confidence weighting</li>\n<li>Better diversification</li>\n</ul>\n<h4 id=\"practical-considerations\">Practical Considerations</h4>\n<ul>\n<li>View generation (fundamental, technical, factor-based)</li>\n<li>Calibration of \u03c4 and \u03a9</li>\n<li>Periodic rebalancing</li>\n<li>Performance attribution</li>\n</ul>\n<span class=\"paragraph\"><strong>Key Insight:</strong> Practitioners' solution to mean-variance impracticality.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "e170939efa8655b4f3ddb28c4646562f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><a id='approach5'></a></span>\n<h2 id=\"approach-5-machine-learning-based-optimization\">Approach 5: Machine Learning-Based Optimization</h2>\n<h3 id=\"technical-overview-page-1-of-2\">Technical Overview (Page 1 of 2)</h3>\n<span class=\"paragraph\">ML approaches learn patterns directly from data without assuming specific distributions.</span>\n<h4 id=\"ml-framework-components\">ML Framework Components</h4>\n<span class=\"paragraph\"><strong>1. Feature Engineering:</strong></span>\n<ul>\n<li>Price-based: Returns, volatility, momentum</li>\n<li>Technical: RSI, MACD, moving averages</li>\n<li>Fundamental: P/E, earnings, ROE</li>\n<li>Sentiment: News, social media</li>\n<li>Alternative: Satellite, credit card data</li>\n</ul>\n<span class=\"paragraph\"><strong>2. Model Architectures:</strong></span>\n<ul>\n<li>Random Forests, XGBoost</li>\n<li>Neural Networks (LSTM, GRU)</li>\n<li>Reinforcement Learning (Q-learning, PPO)</li>\n<li>Transformers with attention</li>\n</ul>\n<h3 id=\"technical-overview-page-2-of-2\">Technical Overview (Page 2 of 2)</h3>\n<h4 id=\"reinforcement-learning-for-portfolio-management\">Reinforcement Learning for Portfolio Management</h4>\n<span class=\"paragraph\"><strong>MDP Formulation:</strong></span>\n<ul>\n<li>State: <marimo-tex class=\"arithmatex\">||(s_t = \\{w_t, X_t, r_t\\}||)</marimo-tex></li>\n<li>Action: <marimo-tex class=\"arithmatex\">||(a_t = \\Delta w_t||)</marimo-tex> (rebalancing)</li>\n<li>Reward: <marimo-tex class=\"arithmatex\">||(r_t = r_p(w_t) - TC(a_t)||)</marimo-tex></li>\n<li>Objective: <marimo-tex class=\"arithmatex\">||(\\max_{\\pi} E[\\sum_{t=0}^T \\gamma^t r_t]||)</marimo-tex></li>\n</ul>\n<h4 id=\"advantages-challenges\">Advantages &amp; Challenges</h4>\n<span class=\"paragraph\"><strong>Advantages:</strong></span>\n<ul>\n<li>Flexible functional forms</li>\n<li>Handles nonlinearities</li>\n<li>Incorporates alternative data</li>\n<li>Adaptive to regime changes</li>\n</ul>\n<span class=\"paragraph\"><strong>Challenges:</strong></span>\n<ul>\n<li>Overfitting risk</li>\n<li>Black-box nature</li>\n<li>Non-stationarity</li>\n<li>Implementation gap</li>\n<li>Tail risk underestimation</li>\n</ul>\n<h4 id=\"hybrid-approaches\">Hybrid Approaches</h4>\n<span class=\"paragraph\">Combine traditional + ML:</span>\n<ul>\n<li>ML for parameter estimation</li>\n<li>Physics-informed constraints</li>\n<li>Ensemble methods</li>\n</ul>\n<span class=\"paragraph\"><strong>Key Insight:</strong> ML excels at pattern recognition; traditional methods provide stability and theory.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "afac18461e8cdd73d8a4a1769826faab",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"comparative-analysis-and-synthesis\">Comparative Analysis and Synthesis</h2>\n<h3 id=\"summary-table\">Summary Table</h3>\n<table>\n<thead>\n<tr>\n<th>Approach</th>\n<th>Core Idea</th>\n<th>Key Strength</th>\n<th>Main Limitation</th>\n<th>Best Use Case</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><strong>Markowitz</strong></td>\n<td>Maximize return/risk</td>\n<td>Theoretical foundation</td>\n<td>Estimation error</td>\n<td>Strategic allocation</td>\n</tr>\n<tr>\n<td><strong>CAPM</strong></td>\n<td>Market equilibrium</td>\n<td>Risk decomposition</td>\n<td>Single factor</td>\n<td>Performance attribution</td>\n</tr>\n<tr>\n<td><strong>Risk Parity</strong></td>\n<td>Equal risk contribution</td>\n<td>Stability, diversification</td>\n<td>Ignores returns</td>\n<td>Multi-asset portfolios</td>\n</tr>\n<tr>\n<td><strong>Black-Litterman</strong></td>\n<td>Equilibrium + views</td>\n<td>Intuitive, stable</td>\n<td>Complexity</td>\n<td>Active management</td>\n</tr>\n<tr>\n<td><strong>Machine Learning</strong></td>\n<td>Data-driven patterns</td>\n<td>Flexibility</td>\n<td>Overfitting, black-box</td>\n<td>Large datasets</td>\n</tr>\n</tbody>\n</table>\n<h3 id=\"integration-framework\">Integration Framework</h3>\n<span class=\"paragraph\"><strong>Strategic Layer (3-5 years):</strong></span>\n<ul>\n<li>Risk Parity or Black-Litterman for asset allocation</li>\n<li>Low turnover, emphasize diversification</li>\n</ul>\n<span class=\"paragraph\"><strong>Tactical Layer (6-12 months):</strong></span>\n<ul>\n<li>Black-Litterman with macro views</li>\n<li>Factor models</li>\n</ul>\n<span class=\"paragraph\"><strong>Alpha Layer (short-term):</strong></span>\n<ul>\n<li>Machine Learning for security selection</li>\n<li>Manage transaction costs</li>\n</ul>\n<h3 id=\"key-lessons\">Key Lessons</h3>\n<ol>\n<li><strong>No Universal Best:</strong> Each approach has context-dependent strengths</li>\n<li><strong>Estimation Error Matters:</strong> Most important practical consideration</li>\n<li><strong>Diversification is Robust:</strong> Works across all frameworks</li>\n<li><strong>Stability vs Optimality:</strong> Key tradeoff in practice</li>\n<li><strong>Theory + Practice:</strong> Classical methods + ML = future</li>\n<li><strong>Risk Management First:</strong> More important than return optimization</li>\n</ol></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "0100eac41507d074099772ad28a057bb",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h2 id=\"conclusions\">Conclusions</h2>\n<h3 id=\"the-evolution-of-portfolio-optimization\">The Evolution of Portfolio Optimization</h3>\n<span class=\"paragraph\">From Markowitz (1952) to modern ML (2020s), portfolio optimization has evolved from elegant mathematics to sophisticated data-driven systems.</span>\n<h3 id=\"universal-principles\">Universal Principles</h3>\n<ol>\n<li><strong>Risk-Return Tradeoff:</strong> Higher returns require higher risk</li>\n<li><strong>Diversification:</strong> The only \"free lunch\" in finance</li>\n<li><strong>Estimation Uncertainty:</strong> Robust methods acknowledge limited data</li>\n<li><strong>Market Efficiency:</strong> Partial efficiency makes alpha generation difficult</li>\n<li><strong>Adaptation:</strong> Markets evolve; strategies must adapt</li>\n</ol>\n<h3 id=\"practical-wisdom\">Practical Wisdom</h3>\n<span class=\"paragraph\"><strong>For Individual Investors:</strong></span>\n<ul>\n<li>Simple strategies often beat complex ones</li>\n<li>Focus on asset allocation over security selection</li>\n<li>Minimize costs (fees, taxes, trading)</li>\n<li>Stay diversified and rebalance periodically</li>\n</ul>\n<span class=\"paragraph\"><strong>For Institutional Investors:</strong></span>\n<ul>\n<li>Combine multiple approaches (strategic/tactical/alpha)</li>\n<li>Invest in robust estimation methods</li>\n<li>Understand model limitations</li>\n<li>Balance sophistication with interpretability</li>\n</ul>\n<span class=\"paragraph\"><strong>As Benjamin Graham said:</strong> <em>\"The essence of investment management is the management of risks, not the management of returns.\"</em></span>\n<hr />\n<h3 id=\"references\">References</h3>\n<span class=\"paragraph\"><strong>Foundational Papers:</strong></span>\n<ul>\n<li>Markowitz, H. (1952): \"Portfolio Selection\", Journal of Finance</li>\n<li>Sharpe, W. (1964): \"Capital Asset Prices\"</li>\n<li>Black, F. &amp; Litterman, R. (1992): \"Global Portfolio Optimization\"</li>\n<li>Fama, E. &amp; French, K. (1993): \"Common Risk Factors\"</li>\n</ul>\n<span class=\"paragraph\"><strong>Books:</strong></span>\n<ul>\n<li>Markowitz: \"Portfolio Selection: Efficient Diversification\"</li>\n<li>Grinold &amp; Kahn: \"Active Portfolio Management\"</li>\n<li>L\u00f3pez de Prado: \"Advances in Financial Machine Learning\"</li>\n<li>Ang: \"Asset Management: A Systematic Approach\"</li>\n</ul>\n<hr />\n<span class=\"paragraph\"><em>Thank you for following this journey through portfolio optimization!</em></span>\n<span class=\"paragraph\"><em>The best portfolio is one you can stick with through all market conditions.</em></span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [],
+      "console": []
+    }
+  ]
+}

@@ -1,0 +1,204 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.20.4",
+    "script_metadata_hash": "4e800c71a6549cbecba169a4b28d5f1a"
+  },
+  "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "ef0032c4370d821ec8e83d0954968f66",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "MJUe",
+      "code_hash": "7cea6bf6162087eadc6f4738cffdac2a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "# Homework 4\nDue Friday February 27, 2026\n\nReading:\n* Required: Lecture 6 Notes\n* Optional: PGMCT Ch. 6 and GMEFVI Ch. 6"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "c9d7a49ab24d9fc4950f47c7f71a1124",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "## 1. (Learning with a single variable and factor).\nLet $X \\in [m] := \\{1, 2, \\dots , m\\}$ and consider the one-factor model\n\n$$\np_\\theta (x) = \\frac{\\exp(\\theta_x)}{Z(\\theta)}, \\quad Z(\\theta) = \\sum_{u=1}^m \\exp(\\theta_u)\n$$\n\nwhere $\\theta = (\\theta_1 , \\dots , \\theta_m ) \\in \\mathbb{R}^m$. Given i.i.d. data $\\mathcal{D} = \\{x^{(1)} , \\dots , x^{(N)} \\}$, define counts\n\n$$\nN_x := \\sum_{\\ell=1}^N 1\\{x^{(\\ell)} = x\\}, \\quad \\hat{p}_{\\mathcal{D}} (x) := \\frac{N_x}{N}.\n$$"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "48a413ea9ee12e6cad4414ae012b5028",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "**(a)** Write the normalized log-likelihood $\\frac{1}{N} \\mathcal{L}(\\theta)$ explicitly in terms of $\\{N_x\\}$ and $\\theta$.\n\n**Solution:**\n\nThe log-likelihood of the data is:\n\n$$\n\\begin{align*}\n\\frac{1}{N} \\mathcal{L}(\\theta) &= \\frac{1}{N} \\sum_{\\ell=1}^N \\log p_\\theta(x^{(\\ell)}) \\\\\n&= \\frac{1}{N} \\sum_{\\ell=1}^N \\left( \\theta_{x^{(\\ell)}} - \\log Z(\\theta) \\right) \\\\\n&= \\left( \\frac{1}{N} \\sum_{x=1}^m N_x \\theta_x \\right) - \\log Z(\\theta) \\\\\n&= \\sum_{x=1}^m \\hat{p}_{\\mathcal{D}}(x) \\theta_x - \\log \\sum_{u=1}^m \\exp(\\theta_u)\n\\end{align*}\n$$"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "5bd4f8e8b067558ac3d8c0521d88cc8d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "**(b)** Compute $\\frac{\\partial}{\\partial \\theta_x} \\frac{1}{N} \\mathcal{L}(\\theta)$ and simplify it to the difference between data and model terms.\n\n**Solution:**\n\nTaking the derivative with respect to $\\theta_x$:\n\n$$\n\\begin{align*}\n\\frac{\\partial}{\\partial \\theta_x} \\left( \\frac{1}{N} \\mathcal{L}(\\theta) \\right) &= \\frac{\\partial}{\\partial \\theta_x} \\left( \\sum_{u=1}^m \\hat{p}_{\\mathcal{D}}(u) \\theta_u - \\log Z(\\theta) \\right) \\\\\n&= \\hat{p}_{\\mathcal{D}}(x) - \\frac{1}{Z(\\theta)} \\frac{\\partial}{\\partial \\theta_x} Z(\\theta) \\\\\n&= \\hat{p}_{\\mathcal{D}}(x) - \\frac{\\exp(\\theta_x)}{Z(\\theta)} \\\\\n&= \\hat{p}_{\\mathcal{D}}(x) - p_\\theta(x)\n\\end{align*}\n$$\n\nThis is exactly the difference between the empirical data distribution and the model distribution."
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "6f890d5ff9de36fe50fe0db69d08ad0c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "**(c)** Show that $\\frac{1}{N} \\mathcal{L}(\\theta)$ has a maximizer that is not unique due to an extra degree of freedom.\n\n**Solution:**\n\nConsider shifting all parameters by a constant $c$, let $\\theta_{x}' = \\theta_{x} + c$.\n\n$$\np_{\\theta'}(x) = \\frac{\\exp(\\theta_x + c)}{\\sum_u \\exp(\\theta_u + c)} = \\frac{e^c \\exp(\\theta_x)}{e^c \\sum_u \\exp(\\theta_u)} = p_\\theta(x)\n$$\n\nThe distribution is invariant to a uniform scalar shift of all $\\theta$. As a result, the log-likelihood $\\mathcal{L}(\\theta)$ takes the exact same value for any $\\theta' = \\theta + c\\mathbf{1}$. If $\\theta^*$ maximizes the log-likelihood, then any $\\theta^* + c\\mathbf{1}$ is equivalently optimal. Hence, the maximizer is not unique."
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Xref",
+      "code_hash": "cd30e056220624049373153824d41043",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "**(d)** Impose the constraint $\\sum_{x=1}^m \\theta_x = 0$. Under this constraint, solve for the MLE $\\hat{\\theta}$ in closed form in terms of $\\hat{p}_{\\mathcal{D}}$.\n\n**Solution:**\n\nSetting the gradient to zero to find the maximum yields:\n\n$$\n\\hat{p}_{\\mathcal{D}}(x) - p_{\\hat{\\theta}}(x) = 0 \\implies \\hat{p}_{\\mathcal{D}}(x) = \\frac{\\exp(\\hat{\\theta}_x)}{\\sum_u \\exp(\\hat{\\theta}_u)}\n$$\n\nTaking the log of both sides gives:\n\n$$\n\\log \\hat{p}_{\\mathcal{D}}(x) = \\hat{\\theta}_x - \\log Z(\\hat{\\theta}) \\implies \\hat{\\theta}_x = \\log \\hat{p}_{\\mathcal{D}}(x) + C\n$$\n\nwhere $C = \\log Z(\\hat{\\theta})$ is a constant independent of $x$. We find $C$ by applying our constraint $\\sum_{x=1}^m \\hat{\\theta}_x = 0$:\n\n$$\n0 = \\sum_{x=1}^m \\hat{\\theta}_x = \\sum_{x=1}^m \\left( \\log \\hat{p}_{\\mathcal{D}}(x) + C \\right) = \\sum_{x=1}^m \\log \\hat{p}_{\\mathcal{D}}(x) + mC\n$$\n\nThus, $C = -\\frac{1}{m} \\sum_{u=1}^m \\log \\hat{p}_{\\mathcal{D}}(u)$. The unique constrained MLE is:\n\n$$\n\\hat{\\theta}_x = \\log \\hat{p}_{\\mathcal{D}}(x) - \\frac{1}{m} \\sum_{u=1}^m \\log \\hat{p}_{\\mathcal{D}}(u)\n$$"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "SFPL",
+      "code_hash": "86d27ff01c8cb103efbb63996502dd47",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "## 2. (Identifiability and gauge).\nConsider a factor graph with indicator/table factors $\\theta_a \\in \\mathbb{R}^{|\\mathcal{X}_{\\partial a}|}$,\n\n$$\nf_a(x_{\\partial a}; \\theta_a) = \\exp(\\theta_{a, x_{\\partial a}}), \\quad \\theta_{a, x_{\\partial a}} = [\\theta_a]_{x_{\\partial a}}\n$$\n\nAssume the graph is connected and all variables are discrete."
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "BYtC",
+      "code_hash": "3eb244ecb10d4691fd79828382a3c0ac",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "**(a)** Show that if you add a constant $c_a$ to each entry of $\\theta_a$ (possibly different across factors), the distribution $p_\\theta(x)$ does not change. Thus, the constants $c_a$ cannot be identified from data.\n\n**Solution:**\n\nThe joint distribution is proportional to the product of factors:\n\n$$\np_\\theta(x) = \\frac{1}{Z(\\theta)} \\prod_a \\exp(\\theta_{a, x_{\\partial a}})\n$$\n\nIf we shift the parameters $\\theta_a$ by constants $c_a$, the new factors correspond to:\n\n$$\n\\exp(\\theta_{a, x_{\\partial a}} + c_a) = e^{c_a} \\exp(\\theta_{a, x_{\\partial a}})\n$$\n\nThe new unnormalized probability multiplies by an overall constant $\\prod_a e^{c_a} = \\exp(\\sum_a c_a)$. When applying the new normalization factor $Z' = \\sum_x \\exp(\\sum_a c_a) \\prod_a f_a(x_{\\partial a};\\theta_a) = \\exp(\\sum_a c_a) Z(\\theta)$, the extra scaling cancels out entirely in the numerator and denominator. Hence, $p_{\\theta'}(x) = p_\\theta(x)$."
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "82ff4938e5061833d8a741ef1c4586d2",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "**(b)** Show that there is at least one additional redundancy: a \"reparameterization\" that preserves $p_\\theta$ in a pairwise MRF. Specifically, consider a pairwise MRF\n\n$$\np_\\theta(x) \\propto \\exp \\left( \\sum_{i \\in V} \\theta_i(x_i) + \\sum_{(i,j) \\in E} \\theta_{ij}(x_i, x_j) \\right)\n$$\n\nShow that we can use arbitrary functions $\\phi_i: \\mathcal{X}_i \\to \\mathbb{R}$ to define new parameters $\\theta'_i$, $\\theta'_{ij}$ (depending on $\\phi_i$) so that\n\n$$\n\\sum_i \\theta'_i(x_i) + \\sum_{(i,j)} \\theta'_{ij}(x_i, x_j) = \\sum_i \\theta_i(x_i) + \\sum_{(i,j)} \\theta_{ij}(x_i, x_j) \\quad \\text{for all } x.\n$$\n\n**Solution:**\n\nWe can shift parameter values between node terms and edge terms without changing the sum. Let $d_i$ be the degree of node $i$. Given arbitrary functions $\\phi_i(x_i)$, we can add $\\phi_i(x_i)$ to $\\theta_i(x_i)$ and perfectly compensate by subtracting off fractional amounts from each incident edge.\n\nDefine the reparameterized potentials:\n\n$$\n\\begin{align*}\n\\theta'_i(x_i) &= \\theta_i(x_i) + \\phi_i(x_i) \\\\\n\\theta'_{ij}(x_i, x_j) &= \\theta_{ij}(x_i, x_j) - \\frac{\\phi_i(x_i)}{d_i} - \\frac{\\phi_j(x_j)}{d_j}\n\\end{align*}\n$$\n\nSumming the new parameters over the graph gives:\n\n$$\n\\begin{align*}\n\\sum_i \\theta'_i(x_i) + \\sum_{(i,j) \\in E} \\theta'_{ij}(x_i, x_j) &= \\sum_i \\left( \\theta_i(x_i) + \\phi_i(x_i) \\right) + \\sum_{(i,j) \\in E} \\left( \\theta_{ij}(x_i, x_j) - \\frac{\\phi_i(x_i)}{d_i} - \\frac{\\phi_j(x_j)}{d_j} \\right) \\\\\n&= \\sum_i \\theta_i(x_i) + \\sum_i \\phi_i(x_i) + \\sum_{(i,j) \\in E} \\theta_{ij}(x_i, x_j) - \\sum_{(i,j) \\in E} \\frac{\\phi_i(x_i)}{d_i} - \\sum_{(i,j) \\in E} \\frac{\\phi_j(x_j)}{d_j}\n\\end{align*}\n$$\n\nNotice that the term $\\phi_i(x_i) / d_i$ occurs exactly $d_i$ times (once for every edge incident to $i$). Thus:\n\n$$\n\\sum_{(i,j) \\in E} \\frac{\\phi_i(x_i)}{d_i} + \\sum_{(i,j) \\in E} \\frac{\\phi_j(x_j)}{d_j} = \\sum_i d_i \\frac{\\phi_i(x_i)}{d_i} = \\sum_i \\phi_i(x_i)\n$$\n\nThese terms exactly cancel out, and the total sum remains $\\sum_i \\theta_i(x_i) + \\sum_{(i,j)} \\theta_{ij}(x_i, x_j)$, preserving the joint probability perfectly."
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "bb9988b6d0aa21a13b767c05b6021f6a",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "**(c)** Propose a set of constraints that removes these redundancies (not necessarily uniquely), and briefly argue why it fixes identifiability.\n\n**Solution:**\n\nTo remove the redundancies, we can fix the degrees of freedom by explicitly anchoring parameters to zero at a reference state. A common choice is to pick an arbitrary reference state for each domain (e.g. state $0 \\in \\mathcal{X}_i$) and impose \"zero-margins\":\n\n1. For the scalar shift redundancy, constrain $\\theta_i(0) = 0$ for all $i$.\n2. For the parameter transfer between nodes and edges, constrain $\\theta_{ij}(x_i, 0) = 0$ for all $x_i$, and $\\theta_{ij}(0, x_j) = 0$ for all $x_j$, for all edges $(i,j) \\in E$.\n\n**Why it fixes identifiability**:\nIf $\\theta_{ij}(0, x_j) = 0$, then we cannot transfer any parameters from $\\theta_j(x_j)$ into $\\theta_{ij}(x_i, x_j)$ without making $\\theta_{ij}(0, x_j) \\neq 0$. This stops the $\\phi$-reparameterization freedom. Similarly, fixing $\\theta_i(0) = 0$ uniquely resolves the scalar shift (since shifting by $c_a \\neq 0$ would immediately violate the $0$ evaluation). This restricts the parameter space completely, leaving a minimal, identifiable representation."
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "9043652e94ec3f435ce07d32bd7bdcd9",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "## 3. (EM soft clustering).\nLet $Y \\in \\{1, \\dots, m\\}$ be observed and $H \\in \\{1, \\dots, K\\}$ hidden. Consider\n\n$$\np_\\theta(y, h) \\propto \\exp(\\theta_{yh} + \\alpha_y + \\beta_h)\n$$\n\nOne can interpret $H$ as a latent class (or cluster) index and $q^{(\\ell)}(h)$ as a soft cluster assignment for datum $y^{(\\ell)}$."
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hstk",
+      "code_hash": "0596a0b40f746e34facd48b4eb5b1534",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "**(a)** Show that $p_\\theta(h | y)$ is a softmax in the scores $\\theta_{y*} + \\beta$.\n\n**Solution:**\n\nUsing condition probability, we divide the joint distribution $p_\\theta(y, h)$ by the marginal $p_\\theta(y) = \\sum_{h'} p_\\theta(y, h')$:\n\n$$\n\\begin{align*}\np_\\theta(h | y) &= \\frac{p_\\theta(y, h)}{\\sum_{h'} p_\\theta(y, h')} \\\\\n&= \\frac{ \\frac{1}{Z} \\exp(\\theta_{yh} + \\alpha_y + \\beta_h) }{ \\sum_{h'} \\frac{1}{Z} \\exp(\\theta_{yh'} + \\alpha_y + \\beta_{h'}) } \\\\\n&= \\frac{ \\exp(\\alpha_y) \\exp(\\theta_{yh} + \\beta_h) }{ \\exp(\\alpha_y) \\sum_{h'} \\exp(\\theta_{yh'} + \\beta_{h'}) } \\\\\n&= \\frac{ \\exp(\\theta_{yh} + \\beta_h) }{ \\sum_{h'} \\exp(\\theta_{yh'} + \\beta_{h'}) }\n\\end{align*}\n$$\n\nThis is precisely the definition of the softmax function applied to the scores given by $\\theta_{yh} + \\beta_h$ over the valid clusters $h=1, \\dots, K$."
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "1580e30a55500b4793ba230ca5f7b5af",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "**(b)** For data $\\{y^{(\\ell)}\\}_{\\ell=1}^N$, write the E-step responsibilities and explain their clustering meaning.\n\n**Solution:**\n\nIn the E-step, the responsibilities are exactly the conditional probabilities from part (a) evaluated on a given observation $y^{(\\ell)}$ using current parameters:\n\n$$\nq^{(\\ell)}(h) := p_\\theta(h | y = y^{(\\ell)}) = \\frac{ \\exp(\\theta_{y^{(\\ell)}h} + \\beta_h) }{ \\sum_{h'} \\exp(\\theta_{y^{(\\ell)}h'} + \\beta_{h'}) }\n$$\n\n**Meaning:** This $q^{(\\ell)}(h)$ is the \"soft\" probability that data point $y^{(\\ell)}$ is generated by or belongs to cluster $h$. Instead of hard assigning the point entirely to its most likely cluster, the model proportionally weights its membership in all clusters based on these probabilities, distributing the point probabilistically across latent states."
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "iLit",
+      "code_hash": "e415348ccb43c71141322d5336990bb3",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "**(c)** Derive the M-step objective and first-order condition in terms of soft counts.\n\n**Solution:**\n\nThe M-step objective is the expected complete-data log-likelihood, bounding the log-likelihood:\n\n$$\n\\mathcal{Q}(\\theta) = \\sum_{\\ell=1}^N \\sum_{h=1}^K q^{(\\ell)}(h) \\log p_\\theta(y^{(\\ell)}, h)\n$$\n\nSubstitute the log joint probability $\\log p_\\theta(y, h) = \\theta_{yh} + \\alpha_y + \\beta_h - \\log Z(\\theta, \\alpha, \\beta)$:\n\n$$\n\\mathcal{Q}(\\theta) = \\sum_{\\ell=1}^N \\sum_{h=1}^K q^{(\\ell)}(h) \\left( \\theta_{y^{(\\ell)}h} + \\alpha_{y^{(\\ell)}} + \\beta_h \\right) - N \\log Z\n$$\n\nDefining soft counts $N_{y, h} = \\sum_{\\ell=1}^N q^{(\\ell)}(h) 1\\{y^{(\\ell)} = y\\}$, we rewrite $\\mathcal{Q}$:\n\n$$\n\\mathcal{Q}(\\theta) = \\sum_{y=1}^m \\sum_{h=1}^K N_{y, h} (\\theta_{yh} + \\alpha_y + \\beta_h) - N \\log Z(\\theta, \\alpha, \\beta)\n$$\n\nTo find the optimal parameter updates via the first-order condition, take the derivative:\n\n$$\n\\frac{\\partial \\mathcal{Q}}{\\partial \\theta_{yh}} = N_{y, h} - N \\frac{\\partial \\log Z}{\\partial \\theta_{yh}} = 0\n$$\n\nNote that $\\frac{\\partial \\log Z}{\\partial \\theta_{yh}} = p_\\theta(y, h)$. Therefore:\n\n$$\nN_{y, h} - N p_\\theta(y, h) = 0 \\implies p_\\theta(y, h) = \\frac{N_{y, h}}{N}\n$$\n\nThe first-order condition requires that the structural parameters be updated such that the model's new marginal distribution exactly matches the empirical soft-weighted joint distribution given by the responsibilities from the E-step."
+          }
+        }
+      ],
+      "console": []
+    }
+  ]
+}
