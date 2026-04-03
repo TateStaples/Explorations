@@ -11,6 +11,7 @@
     - Sam Rose
     - https://distill.pub/2020/communicating-with-interactive-articles
     - Blender
+    - Josh's Channel
 - Quantum Computing
     - Single Qubit (focus on polarized light as our illustration example)
         - Pure States 

@@ -4,7 +4,6 @@
 #     "marimo>=0.20.2",
 #     "numpy==2.4.3",
 #     "networkx==3.6.1",
-#     "scipy==1.17.1",
 #     "pandas>=2.0.0",
 #     "altair>=5.0.0",
 # ]
@@ -21,7 +20,6 @@ def _():
     import marimo as mo
     import numpy as np
     import networkx as nx
-    from scipy.optimize import linear_sum_assignment
     import pandas as pd
     import altair as alt
 
@@ -45,7 +43,7 @@ def _(mo):
     .result-reject-good { color: var(--game-accent); background: #0d0d1f; border-left: 3px solid var(--game-accent); padding: 8px 12px; border-radius: 4px; font-family: monospace; }
     .result-reject-waste { color: var(--game-warn); background: #1f1a0d; border-left: 3px solid var(--game-warn); padding: 8px 12px; border-radius: 4px; font-family: monospace; }
     </style>""")
-    _css
+    # _css
     return
 
 
@@ -56,13 +54,32 @@ def _(mo):
 
     *Based on [Staples, Fu & Thompson — Scalable Postselection of Quantum Resources](https://arxiv.org/abs/2603.08697)*
 
-    You are the **classical decoder** of a fault-tolerant quantum computer.
-    Noisy resource states stream through your teleportation pipeline.
-    Your mission: **accept** safe states, **reject** dangerous ones, and
-    **minimize total spacetime overhead**.
+    ### What you will learn here
 
-    The boundary stabilizers are *unmeasured* — hidden under a fog of war.
-    You must decide using only the **visible bulk syndrome**.
+    This notebook is a **pedagogical companion** to the paper above. It is **not** a
+    numerical reproduction of the authors’ Stim simulations. Instead you **experience**
+    the core idea hands-on:
+
+    - **Bulk vs boundary:** You see only part of the syndrome; the rest is hidden like fog of war.
+    - **Wrong confidence:** A score computed as if the hidden part were harmless can **mislead** you.
+    - **Better confidence:** Propagating uncertainty about the hidden part yields a score that tracks **logical risk** more honestly (in spirit of the paper’s partial gap).
+    - **Overhead tradeoff:** Rejecting bad trials costs **retries** (here modeled as an extra **$d^3$** per retry). The question is whether **error suppression** is worth it.
+
+    You are the **classical decoder** of a fault-tolerant quantum computer. Noisy resource
+    states stream through your teleportation pipeline. Your mission: **accept** safe states,
+    **reject** dangerous ones, and **minimize total spacetime overhead**. The boundary is
+    *unmeasured* in the demo—you decide from the **visible bulk syndrome** only.
+
+    ### How this demo relates to the paper
+
+    | Aspect | In the paper | In this notebook |
+    |--------|----------------|------------------|
+    | Geometry | 3D **detector graph**; cluster resource; **two hidden time layers** | 2D **surface-code slice**; **top/bottom vertex rows** hidden |
+    | Logical gap $G$ | From matching **log-weights** $w$ (their Eq. (1)) | **Heuristic** score from the decoder correction vs alternate logical strings |
+    | Partial gap $G_P$ | Expectation over $\sigma_h$ weighted by $\mathbb{P}(\sigma_h \mid \sigma_v)$; **string splitting** approximates it | **Monte Carlo:** random boundary defect patterns (illustrates *uncertainty*, not their Eq. (3)) |
+    | Noise | Circuit-level model, Stim + PyMatching | IID bit-flips on edges, NetworkX matching |
+
+    **Takeaway:** The **concepts** align; the **equations and numerics** are simplified so the mechanism fits on one screen.
 
     ---
 
@@ -72,14 +89,27 @@ def _(mo):
     | $p$ | Physical error rate per qubit |
     | $\sigma_v$ | Visible (bulk) syndrome — defects you can see |
     | $\sigma_h$ | Hidden (boundary) syndrome — concealed by fog of war |
-    | $G_A$ | **Apparent gap** — decoder confidence from visible info only |
-    | $G_P$ | **Partial gap** — expected confidence averaging over boundary uncertainty |
+    | $G_A$ | **Apparent gap** — confidence from visible syndrome only (toy heuristic) |
+    | $G_P$ | **Sampled partial gap** — mean toy gap over Monte Carlo boundary samples (not the paper’s weighted $G_P$) |
     | $C(d) = d^3$ | Base cost per resource state |
     """)
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Story arc (four phases)
+
+    1. **Phase 1 — Brute force:** Accept everything; only $d$ and $p$ matter. Feel how expensive it is to buy accuracy with distance alone.
+    2. **Phase 2 — Apparent gap:** You choose accept/reject using $G_A$. Notice how hidden boundary errors can produce **surprise logical failures** when the visible picture looked safe.
+    3. **Phase 3 — Sampled partial gap:** $G_P$ averages the same toy gap over **many plausible** boundary configurations. Watch for **high $G_A$, low $G_P$** traps. *(Here $G_P$ is sampled, not the paper’s weighted partial gap or string splitting.)*
+    4. **Phase 4 — Automation:** Sweep thresholds and plot an overhead–error frontier. Compare to brute-force diamonds; interpret qualitatively (exact factors are **model-dependent**, see the paper’s Fig. 4 for their numerics).
+    """)
+    return
+
+
+@app.cell(hide_code=True)
 def _(np, nx):
     def build_lattice(d):
         """Build a d×d surface code lattice for X-error / Z-stabilizer decoding.
@@ -284,7 +314,7 @@ def _(np, nx):
     return build_lattice, generate_trial
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _():
     def render_lattice_svg(lat, trial, reveal=False, width=460, height=460):
         d, L = lat["d"], lat["L"]
@@ -379,10 +409,97 @@ def _():
             f"</svg>"
         )
 
-    return render_gap_bar, render_lattice_svg
+    def render_mistake_compare_svg(lat, snap, panel_w=420, panel_h=400, gap=28):
+        """Side-by-side: physical errors vs visible-only MWPM correction (full lattice revealed)."""
+        d, L = lat["d"], lat["L"]
+        edges = lat["edges"]
+        vpos = lat["vertex_pos"]
+        hidden = lat["hidden"]
+        err_set = {i for i, v in enumerate(snap["errors"]) if v}
+        vis_set = set(snap["vis_corr"])
+        full_set = set(snap["full_corr"])
+        missed = err_set - vis_set
+        spurious = vis_set - err_set
+        total_w = panel_w * 2 + gap
+
+        header_h = 34
+        foot_h = 24
+        grid_top = header_h + 20
+        svg_h = header_h + panel_h + foot_h
+        subtitle_y = svg_h - 8
+
+        def draw_panel(ox, title, highlight_set, stroke, subtitle):
+            pad = 44
+            cell = min((panel_w - 2 * pad) / L, (panel_h - header_h - foot_h - 2 * pad) / L)
+
+            def px(c):
+                return ox + pad + c * cell
+
+            def py(r):
+                return grid_top + pad + r * cell
+
+            lines = [
+                f'<text x="{ox + panel_w / 2}" y="{header_h + 4}" text-anchor="middle" fill="#c9d1d9" '
+                f'font-family="monospace" font-size="11" font-weight="600">{title}</text>',
+            ]
+            for eid, (a, b) in enumerate(edges):
+                x1, y1, x2, y2 = px(a[1]), py(a[0]), px(b[1]), py(b[0])
+                col, sw = "#21262d", 1.2
+                if eid in highlight_set:
+                    col, sw = stroke, 3.2
+                lines.append(
+                    f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" '
+                    f'stroke="{col}" stroke-width="{sw}" stroke-linecap="round"/>'
+                )
+            for vid in range(lat["n_vertices"]):
+                r, c = vpos[vid]
+                x, y = px(c), py(r)
+                is_hid = vid in hidden
+                rad = 3 if not is_hid else 2.5
+                fill = "#484f58" if not is_hid else "#6e7681"
+                lines.append(
+                    f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{rad}" fill="{fill}" opacity=".85"/>'
+                )
+            sub_y = min(grid_top + pad + (L + 1) * cell + 10, panel_h + header_h - 4)
+            lines.append(
+                f'<text x="{ox + panel_w / 2}" y="{sub_y}" text-anchor="middle" fill="#8b949e" '
+                f'font-family="monospace" font-size="9">{subtitle}</text>'
+            )
+            return "\n".join(lines)
+
+        t1 = "Physical errors (truth)"
+        s1 = f"{len(err_set)} edges flipped by noise"
+        t2 = "Visible-only decode"
+        s2 = f"MWPM flips {len(vis_set)} edges from bulk syndrome"
+        body = "".join(
+            [
+                f'<svg xmlns="http://www.w3.org/2000/svg" width="{total_w}" height="{svg_h}" '
+                f'style="background:#0d1117;border-radius:8px;display:block;margin:8px auto 0">',
+                f'<text x="{total_w / 2}" y="22" text-anchor="middle" fill="#f85149" '
+                f'font-family="monospace" font-size="11">'
+                f"Why it went wrong — truth vs visible-only correction</text>",
+                draw_panel(0, t1, err_set, "#f85149", s1),
+                draw_panel(panel_w + gap, t2, vis_set, "#58a6ff", s2),
+                "</svg>",
+            ]
+        )
+        legend = (
+            f'<div style="max-width:{total_w}px;margin:6px auto 0;font-family:monospace;font-size:10px;'
+            f'color:#8b949e;line-height:1.45;text-align:center">'
+            f'<span style="color:#f85149">■</span> truth &nbsp; '
+            f'<span style="color:#58a6ff">■</span> decoder guess (bulk only) &nbsp;|&nbsp; '
+            f"decoder missed <b style='color:#f85149'>{len(missed)}</b> error edges, "
+            f"invented <b style='color:#58a6ff'>{len(spurious)}</b> spurious flips "
+            f"&nbsp;|&nbsp; full-syndrome correction uses <b>{len(full_set)}</b> edges "
+            f"(would be applied if boundary were measured)"
+            f"</div>"
+        )
+        return body + legend
+
+    return render_gap_bar, render_lattice_svg, render_mistake_compare_svg
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     get_game, set_game = mo.state(
         {
@@ -402,7 +519,7 @@ def _(mo):
     return get_game, set_game
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     phase_sel = mo.ui.radio(
         options={
@@ -419,7 +536,7 @@ def _(mo):
     return d_slider, p_slider, phase_sel
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     # Marimo buttons need on_click to advance .value; default on_click keeps
     # value stuck at the initial value, so downstream cells never see a change.
@@ -455,39 +572,41 @@ def _(generate_trial, get_game, lattice, p_slider):
     return (trial,)
 
 
-@app.cell
-def _(get_game):
-    get_game()
-    return
-
-
 @app.cell(hide_code=True)
 def _(mo, phase_sel):
     _p = phase_sel.value
     _texts = {
         1: r"""
-    **Phase 1 — Brute Force.** Every state is auto-accepted. Your only lever is the
-    code distance slider. Push $d$ higher to suppress logical errors — but watch the
-    overhead ($d^3$ per state) skyrocket. Establish a baseline: what overhead does it
-    take to reach a low error rate without postselection?
+    **Phase 1 — Brute force**
+
+    - **Setup:** Every trial is accepted automatically; only **$d$** and **$p$** matter.
+    - **Your task:** Raise **$d$** until logical errors feel rare.
+    - **Payoff:** Baseline **overhead $\propto d^3$** per accepted gate—notice how expensive “distance only” becomes.
+    - **Pitfall:** Treating larger **$d$** as the only knob for large algorithms (postselection is the alternative story in later phases).
     """,
         2: r"""
-    **Phase 2 — Apparent Gap.** Accept/Reject buttons are now live. Use the
-    **Apparent Gap** $G_A$ (computed from the visible syndrome only, assuming a clean
-    boundary) to decide. *Beware:* when the boundary hides errors, $G_A$ can be
-    dangerously overconfident. You will experience unexpected logical failures.
+    **Phase 2 — Apparent gap**
+
+    - **Setup:** **$G_A$** uses the **visible** defects only; the decoder effectively pretends the hidden boundary is innocuous.
+    - **Your task:** Use **$G_A$** to accept/reject; watch for **logical errors** that feel unfair because the boundary was lying in wait.
+    - **Payoff:** Emotional proof that **partial information** can **overstate** confidence.
+    - **Pitfall:** Trusting any single scalar without asking what assumptions it used.
     """,
         3: r"""
-    **Phase 3 — Partial Gap.** The **Partial Gap** $G_P$ is revealed. It averages the
-    logical gap over possible boundary configurations — accounting for the uncertainty
-    you cannot see. Trust $G_P$ over $G_A$. States with high $G_A$ but low $G_P$ are
-    traps. Reject them.
+    **Phase 3 — Sampled partial gap ($G_P$)**
+
+    - **Setup:** **$G_P$** averages our **toy** logical gap over **many random** boundary defect patterns (Monte Carlo)—not the paper’s weighted $\mathbb{P}(\sigma_h \mid \sigma_v)$ or string splitting, but the same *idea*: respect boundary uncertainty.
+    - **Your task:** Prefer **$G_P$** over **$G_A$**; spot **high $G_A$, low $G_P$** traps and reject them.
+    - **Payoff:** Same visible picture can mean different **risk** once uncertainty is folded in.
+    - **Pitfall:** Confusing this demo’s **$G_P$** with the paper’s **$\hat{G}_P$** / Eq. (3).
     """,
         4: r"""
-    **Phase 4 — Automated Frontier.** Set a rejection threshold on $G_P$ and let the
-    simulator sweep thousands of trials. The frontier chart below plots **overhead vs
-    logical error rate** for brute-force and postselected strategies. Watch the
-    postselected curve achieve the *same error rate at ~4× less overhead*.
+    **Phase 4 — Automated frontier**
+
+    - **Setup:** The simulator sweeps rejection thresholds from **0** up to the **max threshold** you set, then plots **overhead vs logical error rate** among accepted trials.
+    - **Your task:** Compare postselected **curves** to **brute-force** diamonds.
+    - **Payoff:** A **Pareto** picture: you can trade retries for error suppression (qualitatively like the paper’s frontier).
+    - **Pitfall:** Treating a **~4×** overhead ratio as universal—it is **regime- and model-dependent**; cite the **paper’s** figures for quantitative claims.
     """,
     }
     mo.md(_texts.get(_p, ""))
@@ -497,6 +616,7 @@ def _(mo, phase_sel):
 @app.cell
 def _(
     accept_btn,
+    build_lattice,
     d_slider,
     get_game,
     lattice,
@@ -506,6 +626,7 @@ def _(
     reject_btn,
     render_gap_bar,
     render_lattice_svg,
+    render_mistake_compare_svg,
     reset_btn,
     trial,
 ):
@@ -515,7 +636,7 @@ def _(
     _svg = render_lattice_svg(lattice, trial, reveal=False)
     _bars = [render_gap_bar(trial["apparent_gap"], "Apparent G_A", "#3fb950")]
     if _phase >= 3:
-        _bars.append(render_gap_bar(trial["partial_gap"], "Partial G_P", "#58a6ff"))
+        _bars.append(render_gap_bar(trial["partial_gap"], "Sampled G_P", "#58a6ff"))
 
     _result_html = ""
     _lr = _s.get("last_result")
@@ -523,11 +644,19 @@ def _(
         if _lr["action"] == "accept" and not _lr["was_error"]:
             _result_html = f'<div class="result-accept-ok">Gate successful — state was clean. (G_A={_lr["ag"]:.0%}, G_P={_lr["pg"]:.0%})</div>'
         elif _lr["action"] == "accept" and _lr["was_error"]:
-            _result_html = f'<div class="result-accept-err">LOGICAL ERROR — a hidden boundary chain fooled the decoder! (G_A={_lr["ag"]:.0%}, G_P={_lr["pg"]:.0%})</div>'
+            _result_html = (
+                f'<div class="result-accept-err">LOGICAL ERROR — bulk-only decoding does not match the '
+                f"true error pattern. Compare red (physical errors) vs blue (visible MWPM correction) below. "
+                f'(G_A={_lr["ag"]:.0%}, G_P={_lr["pg"]:.0%})</div>'
+            )
         elif _lr["action"] == "reject" and _lr["was_error"]:
             _result_html = f'<div class="result-reject-good">Good reject — this state had a hidden error. Retry cost: d³={_lr["cost"]}. (G_A={_lr["ag"]:.0%}, G_P={_lr["pg"]:.0%})</div>'
         elif _lr["action"] == "reject" and not _lr["was_error"]:
-            _result_html = f'<div class="result-reject-waste">Wasted reject — state was safe. Retry cost: d³={_lr["cost"]}. (G_A={_lr["ag"]:.0%}, G_P={_lr["pg"]:.0%})</div>'
+            _result_html = (
+                f'<div class="result-reject-waste">Wasted reject — logical outcome was fine, but your '
+                f"criterion said no. Truth vs visible-only correction is below. "
+                f'Retry cost: d³={_lr["cost"]}. (G_A={_lr["ag"]:.0%}, G_P={_lr["pg"]:.0%})</div>'
+            )
 
     _auto = _phase == 4
     if _phase == 1:
@@ -545,6 +674,15 @@ def _(
     ]
     if _result_html:
         _elements.append(mo.Html(_result_html))
+
+    _snap = _lr.get("mistake_compare") if _lr else None
+    if _snap and _lr and (
+        (_lr["action"] == "accept" and _lr["was_error"])
+        or (_lr["action"] == "reject" and not _lr["was_error"])
+    ):
+        _lat_c = build_lattice(_snap["d"])
+        _elements.append(mo.Html(render_mistake_compare_svg(_lat_c, _snap)))
+
     if not _auto:
         _elements.append(_btn_row)
         _elements.append(mo.hstack([reset_btn], justify="center"))
@@ -591,23 +729,34 @@ def _(
         _new["_accept_n"] = _a
         _new["trial_count"] = _s.get("trial_count", 0) + 1
 
+        _player_mistake = (_was_accept and _t["is_error"]) or (not _was_accept and not _t["is_error"])
+
         if _was_accept:
             _new["total_cost"] = _s["total_cost"] + _base
             if _t["is_error"]:
                 _new["errors"] = _s["errors"] + 1
             else:
                 _new["gates"] = _s["gates"] + 1
-            _new["last_result"] = dict(
+            _lr = dict(
                 action="accept", was_error=_t["is_error"],
                 ag=_t["apparent_gap"], pg=_t["partial_gap"],
             )
         else:
             _new["rejects"] = _s["rejects"] + 1
             _new["total_cost"] = _s["total_cost"] + _base
-            _new["last_result"] = dict(
+            _lr = dict(
                 action="reject", was_error=_t["is_error"], cost=_base,
                 ag=_t["apparent_gap"], pg=_t["partial_gap"],
             )
+
+        if _player_mistake:
+            _lr["mistake_compare"] = {
+                "d": _d,
+                "errors": [int(x) for x in _t["errors"].tolist()],
+                "vis_corr": list(_t["vis_corr"]),
+                "full_corr": list(_t["full_corr"]),
+            }
+        _new["last_result"] = _lr
 
         _new["seed"] = _s["seed"] + 1
         _new["history"] = _s.get("history", []) + [_new["last_result"]]
@@ -649,8 +798,8 @@ def _(d_slider, get_game, mo, phase_sel):
 def _(mo, phase_sel):
     mo.stop(phase_sel.value != 4)
     threshold_slider = mo.ui.slider(
-        0.0, 0.95, step=0.05, value=0.55,
-        label="Partial-gap rejection threshold",
+        0.05, 0.95, step=0.05, value=0.55,
+        label="Max partial-gap threshold (sweep 0 → this value)",
     )
     n_trials_slider = mo.ui.slider(
         50, 500, step=50, value=200,
@@ -661,7 +810,7 @@ def _(mo, phase_sel):
         mo.hstack([threshold_slider, n_trials_slider], justify="center", gap=2),
         mo.hstack([run_frontier_btn], justify="center"),
     ])
-    return n_trials_slider, run_frontier_btn
+    return n_trials_slider, run_frontier_btn, threshold_slider
 
 
 @app.cell
@@ -675,18 +824,20 @@ def _(
     pd,
     phase_sel,
     run_frontier_btn,
+    threshold_slider,
 ):
     mo.stop(phase_sel.value != 4)
     mo.stop(not run_frontier_btn.value)
 
     _p = p_slider.value
     _n = n_trials_slider.value
+    _thr_max = float(threshold_slider.value)
     _rows = []
 
     for _d in (3, 5, 7):
         _lat = build_lattice(_d)
         _base = _d**3
-        for _thr in np.linspace(0.0, 0.90, 10):
+        for _thr in np.linspace(0.0, _thr_max, 10):
             _accepted, _errors, _rejected = 0, 0, 0
             for _i in range(_n):
                 _t = generate_trial(_lat, _p, seed=500000 + _d * 10000 + int(_thr * 1000) * 100 + _i)
@@ -748,13 +899,25 @@ def _(alt, frontier_df, mo, phase_sel):
     ### Frontier Chart
 
     Each curve shows the **overhead–error tradeoff** for a given code distance $d$
-    as the partial-gap rejection threshold varies. Higher threshold = more
-    rejections = lower error rate but higher retry overhead.
+    as the **sampled** partial-gap rejection threshold varies (the simulation sweeps
+    from 0 up to the **max threshold** you set above). A higher cutoff tends to mean
+    more rejections, lower error rate among accepts, and higher retry overhead.
 
-    The diamond markers show **brute-force** (no postselection, threshold=0) for
-    each $d$. The key insight: a postselected curve at *smaller* $d$ can reach the
-    same error rate as a brute-force point at *larger* $d$, at a fraction of the
-    overhead. This is the **scalable postselection advantage**.
+    The diamond markers show **brute-force** (accept all) for each $d$. Qualitatively,
+    a postselected curve at *smaller* $d$ can reach a **similar** error rate as a
+    brute-force point at *larger* $d$ at lower overhead in this toy model—the paper
+    reports about **$4\times$** spacetime overhead reduction in their setting
+    ([arXiv:2603.08697](https://arxiv.org/abs/2603.08697), Fig. 4); **this chart is
+    not** a copy of that figure.
+
+    **How to read this chart**
+
+    - **x-axis:** Toy spacetime overhead per logical gate: base cost **$d^3$** divided by the
+      fraction of trials **accepted**. More rejection $\Rightarrow$ more retries $\Rightarrow$
+      larger **x** (in expectation).
+    - **y-axis:** Logical error rate among **accepted** trials only.
+    - **Curves:** For each **$d$**, varying the threshold traces the tradeoff. **Diamonds:**
+      no postselection, for reference.
     """),
         mo.ui.altair_chart(_chart + _brute),
     ])
@@ -766,25 +929,32 @@ def _(mo):
     mo.md(r"""
     ---
 
-    ## Key Takeaways
+    ## Key takeaways
 
-    1. **The apparent gap $G_A$ is unreliable.** It ignores boundary uncertainty and
-       can be dangerously overconfident when hidden defects lurk at the unmeasured
-       boundary stabilizers.
+    **From the paper (qualitative)**
 
-    2. **The partial gap $G_P$ is the right metric.** By averaging over possible
-       boundary syndromes (via the string-splitting approximation in the paper),
-       $G_P$ faithfully estimates the true logical error probability.
+    1. When part of the syndrome is **unmeasured** (open boundaries), a gap computed on
+       the visible part alone can **misestimate** logical risk.
+    2. The **partial gap** formalizes averaging logical confidence over hidden boundary
+       configurations, weighted by their plausibility $\mathbb{P}(\sigma_h \mid \sigma_v)$;
+       efficient approximations (e.g. **string splitting** on the surface code) make this tractable.
+    3. Postselection on that kind of metric can improve the **overhead–error** tradeoff at
+       **moderate** rejection rates; the authors report about **$4\times$** lower spacetime
+       overhead per logical gate at fixed logical error probability in their teleportation
+       model ([arXiv:2603.08697](https://arxiv.org/abs/2603.08697)).
 
-    3. **Scalable postselection yields a ~4× overhead reduction.** Rejecting states
-       with low $G_P$ dramatically lowers the logical error rate. You can then use a
-       *smaller* code distance to hit the same target error rate — and since the base
-       cost scales as $d^3$, even modest distance reductions compound into large
-       savings.
+    **From this notebook (what you practiced)**
 
-    4. **The tradeoff is retry cost vs error suppression.** Each rejection costs one
-       extra $d^3$ resource state. But the error rate drops faster than the overhead
-       grows, creating a favorable frontier.
+    1. **$G_A$** ignores boundary uncertainty; **$G_P$** here forces you to respect it via
+       **Monte Carlo** boundary samples (same *idea* as the paper, different math).
+    2. Rejection improves error rate among accepts but adds **retry cost**; the frontier plot
+       shows the tradeoff in this **toy** simulator.
+    3. For **quantitative** factors and curves, cite the **paper’s** figures and noise model—
+       not this notebook’s chart.
+
+    **Retry cost vs error suppression:** Each rejection costs one extra **$d^3$** resource
+    state in our accounting; whether error suppression wins is exactly what the frontier
+    illustrates.
 
     > *Reference:* J. W. Staples, W. Fu, J. D. Thompson.
     > [Scalable Postselection of Quantum Resources](https://arxiv.org/abs/2603.08697).

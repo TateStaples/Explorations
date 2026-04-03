@@ -2,12 +2,12 @@
   "version": "1",
   "metadata": {
     "marimo_version": "0.21.1",
-    "script_metadata_hash": "0e5b061448a43fec76cb6ac13d4fd9bb"
+    "script_metadata_hash": "06061515b6f0f88d52fe3591494d2ed0"
   },
   "cells": [
     {
       "id": "Hbol",
-      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "code_hash": "b01b549614805ab6b028322ba65c515c",
       "outputs": [
         {
           "type": "data",
@@ -19,8 +19,34 @@
       "console": []
     },
     {
-      "id": "MJUe",
-      "code_hash": "a2c24ed68f162ea0b7e212211d685f61",
+      "id": "SFPL",
+      "code_hash": "d4cdfd7dad03f12d2d8d390be6404da9",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<style>\n:root {\n    --game-bg: #0d1117; --game-fg: #c9d1d9; --game-accent: #58a6ff;\n    --game-danger: #f85149; --game-success: #3fb950; --game-warn: #d29922;\n}\n.game-card {\n    background: #161b22; border: 1px solid #30363d; border-radius: 8px;\n    padding: 16px; margin: 4px 0; font-family: 'SF Mono', 'Fira Code', monospace;\n}\n.game-card h3 { margin: 0 0 8px 0; color: var(--game-accent); font-size: 14px; }\n.result-accept-ok { color: var(--game-success); background: #0d1f0d; border-left: 3px solid var(--game-success); padding: 8px 12px; border-radius: 4px; font-family: monospace; }\n.result-accept-err { color: var(--game-danger); background: #1f0d0d; border-left: 3px solid var(--game-danger); padding: 8px 12px; border-radius: 4px; font-family: monospace; }\n.result-reject-good { color: var(--game-accent); background: #0d0d1f; border-left: 3px solid var(--game-accent); padding: 8px 12px; border-radius: 4px; font-family: monospace; }\n.result-reject-waste { color: var(--game-warn); background: #1f1a0d; border-left: 3px solid var(--game-warn); padding: 8px 12px; border-radius: 4px; font-family: monospace; }\n</style>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ROlb",
+      "code_hash": "7e0149df90de6794f2c46541d24c3da8",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h1 id=\"scalable-postselection-the-game\">Scalable Postselection: The Game</h1>\n<span class=\"paragraph\"><em>Based on <a href=\"https://arxiv.org/abs/2603.08697\" rel=\"noopener noreferrer\" target=\"_blank\">Staples, Fu &amp; Thompson \u2014 Scalable Postselection of Quantum Resources</a></em></span>\n<span class=\"paragraph\">You are the <strong>classical decoder</strong> of a fault-tolerant quantum computer.\nNoisy resource states stream through your teleportation pipeline.\nYour mission: <strong>accept</strong> safe states, <strong>reject</strong> dangerous ones, and\n<strong>minimize total spacetime overhead</strong>.</span>\n<span class=\"paragraph\">The boundary stabilizers are <em>unmeasured</em> \u2014 hidden under a fog of war.\nYou must decide using only the <strong>visible bulk syndrome</strong>.</span>\n<hr />\n<table>\n<thead>\n<tr>\n<th>Symbol</th>\n<th>Meaning</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><marimo-tex class=\"arithmatex\">||(d||)</marimo-tex></td>\n<td>Code distance (lattice size)</td>\n</tr>\n<tr>\n<td><marimo-tex class=\"arithmatex\">||(p||)</marimo-tex></td>\n<td>Physical error rate per qubit</td>\n</tr>\n<tr>\n<td><marimo-tex class=\"arithmatex\">||(\\sigma_v||)</marimo-tex></td>\n<td>Visible (bulk) syndrome \u2014 defects you can see</td>\n</tr>\n<tr>\n<td><marimo-tex class=\"arithmatex\">||(\\sigma_h||)</marimo-tex></td>\n<td>Hidden (boundary) syndrome \u2014 concealed by fog of war</td>\n</tr>\n<tr>\n<td><marimo-tex class=\"arithmatex\">||(G_A||)</marimo-tex></td>\n<td><strong>Apparent gap</strong> \u2014 decoder confidence from visible info only</td>\n</tr>\n<tr>\n<td><marimo-tex class=\"arithmatex\">||(G_P||)</marimo-tex></td>\n<td><strong>Partial gap</strong> \u2014 expected confidence averaging over boundary uncertainty</td>\n</tr>\n<tr>\n<td><marimo-tex class=\"arithmatex\">||(C(d) = d^3||)</marimo-tex></td>\n<td>Base cost per resource state</td>\n</tr>\n</tbody>\n</table></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "qnkX",
+      "code_hash": "39e4c0d984ddc6e058e9d25616566667",
       "outputs": [
         {
           "type": "data",
@@ -32,8 +58,8 @@
       "console": []
     },
     {
-      "id": "bAXA",
-      "code_hash": "42bdf1650fb5e49e178ca5935b77650f",
+      "id": "BYtC",
+      "code_hash": "e0cfb24ce1b2396b9c0ea198d592ffa9",
       "outputs": [
         {
           "type": "data",
@@ -46,33 +72,7 @@
     },
     {
       "id": "vblA",
-      "code_hash": "372d9262081f4c2fad90eaf22e48af7b",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/html": "<div style='display: flex;flex: 1;flex-direction: row;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 0.5rem'><marimo-ui-element object-id='bAXA-0' random-id='1f12f428-5080-7194-fe89-fd6c8fb5ea82'><marimo-button data-initial-value='0' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;A: value + on_click tick&lt;/span&gt;&lt;/span&gt;&quot;' data-kind='&quot;neutral&quot;' data-disabled='false' data-full-width='false'></marimo-button></marimo-ui-element><marimo-json-output data-json-data='{&quot;clicks_recorded&quot;:15,&quot;_clicks&quot;:15,&quot;_accept_n&quot;:15,&quot;direct_clicks&quot;:4}' data-value-types='&quot;python&quot;'></marimo-json-output></div>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "bkHC",
-      "code_hash": "fb8dc48b5afde7700707de217518c360",
-      "outputs": [
-        {
-          "type": "data",
-          "data": {
-            "text/html": "<div style='display: flex;flex: 1;flex-direction: row;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 0.5rem'><marimo-ui-element object-id='bkHC-0' random-id='c2ebb4fc-9c89-96f5-2ba5-b3a01c5a40e1'><marimo-button data-initial-value='0' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;C: on_click -&amp;gt; set_game()&lt;/span&gt;&lt;/span&gt;&quot;' data-kind='&quot;neutral&quot;' data-disabled='false' data-full-width='false'></marimo-button></marimo-ui-element></div>"
-          }
-        }
-      ],
-      "console": []
-    },
-    {
-      "id": "lEQa",
-      "code_hash": "508442adbf8f46dc602cd9d402517c64",
+      "code_hash": "14c6e138f8cbfc3a16ce6a81e94ef300",
       "outputs": [
         {
           "type": "data",
@@ -84,13 +84,104 @@
       "console": []
     },
     {
-      "id": "PKri",
-      "code_hash": "04b3a016ac09d1f63184f1c85ab56bf8",
+      "id": "bkHC",
+      "code_hash": "5b28ebd83b4bdaa7fbe9ca6fb396f900",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><strong>B \u2014 game-style counter</strong> (handler updates when <code>_total &gt; _prev</code>):</span>\n<ul>\n<li><code>clicks_recorded</code>: <strong>15</strong></li>\n<li><code>_clicks</code> (stored total): <strong>15</strong></li>\n</ul></span>"
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Hstk",
+      "code_hash": "87339c927dbb0d8e651453b29f7ca7ae",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "iLit",
+      "code_hash": "38e97478a99e8a4637d5c4a706570b44",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "RGSE",
+      "code_hash": "ca5923ee84580c5e9373de02c34d43be",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "MJUe",
+      "code_hash": "b30ccf08552f73a458277f7fcb0cc9e2",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "application/json": "{\"seed\": 126, \"trial_count\": 84, \"gates\": 71, \"errors\": 13, \"rejects\": 0, \"total_cost\": \"text/plain+float:7008.0\", \"history\": [{\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.14947223283699418\", \"pg\": \"text/plain+float:0.5077212978340594\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.8128326933131483\", \"pg\": \"text/plain+float:0.5501372530209995\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.03471930168794857\", \"pg\": \"text/plain+float:0.6164228932848439\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.7460967889793533\", \"pg\": \"text/plain+float:0.03504685430731924\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.4486709653582144\", \"pg\": \"text/plain+float:0.12201481264078129\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.05552998788654229\", \"pg\": \"text/plain+float:0.9070752536141979\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.1411690719970078\", \"pg\": \"text/plain+float:0.4185255503849785\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.0995840315415033\", \"pg\": \"text/plain+float:0.9396439004679217\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.8256917607966945\", \"pg\": \"text/plain+float:0.2055110094476168\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.3916916542180152\", \"pg\": \"text/plain+float:0.3727843309505613\"}, {\"action\": \"accept\", \"was_error\": true, \"ag\": \"text/plain+float:0.9871488306392624\", \"pg\": \"text/plain+float:0.21343792058197275\"}, {\"action\": \"accept\", \"was_error\": true, \"ag\": \"text/plain+float:0.4994497643656852\", \"pg\": \"text/plain+float:0.050737861412273766\"}, {\"action\": \"accept\", \"was_error\": true, \"ag\": \"text/plain+float:0.6270992841704911\", \"pg\": \"text/plain+float:0.06456782403099892\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.9865352505104809\", \"pg\": \"text/plain+float:0.8354171248669847\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.07535666299187072\", \"pg\": \"text/plain+float:0.669182963255036\"}, {\"action\": \"accept\", \"was_error\": true, \"ag\": \"text/plain+float:0.15899518657260803\", \"pg\": \"text/plain+float:0.3046531261843297\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.7927299029818409\", \"pg\": \"text/plain+float:0.4527749578748096\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.7704372829853022\", \"pg\": \"text/plain+float:0.7112253032673784\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.06982041331064404\", \"pg\": \"text/plain+float:0.8284679414381602\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.5298739038853494\", \"pg\": \"text/plain+float:0.6579996497474263\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.410410356582693\", \"pg\": \"text/plain+float:0.278896286337706\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.4948187008200632\", \"pg\": \"text/plain+float:0.9283764980388859\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.33750653835799405\", \"pg\": \"text/plain+float:0.9775100428299989\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.18143182717113193\", \"pg\": \"text/plain+float:0.49850150943590343\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.8408515788632566\", \"pg\": \"text/plain+float:0.9167140381006167\"}, {\"action\": \"accept\", \"was_error\": true, \"ag\": \"text/plain+float:0.7946287115270977\", \"pg\": \"text/plain+float:0.3891738495589159\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.9033834973977772\", \"pg\": \"text/plain+float:0.8493333669840232\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.7928022560056669\", \"pg\": \"text/plain+float:0.9935077219454523\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.4509800812998874\", \"pg\": \"text/plain+float:0.9360036835855529\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.6602539577475117\", \"pg\": \"text/plain+float:0.29942437129101107\"}, {\"action\": \"accept\", \"was_error\": true, \"ag\": \"text/plain+float:0.9522145385661205\", \"pg\": \"text/plain+float:0.9456842885043378\"}, {\"action\": \"accept\", \"was_error\": true, \"ag\": \"text/plain+float:0.7768403547230094\", \"pg\": \"text/plain+float:0.9021229730437645\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.7292706579289243\", \"pg\": \"text/plain+float:0.5674848028780666\"}, {\"action\": \"accept\", \"was_error\": true, \"ag\": \"text/plain+float:0.2245270135171875\", \"pg\": \"text/plain+float:0.7780989776376591\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.5550789241582775\", \"pg\": \"text/plain+float:0.353686157853242\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.8157662606355991\", \"pg\": \"text/plain+float:0.015755553283386292\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.8617284647533735\", \"pg\": \"text/plain+float:0.7496054396728428\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.6284305676792568\", \"pg\": \"text/plain+float:0.7221955055826579\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.446947800203382\", \"pg\": \"text/plain+float:0.527651234801508\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.44721918629248014\", \"pg\": \"text/plain+float:0.8356856872086094\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.347103766703711\", \"pg\": \"text/plain+float:0.9796856928051481\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.40787605042419905\", \"pg\": \"text/plain+float:0.9498366608348011\"}, {\"action\": \"accept\", \"was_error\": true, \"ag\": \"text/plain+float:0.4997864614314159\", \"pg\": \"text/plain+float:0.22744989034921215\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.9453802827367244\", \"pg\": \"text/plain+float:0.05257070572270828\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.7900354318958467\", \"pg\": \"text/plain+float:0.5808087619215889\"}, {\"action\": \"accept\", \"was_error\": true, \"ag\": \"text/plain+float:0.5766327260889742\", \"pg\": \"text/plain+float:0.11735964718446934\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.5350315544906005\", \"pg\": \"text/plain+float:0.24984215055717218\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.13831877496303435\", \"pg\": \"text/plain+float:0.4387232480000095\"}, {\"action\": \"accept\", \"was_error\": true, \"ag\": \"text/plain+float:0.41724812820553114\", \"pg\": \"text/plain+float:0.884869598932028\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.08636911383755452\", \"pg\": \"text/plain+float:0.14740191864559682\"}, {\"action\": \"accept\", \"was_error\": true, \"ag\": \"text/plain+float:0.3692715898388018\", \"pg\": \"text/plain+float:0.0939790357349658\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.6509779247997131\", \"pg\": \"text/plain+float:0.9917786380053937\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.1332211825673455\", \"pg\": \"text/plain+float:0.8296581858302089\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.6156396740499037\", \"pg\": \"text/plain+float:0.48157556667978085\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:1.0\", \"pg\": \"text/plain+float:0.8499999999999999\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:1.0\", \"pg\": \"text/plain+float:0.9166666666666666\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:1.0\", \"pg\": \"text/plain+float:0.8\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:1.0\", \"pg\": \"text/plain+float:0.8166666666666668\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:1.0\", \"pg\": \"text/plain+float:0.9\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.6666666666666666\", \"pg\": \"text/plain+float:0.5333333333333332\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:1.0\", \"pg\": \"text/plain+float:0.8\"}, {\"action\": \"accept\", \"was_error\": true, \"ag\": \"text/plain+float:0.6666666666666666\", \"pg\": \"text/plain+float:0.6666666666666665\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:1.0\", \"pg\": \"text/plain+float:0.7833333333333333\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:1.0\", \"pg\": \"text/plain+float:0.9\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.6666666666666666\", \"pg\": \"text/plain+float:0.5666666666666665\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.6666666666666666\", \"pg\": \"text/plain+float:0.5499999999999998\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:1.0\", \"pg\": \"text/plain+float:0.9\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:1.0\", \"pg\": \"text/plain+float:0.8\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.6666666666666666\", \"pg\": \"text/plain+float:0.5833333333333333\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.2857142857142857\", \"pg\": \"text/plain+float:0.5928571428571427\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.8571428571428571\", \"pg\": \"text/plain+float:0.6285714285714284\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.8571428571428571\", \"pg\": \"text/plain+float:0.6857142857142857\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.8571428571428571\", \"pg\": \"text/plain+float:0.6214285714285714\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.8571428571428571\", \"pg\": \"text/plain+float:0.7214285714285715\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.8571428571428571\", \"pg\": \"text/plain+float:0.8428571428571429\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.7142857142857143\", \"pg\": \"text/plain+float:0.6571428571428571\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.8571428571428571\", \"pg\": \"text/plain+float:0.6214285714285714\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.8571428571428571\", \"pg\": \"text/plain+float:0.642857142857143\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.7142857142857143\", \"pg\": \"text/plain+float:0.607142857142857\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.8571428571428571\", \"pg\": \"text/plain+float:0.7214285714285714\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.8571428571428571\", \"pg\": \"text/plain+float:0.6642857142857144\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.8571428571428571\", \"pg\": \"text/plain+float:0.5857142857142856\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.8571428571428571\", \"pg\": \"text/plain+float:0.6714285714285715\"}, {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.8571428571428571\", \"pg\": \"text/plain+float:0.5714285714285715\"}], \"last_result\": {\"action\": \"accept\", \"was_error\": false, \"ag\": \"text/plain+float:0.8571428571428571\", \"pg\": \"text/plain+float:0.5714285714285715\"}, \"_clicks\": 84, \"_accept_n\": 84, \"_reset_n\": 0}"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZHCJ",
+      "code_hash": "f9d4655bbd02f5748d75179cc4fd38a7",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><span class=\"paragraph\"><strong>Phase 2 \u2014 Apparent Gap.</strong> Accept/Reject buttons are now live. Use the\n<strong>Apparent Gap</strong> <marimo-tex class=\"arithmatex\">||(G_A||)</marimo-tex> (computed from the visible syndrome only, assuming a clean\nboundary) to decide. <em>Beware:</em> when the boundary hides errors, <marimo-tex class=\"arithmatex\">||(G_A||)</marimo-tex> can be\ndangerously overconfident. You will experience unexpected logical failures.</span></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "emfo",
+      "code_hash": "02de0e66d0d391085cecbe165d973f1f",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<div style='display: flex;flex: 1;flex-direction: column;justify-content: flex-start;align-items: center;flex-wrap: nowrap;gap: 0.5rem'><div style='display: flex;flex: 1;flex-direction: row;justify-content: center;align-items: normal;flex-wrap: nowrap;gap: 0.5rem'><marimo-ui-element object-id='bkHC-0' random-id='505639b0-4771-d4de-8603-5374a890ccf4'><marimo-radio data-initial-value='&quot;Phase 1 \u2014 Brute Force&quot;' data-label='null' data-options='[&quot;Phase 1 \u2014 Brute Force&quot;,&quot;Phase 2 \u2014 Apparent Gap&quot;,&quot;Phase 3 \u2014 Partial Gap&quot;,&quot;Phase 4 \u2014 Automation&quot;]' data-inline='false' data-disabled='false'></marimo-radio></marimo-ui-element></div><div style='display: flex;flex: 1;flex-direction: row;justify-content: center;align-items: normal;flex-wrap: nowrap;gap: 2rem'><marimo-ui-element object-id='bkHC-1' random-id='c3bcd855-0a5b-ecb0-d2b5-1fa3a05a3924'><marimo-slider data-initial-value='3' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Code distance d&lt;/span&gt;&lt;/span&gt;&quot;' data-start='3' data-stop='9' data-step='2' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='false' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element><marimo-ui-element object-id='bkHC-2' random-id='fb1ae023-92b7-0da0-f02e-5dd84d029c3d'><marimo-slider data-initial-value='0.05' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Error rate p&lt;/span&gt;&lt;/span&gt;&quot;' data-start='0.01' data-stop='0.15' data-step='0.005' data-steps='[]' data-debounce='false' data-disabled='false' data-orientation='&quot;horizontal&quot;' data-show-value='false' data-include-input='false' data-full-width='false'></marimo-slider></marimo-ui-element></div><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"460\" height=\"460\" style=\"background:#0d1117;border-radius:8px;display:block;margin:auto\">\n<defs><linearGradient id=\"ftop\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0%\" stop-color=\"#0d1117\" stop-opacity=\"1\"/><stop offset=\"60%\" stop-color=\"#0d1117\" stop-opacity=\".97\"/><stop offset=\"100%\" stop-color=\"#0d1117\" stop-opacity=\"0\"/></linearGradient><linearGradient id=\"fbot\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0%\" stop-color=\"#0d1117\" stop-opacity=\"0\"/><stop offset=\"40%\" stop-color=\"#0d1117\" stop-opacity=\".97\"/><stop offset=\"100%\" stop-color=\"#0d1117\" stop-opacity=\"1\"/></linearGradient></defs>\n<line x1=\"56.0\" y1=\"56.0\" x2=\"105.7\" y2=\"56.0\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"105.7\" y1=\"56.0\" x2=\"155.4\" y2=\"56.0\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"155.4\" y1=\"56.0\" x2=\"205.1\" y2=\"56.0\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"205.1\" y1=\"56.0\" x2=\"254.9\" y2=\"56.0\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"254.9\" y1=\"56.0\" x2=\"304.6\" y2=\"56.0\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"304.6\" y1=\"56.0\" x2=\"354.3\" y2=\"56.0\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"354.3\" y1=\"56.0\" x2=\"404.0\" y2=\"56.0\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"56.0\" y1=\"105.7\" x2=\"105.7\" y2=\"105.7\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"105.7\" y1=\"105.7\" x2=\"155.4\" y2=\"105.7\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"155.4\" y1=\"105.7\" x2=\"205.1\" y2=\"105.7\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"205.1\" y1=\"105.7\" x2=\"254.9\" y2=\"105.7\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"254.9\" y1=\"105.7\" x2=\"304.6\" y2=\"105.7\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"304.6\" y1=\"105.7\" x2=\"354.3\" y2=\"105.7\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"354.3\" y1=\"105.7\" x2=\"404.0\" y2=\"105.7\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"56.0\" y1=\"155.4\" x2=\"105.7\" y2=\"155.4\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"105.7\" y1=\"155.4\" x2=\"155.4\" y2=\"155.4\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"155.4\" y1=\"155.4\" x2=\"205.1\" y2=\"155.4\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"205.1\" y1=\"155.4\" x2=\"254.9\" y2=\"155.4\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"254.9\" y1=\"155.4\" x2=\"304.6\" y2=\"155.4\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"304.6\" y1=\"155.4\" x2=\"354.3\" y2=\"155.4\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"354.3\" y1=\"155.4\" x2=\"404.0\" y2=\"155.4\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"56.0\" y1=\"205.1\" x2=\"105.7\" y2=\"205.1\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"105.7\" y1=\"205.1\" x2=\"155.4\" y2=\"205.1\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"155.4\" y1=\"205.1\" x2=\"205.1\" y2=\"205.1\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"205.1\" y1=\"205.1\" x2=\"254.9\" y2=\"205.1\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"254.9\" y1=\"205.1\" x2=\"304.6\" y2=\"205.1\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"304.6\" y1=\"205.1\" x2=\"354.3\" y2=\"205.1\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"354.3\" y1=\"205.1\" x2=\"404.0\" y2=\"205.1\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"56.0\" y1=\"254.9\" x2=\"105.7\" y2=\"254.9\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"105.7\" y1=\"254.9\" x2=\"155.4\" y2=\"254.9\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"155.4\" y1=\"254.9\" x2=\"205.1\" y2=\"254.9\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"205.1\" y1=\"254.9\" x2=\"254.9\" y2=\"254.9\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"254.9\" y1=\"254.9\" x2=\"304.6\" y2=\"254.9\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"304.6\" y1=\"254.9\" x2=\"354.3\" y2=\"254.9\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"354.3\" y1=\"254.9\" x2=\"404.0\" y2=\"254.9\" stroke=\"#3fb95066\" stroke-width=\"2.0\" stroke-linecap=\"round\"/>\n<line x1=\"56.0\" y1=\"304.6\" x2=\"105.7\" y2=\"304.6\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"105.7\" y1=\"304.6\" x2=\"155.4\" y2=\"304.6\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"155.4\" y1=\"304.6\" x2=\"205.1\" y2=\"304.6\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"205.1\" y1=\"304.6\" x2=\"254.9\" y2=\"304.6\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"254.9\" y1=\"304.6\" x2=\"304.6\" y2=\"304.6\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"304.6\" y1=\"304.6\" x2=\"354.3\" y2=\"304.6\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"354.3\" y1=\"304.6\" x2=\"404.0\" y2=\"304.6\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"56.0\" y1=\"354.3\" x2=\"105.7\" y2=\"354.3\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"105.7\" y1=\"354.3\" x2=\"155.4\" y2=\"354.3\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"155.4\" y1=\"354.3\" x2=\"205.1\" y2=\"354.3\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"205.1\" y1=\"354.3\" x2=\"254.9\" y2=\"354.3\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"254.9\" y1=\"354.3\" x2=\"304.6\" y2=\"354.3\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"304.6\" y1=\"354.3\" x2=\"354.3\" y2=\"354.3\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"354.3\" y1=\"354.3\" x2=\"404.0\" y2=\"354.3\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"56.0\" y1=\"404.0\" x2=\"105.7\" y2=\"404.0\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"105.7\" y1=\"404.0\" x2=\"155.4\" y2=\"404.0\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"155.4\" y1=\"404.0\" x2=\"205.1\" y2=\"404.0\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"205.1\" y1=\"404.0\" x2=\"254.9\" y2=\"404.0\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"254.9\" y1=\"404.0\" x2=\"304.6\" y2=\"404.0\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"304.6\" y1=\"404.0\" x2=\"354.3\" y2=\"404.0\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"354.3\" y1=\"404.0\" x2=\"404.0\" y2=\"404.0\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"56.0\" y1=\"56.0\" x2=\"56.0\" y2=\"105.7\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"105.7\" y1=\"56.0\" x2=\"105.7\" y2=\"105.7\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"155.4\" y1=\"56.0\" x2=\"155.4\" y2=\"105.7\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"205.1\" y1=\"56.0\" x2=\"205.1\" y2=\"105.7\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"254.9\" y1=\"56.0\" x2=\"254.9\" y2=\"105.7\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"304.6\" y1=\"56.0\" x2=\"304.6\" y2=\"105.7\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"354.3\" y1=\"56.0\" x2=\"354.3\" y2=\"105.7\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"404.0\" y1=\"56.0\" x2=\"404.0\" y2=\"105.7\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"56.0\" y1=\"105.7\" x2=\"56.0\" y2=\"155.4\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"105.7\" y1=\"105.7\" x2=\"105.7\" y2=\"155.4\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"155.4\" y1=\"105.7\" x2=\"155.4\" y2=\"155.4\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"205.1\" y1=\"105.7\" x2=\"205.1\" y2=\"155.4\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"254.9\" y1=\"105.7\" x2=\"254.9\" y2=\"155.4\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"304.6\" y1=\"105.7\" x2=\"304.6\" y2=\"155.4\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"354.3\" y1=\"105.7\" x2=\"354.3\" y2=\"155.4\" stroke=\"#3fb95066\" stroke-width=\"2.0\" stroke-linecap=\"round\"/>\n<line x1=\"404.0\" y1=\"105.7\" x2=\"404.0\" y2=\"155.4\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"56.0\" y1=\"155.4\" x2=\"56.0\" y2=\"205.1\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"105.7\" y1=\"155.4\" x2=\"105.7\" y2=\"205.1\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"155.4\" y1=\"155.4\" x2=\"155.4\" y2=\"205.1\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"205.1\" y1=\"155.4\" x2=\"205.1\" y2=\"205.1\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"254.9\" y1=\"155.4\" x2=\"254.9\" y2=\"205.1\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"304.6\" y1=\"155.4\" x2=\"304.6\" y2=\"205.1\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"354.3\" y1=\"155.4\" x2=\"354.3\" y2=\"205.1\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"404.0\" y1=\"155.4\" x2=\"404.0\" y2=\"205.1\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"56.0\" y1=\"205.1\" x2=\"56.0\" y2=\"254.9\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"105.7\" y1=\"205.1\" x2=\"105.7\" y2=\"254.9\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"155.4\" y1=\"205.1\" x2=\"155.4\" y2=\"254.9\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"205.1\" y1=\"205.1\" x2=\"205.1\" y2=\"254.9\" stroke=\"#3fb95066\" stroke-width=\"2.0\" stroke-linecap=\"round\"/>\n<line x1=\"254.9\" y1=\"205.1\" x2=\"254.9\" y2=\"254.9\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"304.6\" y1=\"205.1\" x2=\"304.6\" y2=\"254.9\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"354.3\" y1=\"205.1\" x2=\"354.3\" y2=\"254.9\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"404.0\" y1=\"205.1\" x2=\"404.0\" y2=\"254.9\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"56.0\" y1=\"254.9\" x2=\"56.0\" y2=\"304.6\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"105.7\" y1=\"254.9\" x2=\"105.7\" y2=\"304.6\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"155.4\" y1=\"254.9\" x2=\"155.4\" y2=\"304.6\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"205.1\" y1=\"254.9\" x2=\"205.1\" y2=\"304.6\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"254.9\" y1=\"254.9\" x2=\"254.9\" y2=\"304.6\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"304.6\" y1=\"254.9\" x2=\"304.6\" y2=\"304.6\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"354.3\" y1=\"254.9\" x2=\"354.3\" y2=\"304.6\" stroke=\"#3fb95066\" stroke-width=\"2.0\" stroke-linecap=\"round\"/>\n<line x1=\"404.0\" y1=\"254.9\" x2=\"404.0\" y2=\"304.6\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"56.0\" y1=\"304.6\" x2=\"56.0\" y2=\"354.3\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"105.7\" y1=\"304.6\" x2=\"105.7\" y2=\"354.3\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"155.4\" y1=\"304.6\" x2=\"155.4\" y2=\"354.3\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"205.1\" y1=\"304.6\" x2=\"205.1\" y2=\"354.3\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"254.9\" y1=\"304.6\" x2=\"254.9\" y2=\"354.3\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"304.6\" y1=\"304.6\" x2=\"304.6\" y2=\"354.3\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"354.3\" y1=\"304.6\" x2=\"354.3\" y2=\"354.3\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"404.0\" y1=\"304.6\" x2=\"404.0\" y2=\"354.3\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"56.0\" y1=\"354.3\" x2=\"56.0\" y2=\"404.0\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"105.7\" y1=\"354.3\" x2=\"105.7\" y2=\"404.0\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"155.4\" y1=\"354.3\" x2=\"155.4\" y2=\"404.0\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"205.1\" y1=\"354.3\" x2=\"205.1\" y2=\"404.0\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"254.9\" y1=\"354.3\" x2=\"254.9\" y2=\"404.0\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"304.6\" y1=\"354.3\" x2=\"304.6\" y2=\"404.0\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"354.3\" y1=\"354.3\" x2=\"354.3\" y2=\"404.0\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<line x1=\"404.0\" y1=\"354.3\" x2=\"404.0\" y2=\"404.0\" stroke=\"#21262d\" stroke-width=\"1.5\" stroke-linecap=\"round\"/>\n<circle cx=\"56.0\" cy=\"105.7\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"105.7\" cy=\"105.7\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"155.4\" cy=\"105.7\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"205.1\" cy=\"105.7\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"254.9\" cy=\"105.7\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"304.6\" cy=\"105.7\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"354.3\" cy=\"105.7\" r=\"7\" fill=\"#f85149\" stroke=\"#fff\" stroke-width=\"1.2\" opacity=\".95\"/>\n<circle cx=\"404.0\" cy=\"105.7\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"56.0\" cy=\"155.4\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"105.7\" cy=\"155.4\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"155.4\" cy=\"155.4\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"205.1\" cy=\"155.4\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"254.9\" cy=\"155.4\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"304.6\" cy=\"155.4\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"354.3\" cy=\"155.4\" r=\"7\" fill=\"#f85149\" stroke=\"#fff\" stroke-width=\"1.2\" opacity=\".95\"/>\n<circle cx=\"404.0\" cy=\"155.4\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"56.0\" cy=\"205.1\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"105.7\" cy=\"205.1\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"155.4\" cy=\"205.1\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"205.1\" cy=\"205.1\" r=\"7\" fill=\"#f85149\" stroke=\"#fff\" stroke-width=\"1.2\" opacity=\".95\"/>\n<circle cx=\"254.9\" cy=\"205.1\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"304.6\" cy=\"205.1\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"354.3\" cy=\"205.1\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"404.0\" cy=\"205.1\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"56.0\" cy=\"254.9\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"105.7\" cy=\"254.9\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"155.4\" cy=\"254.9\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"205.1\" cy=\"254.9\" r=\"7\" fill=\"#f85149\" stroke=\"#fff\" stroke-width=\"1.2\" opacity=\".95\"/>\n<circle cx=\"254.9\" cy=\"254.9\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"304.6\" cy=\"254.9\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"354.3\" cy=\"254.9\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"404.0\" cy=\"254.9\" r=\"7\" fill=\"#f85149\" stroke=\"#fff\" stroke-width=\"1.2\" opacity=\".95\"/>\n<circle cx=\"56.0\" cy=\"304.6\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"105.7\" cy=\"304.6\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"155.4\" cy=\"304.6\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"205.1\" cy=\"304.6\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"254.9\" cy=\"304.6\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"304.6\" cy=\"304.6\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"354.3\" cy=\"304.6\" r=\"7\" fill=\"#f85149\" stroke=\"#fff\" stroke-width=\"1.2\" opacity=\".95\"/>\n<circle cx=\"404.0\" cy=\"304.6\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"56.0\" cy=\"354.3\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"105.7\" cy=\"354.3\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"155.4\" cy=\"354.3\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"205.1\" cy=\"354.3\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"254.9\" cy=\"354.3\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"304.6\" cy=\"354.3\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"354.3\" cy=\"354.3\" r=\"3\" fill=\"#30363d\"/>\n<circle cx=\"404.0\" cy=\"354.3\" r=\"3\" fill=\"#30363d\"/>\n<rect x=\"42\" y=\"32.8\" width=\"376.0\" height=\"42.3\" fill=\"url(#ftop)\" rx=\"4\"/>\n<rect x=\"42\" y=\"385.0\" width=\"376.0\" height=\"42.3\" fill=\"url(#fbot)\" rx=\"4\"/>\n<text x=\"230.0\" y=\"54\" text-anchor=\"middle\" fill=\"#d29922\" font-family=\"monospace\" font-size=\"9\" opacity=\".7\">HIDDEN BOUNDARY</text>\n<text x=\"230.0\" y=\"414.0\" text-anchor=\"middle\" fill=\"#d29922\" font-family=\"monospace\" font-size=\"9\" opacity=\".7\">HIDDEN BOUNDARY</text>\n<text x=\"230.0\" y=\"18\" text-anchor=\"middle\" fill=\"#8b949e\" font-family=\"monospace\" font-size=\"11\">d=7  |  BULK SYNDROME</text>\n</svg><div style='display: flex;flex: 1;flex-direction: row;justify-content: center;align-items: normal;flex-wrap: nowrap;gap: 1rem'><svg width=\"240\" height=\"28\"><text x=\"0\" y=\"18\" fill=\"#8b949e\" font-family=\"monospace\" font-size=\"11\">Apparent G_A</text><rect x=\"90\" y=\"4\" width=\"150\" height=\"20\" rx=\"4\" fill=\"#161b22\" stroke=\"#30363d\"/><rect x=\"90\" y=\"4\" width=\"107.1\" height=\"20\" rx=\"4\" fill=\"#3fb950\" opacity=\".85\"/><text x=\"246\" y=\"18\" fill=\"#3fb950\" font-family=\"monospace\" font-size=\"11\">71%</text></svg></div><div class=\"result-accept-ok\">Gate successful \u2014 state was clean. (G_A=86%, G_P=57%)</div><div style='display: flex;flex: 1;flex-direction: row;justify-content: center;align-items: normal;flex-wrap: nowrap;gap: 1rem'><marimo-ui-element object-id='Hstk-0' random-id='ea61357f-ad65-14c6-e9a4-f44ce18498fb'><marimo-button data-initial-value='0' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Accept  [a]&lt;/span&gt;&lt;/span&gt;&quot;' data-kind='&quot;success&quot;' data-disabled='false' data-full-width='false' data-keyboard-shortcut='&quot;a&quot;'></marimo-button></marimo-ui-element><marimo-ui-element object-id='Hstk-1' random-id='34c035e1-c45b-af76-ade8-c32aaa51a5a5'><marimo-button data-initial-value='0' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Reject  [r]&lt;/span&gt;&lt;/span&gt;&quot;' data-kind='&quot;danger&quot;' data-disabled='false' data-full-width='false' data-keyboard-shortcut='&quot;r&quot;'></marimo-button></marimo-ui-element></div><div style='display: flex;flex: 1;flex-direction: row;justify-content: center;align-items: normal;flex-wrap: nowrap;gap: 0.5rem'><marimo-ui-element object-id='Hstk-2' random-id='b7d87c3a-1d73-0834-6e8d-3d9713dc0adc'><marimo-button data-initial-value='0' data-label='&quot;&lt;span class=&#92;&quot;markdown prose dark:prose-invert contents&#92;&quot;&gt;&lt;span class=&#92;&quot;paragraph&#92;&quot;&gt;Reset Score&lt;/span&gt;&lt;/span&gt;&quot;' data-kind='&quot;neutral&quot;' data-disabled='false' data-full-width='false'></marimo-button></marimo-ui-element></div></div>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "lEQa",
+      "code_hash": "9dc00ca309ebc39669e65c554a5aed4d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
           }
         }
       ],
@@ -98,12 +189,64 @@
     },
     {
       "id": "Xref",
-      "code_hash": "74808450feca81bfcb494f4e9f6836f4",
+      "code_hash": "dbb32ca2783a23c08c913e2d85bee523",
       "outputs": [
         {
           "type": "data",
           "data": {
-            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><hr />\n<span class=\"paragraph\">\"\n    <!-- \"**Debug:** open browser devtools \u2192 Console when clicking. \" -->\n    \"If A stays 0, <code>on_click</code> is not updating <code>.value</code>. \"\n    \"If A moves but B stays 0, the handler cell is not re-running after the button updates.</span></span>"
+            "text/html": "<div style='display: flex;flex: 1;flex-direction: column;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 0.5rem'><span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"scoreboard\">Scoreboard</h3></span><div style='display: flex;flex: 1;flex-direction: row;justify-content: center;align-items: normal;flex-wrap: nowrap;gap: 1rem'><marimo-stat data-value='&quot;71&quot;' data-label='&quot;Gates OK&quot;' data-bordered='true' data-target_direction='&quot;increase&quot;'></marimo-stat><marimo-stat data-value='&quot;13&quot;' data-label='&quot;Logical Errors&quot;' data-bordered='true' data-target_direction='&quot;increase&quot;'></marimo-stat><marimo-stat data-value='&quot;0&quot;' data-label='&quot;Rejects&quot;' data-bordered='true' data-target_direction='&quot;increase&quot;'></marimo-stat></div><div style='display: flex;flex: 1;flex-direction: row;justify-content: center;align-items: normal;flex-wrap: nowrap;gap: 1rem'><marimo-stat data-value='&quot;15.5%&quot;' data-label='&quot;Error Rate&quot;' data-bordered='true' data-target_direction='&quot;increase&quot;'></marimo-stat><marimo-stat data-value='&quot;99&quot;' data-label='&quot;Overhead/Gate&quot;' data-bordered='true' data-target_direction='&quot;increase&quot;'></marimo-stat><marimo-stat data-value='&quot;343&quot;' data-label='&quot;Base Cost d\u00b3&quot;' data-bordered='true' data-target_direction='&quot;increase&quot;'></marimo-stat></div></div>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bAXA",
+      "code_hash": "9419e391d126dff7c65b6c49e63f515d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "nWHF",
+      "code_hash": "5302c9b121f3533407fa734f745528b2",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "ancestor-stopped",
+          "evalue": "This cell wasn't run because an ancestor was stopped with `mo.stop`: ",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Kclp",
+      "code_hash": "f92423b2cbbcb4eb3badb73780a89383",
+      "outputs": [
+        {
+          "type": "error",
+          "ename": "ancestor-stopped",
+          "evalue": "This cell wasn't run because an ancestor was stopped with `mo.stop`: ",
+          "traceback": []
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "PKri",
+      "code_hash": "d59cf89ff8521bc9bfbedd48165d3812",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><hr />\n<h2 id=\"key-takeaways\">Key Takeaways</h2>\n<ol>\n<li><strong>The apparent gap <marimo-tex class=\"arithmatex\">||(G_A||)</marimo-tex> is unreliable.</strong> It ignores boundary uncertainty and\n   can be dangerously overconfident when hidden defects lurk at the unmeasured\n   boundary stabilizers.</li>\n<li><strong>The partial gap <marimo-tex class=\"arithmatex\">||(G_P||)</marimo-tex> is the right metric.</strong> By averaging over possible\n   boundary syndromes (via the string-splitting approximation in the paper),\n   <marimo-tex class=\"arithmatex\">||(G_P||)</marimo-tex> faithfully estimates the true logical error probability.</li>\n<li><strong>Scalable postselection yields a ~4\u00d7 overhead reduction.</strong> Rejecting states\n   with low <marimo-tex class=\"arithmatex\">||(G_P||)</marimo-tex> dramatically lowers the logical error rate. You can then use a\n   <em>smaller</em> code distance to hit the same target error rate \u2014 and since the base\n   cost scales as <marimo-tex class=\"arithmatex\">||(d^3||)</marimo-tex>, even modest distance reductions compound into large\n   savings.</li>\n<li><strong>The tradeoff is retry cost vs error suppression.</strong> Each rejection costs one\n   extra <marimo-tex class=\"arithmatex\">||(d^3||)</marimo-tex> resource state. But the error rate drops faster than the overhead\n   grows, creating a favorable frontier.</li>\n</ol>\n<blockquote>\n<span class=\"paragraph\"><em>Reference:</em> J. W. Staples, W. Fu, J. D. Thompson.\n<a href=\"https://arxiv.org/abs/2603.08697\" rel=\"noopener noreferrer\" target=\"_blank\">Scalable Postselection of Quantum Resources</a>.\narXiv:2603.08697 (2026).</span>\n</blockquote></span>"
           }
         }
       ],
