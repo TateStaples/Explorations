@@ -11,7 +11,7 @@
 
 import marimo
 
-__generated_with = "0.20.4"
+__generated_with = "0.22.4"
 app = marimo.App(width="medium")
 
 
@@ -24,21 +24,35 @@ def _():
 
 @app.cell
 def _():
-    import numpy as np
-    import scipy
+    import time
+    from collections import Counter
+    from itertools import combinations
+    from typing import Any
+
     import matplotlib.pyplot as plt
     import networkx as nx
-    from itertools import combinations
-    from collections import Counter
-    import time
+    import numpy as np
+    import scipy
 
-    def layout_graph(G, seed=0):
+    def layout_graph(G: nx.Graph, seed: int = 0) -> dict[Any, Any]:
         try:
             return nx.nx_agraph.graphviz_layout(G, prog="neato")
         except Exception:
             return nx.spring_layout(G, seed=seed, k=0.15)
 
-    return np, nx, plt, scipy, time, Counter, layout_graph, combinations
+    return Counter, combinations, layout_graph, np, nx, plt, scipy
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Abstract
+
+    *(Verbatim from [arXiv:2510.02290](https://arxiv.org/abs/2510.02290), v2.)*
+
+    > Tensor network contraction on arbitrary graphs is a fundamental computational challenge with applications ranging from quantum simulation to error correction. While belief propagation (BP) provides a powerful approximation algorithm for this task, its accuracy limitations are poorly understood and systematic improvements remain elusive. Here, we develop a rigorous theoretical framework for BP in tensor networks, leveraging insights from statistical mechanics to devise a *cluster expansion* that systematically improves the BP approximation. We prove that the cluster expansion converges exponentially fast if an object called the *loop contribution* decays sufficiently fast with the loop size, giving a rigorous error bound on BP. We also provide a simple and efficient algorithm to compute the cluster expansion to arbitrary order. We demonstrate the efficacy of our method on the two-dimensional Ising model, where we find that our method significantly improves upon BP and existing corrective algorithms such as loop series expansion. Our work opens the door to a systematic theory of BP for tensor networks and its applications in decoding classical and quantum error-correcting codes and simulating quantum systems.
+    """)
+    return
 
 
 @app.cell(hide_code=True)
@@ -130,7 +144,13 @@ def _(chi_slider, layout_graph, nx, plt):
 
 @app.cell
 def _(np):
-    def ising_partition_brute_force(beta, Lx, Ly, J=1.0, periodic=False):
+    def ising_partition_brute_force(
+        beta: float,
+        Lx: int,
+        Ly: int,
+        J: float = 1.0,
+        periodic: bool = False,
+    ) -> float:
         """Exhaustive Z for Ising; periodic = torus (small L only)."""
         N = Lx * Ly
         Z = 0.0
@@ -157,30 +177,38 @@ def _(np):
 
 @app.cell
 def _(np, nx):
+    from typing import Any, Self
+
     class TensorNetwork:
         """Tensor network on a graph; legs ordered by sorted neighbors."""
 
-        def __init__(self, graph: nx.Graph, chi: int):
+        graph: nx.Graph
+        chi: int
+        nodes: list[Any]
+        edges: list[tuple[Any, Any]]
+        tensors: dict[Any, np.ndarray]
+
+        def __init__(self, graph: nx.Graph, chi: int) -> None:
             self.graph = graph
             self.chi = chi
             self.nodes = list(graph.nodes())
             self.edges = list(graph.edges())
             self.tensors = {}
 
-        def set_tensor(self, node, tensor):
+        def set_tensor(self, node: Any, tensor: np.ndarray) -> None:
             self.tensors[node] = tensor
 
-        def neighbors(self, node):
+        def neighbors(self, node: Any) -> list[Any]:
             return sorted(self.graph.neighbors(node))
 
-        def copy_empty_tensors(self):
+        def copy_empty_tensors(self) -> Self:
             """Shallow graph copy; tensors filled by caller."""
             out = TensorNetwork(self.graph, self.chi)
             for n in self.nodes:
                 out.tensors[n] = self.tensors[n].copy()
             return out
 
-        def contract_exact(self):
+        def contract_exact(self) -> np.floating:
             edge_to_idx = {}
             idx = 0
             for e in self.edges:
@@ -204,7 +232,7 @@ def _(np, nx):
 
 @app.cell
 def _(TensorNetwork, np, nx):
-    def w_paper(s, x, beta, J=1.0):
+    def w_paper(s: int, x: int, beta: float, J: float = 1.0) -> float:
         """Paper Eq. after (26): w(s,x,β) with s ∈ {+1,-1}, x ∈ {0,1}."""
         b = beta * J
         ch = np.cosh(b)
@@ -213,7 +241,7 @@ def _(TensorNetwork, np, nx):
             return float(np.sqrt(ch))
         return float(np.sqrt(ch) * s * np.sqrt(th))
 
-    def make_grid_graph(Lx, Ly, periodic=False):
+    def make_grid_graph(Lx: int, Ly: int, periodic: bool = False) -> nx.Graph:
         if not periodic:
             return nx.grid_2d_graph(Lx, Ly)
         G = nx.Graph()
@@ -246,7 +274,27 @@ def _(TensorNetwork, np, nx):
             tn.set_tensor(node, T)
         return tn
 
-    return make_ising_tn, make_grid_graph, w_paper
+    def make_ising_ring_tn(n_sites: int, beta: float, J: float = 1.0) -> TensorNetwork:
+        """1D ring C_n, χ=2 Ising with the same paper bond weights as ``make_ising_tn``."""
+        G = nx.cycle_graph(n_sites)
+        tn = TensorNetwork(G, chi=2)
+        spins = (1, -1)
+        for node in G.nodes():
+            nbrs = sorted(G.neighbors(node))
+            deg = len(nbrs)
+            T = np.zeros((2,) * deg)
+            for sigma in spins:
+                contrib = np.ones(1)
+                for _ in range(deg):
+                    outer = []
+                    for x in (0, 1):
+                        outer.append(w_paper(sigma, x, beta, J))
+                    contrib = np.outer(contrib, outer).flatten()
+                T += contrib.reshape((2,) * deg)
+            tn.set_tensor(node, T)
+        return tn
+
+    return make_ising_ring_tn, make_ising_tn
 
 
 @app.cell(hide_code=True)
@@ -264,22 +312,24 @@ def _(mo):
 
 
 @app.cell
-def _(np):
+def _(TensorNetwork, np):
+    from typing import Any
+
     def belief_propagation(
-        tn,
-        max_iter=500,
-        tol=1e-9,
-        damping=0.3,
-        noise_std=1e-6,
-        verbose=False,
-    ):
+        tn: TensorNetwork,
+        max_iter: int = 500,
+        tol: float = 1e-9,
+        damping: float = 0.3,
+        noise_std: float = 1e-6,
+        verbose: bool = False,
+    ) -> tuple[dict[tuple[Any, Any], np.ndarray], bool, list[float]]:
         chi, graph = tn.chi, tn.graph
-        messages = {}
+        messages: dict[tuple[Any, Any], np.ndarray] = {}
         for u, v in graph.edges():
             messages[(u, v)] = np.random.rand(chi) + 0.1
             messages[(v, u)] = np.random.rand(chi) + 0.1
 
-        def normalize_pair(u, v):
+        def normalize_pair(u: Any, v: Any) -> None:
             ip = messages[(u, v)] @ messages[(v, u)]
             if ip > 0:
                 s = np.sqrt(ip)
@@ -317,7 +367,8 @@ def _(np):
 
             for key in new_messages:
                 old = messages[key]
-                new = new_messages[key] + noise_std * np.random.randn(*new.shape)
+                raw = new_messages[key]
+                new = raw + noise_std * np.random.randn(*raw.shape)
                 nrm = np.linalg.norm(new)
                 if nrm > 0:
                     new /= nrm
@@ -344,15 +395,24 @@ def _(np):
 
 
 @app.cell
-def _(np):
-    def bp_contract_vertex(tn, messages, node):
+def _(TensorNetwork, np):
+    from typing import Any
+
+    def bp_contract_vertex(
+        tn: TensorNetwork,
+        messages: dict[tuple[Any, Any], np.ndarray],
+        node: Any,
+    ) -> float:
         nbrs = tn.neighbors(node)
         T = tn.tensors[node]
         for w in nbrs:
             T = np.tensordot(T, messages[(w, node)], axes=([0], [0]))
         return float(T)
 
-    def compute_bp_partition(tn, messages):
+    def compute_bp_partition(
+        tn: TensorNetwork,
+        messages: dict[tuple[Any, Any], np.ndarray],
+    ) -> float:
         log_Z = 0.0
         for node in tn.nodes:
             z_v = bp_contract_vertex(tn, messages, node)
@@ -360,12 +420,18 @@ def _(np):
         for u, v in tn.edges:
             z_uv = messages[(u, v)] @ messages[(v, u)]
             log_Z -= np.log(abs(z_uv) + 1e-30)
-        return log_Z
+        return float(log_Z)
 
-    def local_z_factors(tn, messages):
+    def local_z_factors(
+        tn: TensorNetwork,
+        messages: dict[tuple[Any, Any], np.ndarray],
+    ) -> dict[Any, float]:
         return {v: bp_contract_vertex(tn, messages, v) for v in tn.nodes}
 
-    def normalize_tensors(tn, messages):
+    def normalize_tensors(
+        tn: TensorNetwork,
+        messages: dict[tuple[Any, Any], np.ndarray],
+    ) -> tuple[TensorNetwork, float, dict[Any, float]]:
         """T̃_v = T_v / Z^{(v)} (Eq. (12)); return offset Σ ln Z^{(v)}."""
         zv = local_z_factors(tn, messages)
         ttn = tn.copy_empty_tensors()
@@ -376,17 +442,11 @@ def _(np):
             ttn.tensors[v] = tn.tensors[v] / z
         return ttn, log_off, zv
 
-    def free_energy_density(log_Z, beta, N):
+    def free_energy_density(log_Z: float, beta: float, N: int) -> float:
         """f = -β⁻¹ ln Z / N (paper Sec. V)."""
         return -log_Z / (beta * N)
 
-    return (
-        compute_bp_partition,
-        bp_contract_vertex,
-        normalize_tensors,
-        local_z_factors,
-        free_energy_density,
-    )
+    return compute_bp_partition, free_energy_density, normalize_tensors
 
 
 @app.cell(hide_code=True)
@@ -422,7 +482,9 @@ def _(mo):
 
 @app.cell
 def _(combinations, nx):
-    def is_paper_generalized_loop(edge_list):
+    from typing import Any
+
+    def is_paper_generalized_loop(edge_list: list[tuple[Any, Any]]) -> bool:
         """Def. II.1: induced subgraph has min degree ≥ 2."""
         if not edge_list:
             return False
@@ -473,12 +535,7 @@ def _(combinations, nx):
                 cycles.append(el)
         return cycles
 
-    return (
-        enumerate_connected_paper_loops,
-        enumerate_simple_cycles_as_edges,
-        is_paper_generalized_loop,
-        canonical_loop_edges,
-    )
+    return enumerate_connected_paper_loops, enumerate_simple_cycles_as_edges
 
 
 @app.cell
@@ -630,7 +687,7 @@ def _(mo):
 
 
 @app.cell
-def _(nx, np):
+def _(nx):
     def phi_cluster_from_graph(G_W, factorial_W):
         """φ = (1/W!) * sum_{spanning connected} (-1)^|E|."""
         n = G_W.number_of_nodes()
@@ -674,15 +731,11 @@ def _(nx, np):
             p *= math.factorial(int(eta))
         return p
 
-    return (
-        phi_cluster_from_graph,
-        build_interaction_graph,
-        cluster_factorial,
-    )
+    return build_interaction_graph, phi_cluster_from_graph
 
 
 @app.cell
-def _(Counter, build_interaction_graph, phi_cluster_from_graph, nx):
+def _(Counter, build_interaction_graph, nx, phi_cluster_from_graph):
     import math
     from itertools import combinations_with_replacement
 
@@ -737,7 +790,7 @@ def _(
         F_tilde = cluster_expansion_sum(loops, loop_Z, max_weight, max_cluster_size)
         return F_tilde + log_off, loops, loop_Z
 
-    return collect_loops, log_partition_cluster
+    return (log_partition_cluster,)
 
 
 @app.cell(hide_code=True)
@@ -746,44 +799,135 @@ def _(mo):
     ---
     ## Sec. III.3 — Toy ring (normalized network)
 
-    On a 1D ring with a single loop $\ell$, after normalization $\mathcal{Z}(\tilde{\mathcal{T}})=1+Z_\ell$
-    and $\mathcal{F}=\ln(1+Z_\ell)$. Cluster expansion reproduces the Taylor series
-    $\sum_{k\ge1} (-1)^{k+1} Z_\ell^k/k$ (Eq. (23)), termwise distinct from the **linked cluster**
-    expansion (one-line $\ln(1+Z_\ell)$) discussed in the paper.
+    On a 1D ring with a single loop $\ell$, after normalization one expects
+    $\mathcal{Z}(\tilde{\mathcal{T}})\approx 1+Z_\ell$ and $\tilde{\mathcal{F}}=\ln\mathcal{Z}(\tilde{\mathcal{T}})\approx\ln(1+Z_\ell)$.
+    The **cluster expansion** (Lemma III.1) truncated at multiset size $K$ approaches $\ln\mathcal{Z}(\tilde{\mathcal{T}})$
+    as $K$ grows; for this graph it tracks the Taylor series
+    $\sum_{k\ge1} (-1)^{k+1} Z_\ell^k/k$ from Eq. (23)—distinct from the one-line **linked-cluster** expression
+    $\ln(1+Z_\ell)$. The next cell fixes $C_n$, runs BP + normalization, and plots **errors vs. $K$** so convergence is visible.
     """)
     return
 
 
 @app.cell
-def _(TensorNetwork, belief_propagation, compute_bp_partition, mo, np, nx, scipy):
-    _G = nx.cycle_graph(3)
+def _(
+    belief_propagation,
+    cluster_expansion_sum,
+    compute_loop_tensor,
+    make_ising_ring_tn,
+    mo,
+    normalize_tensors,
+    np,
+    plt,
+):
+    _n = 5
     _beta = 0.3
-    _tn = TensorNetwork(_G, chi=2)
-    _W = np.array(
-        [
-            [np.exp(_beta), np.exp(-_beta)],
-            [np.exp(-_beta), np.exp(_beta)],
-        ]
+    _tn = make_ising_ring_tn(_n, _beta)
+    _logZ_full = float(np.log(float(_tn.contract_exact())))
+    _msgs, _bp_ok, _ = belief_propagation(
+        _tn,
+        max_iter=4000,
+        tol=1e-12,
+        damping=0.5,
+        noise_std=0.0,
     )
-    _sqrtW = scipy.linalg.sqrtm(_W).real
-    for _node in _G.nodes():
-        _nbrs = sorted(_G.neighbors(_node))
-        _deg = len(_nbrs)
-        _T = np.zeros((2,) * _deg)
-        for _sig in range(2):
-            _c = np.ones(1)
-            for _ in range(_deg):
-                _c = np.outer(_c, _sqrtW[_sig, :]).flatten()
-            _T += _c.reshape((2,) * _deg)
-        _tn.set_tensor(_node, _T)
-    _Zex = float(_tn.contract_exact())
-    _msgs, _, _ = belief_propagation(_tn, max_iter=400, damping=0.25)
-    _Zbp = float(np.exp(compute_bp_partition(_tn, _msgs)))
+    _ttn, _log_off, _ = normalize_tensors(_tn, _msgs)
+    _Z_tilde = float(_ttn.contract_exact())
+    _logZ_tilde = float(np.log(_Z_tilde))
+
+    _ring_edges = []
+    for _i in range(_n):
+        _a, _b = _i, (_i + 1) % _n
+        _ring_edges.append((_a, _b) if _a < _b else (_b, _a))
+    _Z_ell = compute_loop_tensor(_ttn, _msgs, _ring_edges)
+    _one_plus = 1.0 + _Z_ell
+    _log_one_plus = float(np.log(_one_plus))
+
+    _loops = [_ring_edges]
+    _loop_Z = [_Z_ell]
+    _K_max = 14
+    _Ks = list(range(1, _K_max + 1))
+    _err_cluster = []
+    _err_taylor = []
+    for _K in _Ks:
+        _F_K = cluster_expansion_sum(
+            _loops, _loop_Z, max_weight=9999, max_cluster_size=_K
+        )
+        _err_cluster.append(abs(_F_K - _logZ_tilde))
+        _T_K = sum(
+            ((-1) ** (_k + 1)) * (_Z_ell**_k) / _k for _k in range(1, _K + 1)
+        )
+        _err_taylor.append(abs(_T_K - _logZ_tilde))
+
+    _fig, _axes = plt.subplots(1, 2, figsize=(10, 3.8))
+    _axes[0].semilogy(
+        _Ks,
+        _err_cluster,
+        "o-",
+        ms=4,
+        label=r"$|\tilde{\mathcal{F}}_K - \ln\tilde{Z}|$",
+    )
+    _axes[0].axhline(
+        abs(_log_one_plus - _logZ_tilde),
+        color="gray",
+        ls=":",
+        lw=1.2,
+        label=r"$|\ln(1+Z_\ell)-\ln\tilde{Z}|$",
+    )
+    _axes[0].set_xlabel(r"max multiset size $K$")
+    _axes[0].set_ylabel("absolute error")
+    _axes[0].set_title("Cluster expansion vs truncation")
+    _axes[0].legend(fontsize=8)
+    _axes[0].grid(True, alpha=0.3)
+
+    _axes[1].semilogy(
+        _Ks,
+        _err_taylor,
+        "s-",
+        ms=4,
+        color="darkgreen",
+        label=r"$|T_K - \ln\tilde{Z}|$",
+    )
+    _axes[1].axhline(
+        abs(_log_one_plus - _logZ_tilde),
+        color="gray",
+        ls=":",
+        lw=1.2,
+        label=r"$|\ln(1+Z_\ell)-\ln\tilde{Z}|$",
+    )
+    _axes[1].set_xlabel(r"Taylor order $K$")
+    _axes[1].set_ylabel("absolute error")
+    _axes[1].set_title(r"Eq. (23): $T_K=\sum_{k=1}^K (-1)^{k+1} Z_\ell^k/k$")
+    _axes[1].legend(fontsize=8)
+    _axes[1].grid(True, alpha=0.3)
+    plt.suptitle(
+        rf"Sec. III.3 — $C_{_n}$ ring at $\beta={_beta}$: convergence in $K$",
+        fontsize=11,
+        y=1.02,
+    )
+    plt.tight_layout()
+
     mo.md(
-        f"**Triangle sanity check (β={_beta}):** "
-        f"$Z_{{\\rm exact}}={_Zex:.6f}$, "
-        f"$Z_{{\\rm BP}}={_Zbp:.6f}$."
+        f"""
+    ### Toy ring numerics ($C_{_n}$, $\\beta={_beta}$)
+
+    | | |
+    |---|---|
+    | $\\ln Z$ (unnormalized TN) | {_logZ_full:.12f} |
+    | $\\ln\\tilde{{Z}}$ (normalized TN, exact) | {_logZ_tilde:.12f} |
+    | $\\sum_v \\ln Z^{{(v)}}$ (offset) | {_log_off:.12f} |
+    | BP converged | `{_bp_ok}` |
+    | $Z_\\ell$ (single ring loop, $\\tilde{{T}}$) | {_Z_ell:.6e} |
+    | $1+Z_\\ell$ | {_one_plus:.10f} |
+    | $\\ln(1+Z_\\ell)$ | {_log_one_plus:.12f} |
+    | $|\\tilde{{Z}}-(1+Z_\\ell)|\\,/\\,\\tilde{{Z}}$ | {abs(_Z_tilde - _one_plus) / max(abs(_Z_tilde), 1e-30):.2e} |
+    | $|\\tilde{{\\mathcal{{F}}}}_{{{_K_max}}} - \\ln\\tilde{{Z}}|$ | {_err_cluster[-1]:.2e} |
+    | $|T_{{{_K_max}}} - \\ln\\tilde{{Z}}|$ | {_err_taylor[-1]:.2e} |
+
+    Both curves decay with $K$ when $|Z_\\ell|\\ll 1$: the cluster sum and the Taylor partial sums approach the same limit near $\\ln\\tilde{{Z}}$. The horizontal gray line is the gap between that limit and the one-line linked-cluster value $\\ln(1+Z_\\ell)$ when $\\tilde{{Z}}\\neq 1+Z_\\ell$ at finite $\\chi$ and BP messages.
+    """
     )
+    _fig
     return
 
 
@@ -864,7 +1008,6 @@ def _(
 @app.cell
 def _(
     belief_propagation,
-    compute_bp_partition,
     free_energy_density,
     ising_partition_brute_force,
     log_partition_cluster,
@@ -960,11 +1103,10 @@ def _(
     belief_propagation,
     compute_loop_tensor,
     enumerate_simple_cycles_as_edges,
-    free_energy_density,
     make_ising_tn,
     mo,
-    np,
     normalize_tensors,
+    np,
     plt,
 ):
     _L = 4
