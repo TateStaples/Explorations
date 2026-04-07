@@ -9,7 +9,10 @@
     - [Welch Labs](https://github.com/WelchLabs/videos/tree/master/_2025)
     - BrainTruffle
     - Sam Rose
-    - https://distill.pub/2020/communicating-with-interactive-articles
+    - Distill Pub
+        - https://distill.pub/2020/communicating-with-interactive-articles
+        - https://distill.pub/2017/research-debt/
+    - https://cognitivemedium.com/tat/
     - Blender
     - Josh's Channel
 - Quantum Computing
